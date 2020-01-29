@@ -24,7 +24,7 @@ SECRET_KEY = 'i&^l7d&4&$mdbf5gy+atcj#njzfuh&93d0@gwnp@%bzeqo3w5c'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -113,4 +113,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+CELERY_BROKER_URL = 'redis://redis:6379'
+STATIC_URL = '/evalmgr/static/'
+STATIC_ROOT = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), '/evalmgr/static')
+MEDIA_URL = '/evalmgr/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'evalmgr/media')
