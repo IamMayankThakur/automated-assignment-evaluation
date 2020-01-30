@@ -4,7 +4,7 @@ API conf format
 name = Assignment 1 Eval Cloud Computing
 description = CC A 1
 email = instructor1@mail.com
-code = UE17CS302
+access_code = UE17CS302
 test_type = 1
 [TestName]
 api_endpoint = api/v1/test
@@ -20,6 +20,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import Evaluation
+from .utils import create_evaluation
 
 
 class ConfigUpload(View):
@@ -29,5 +30,6 @@ class ConfigUpload(View):
             evaluation = Evaluation()
             evaluation.conf_file = eval_conf
             evaluation.save()
+            create_evaluation(eval_id=evaluation.id)
         except Exception as e:
             print(e)

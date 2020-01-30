@@ -1,13 +1,14 @@
 import configparser
 from .models import Evaluation, FacultyProfile
+from ..testmgr.api_eval import setup_api_eval
 
 
 def create_evaluation(**kwargs):
-    submission_id = kwargs['sub_id'] if 'sub_id' in kwargs else None
-    if submission_id is None:
-        raise ImportError
+    eval_id = kwargs['eval_id'] if 'eval_id' in kwargs else None
+    if eval_id is None:
+        raise RuntimeError
     try:
-        evaluation = Evaluation.objects.get(pk=submission_id)
+        evaluation = Evaluation.objects.get(pk=eval_id)
         file = evaluation.path
         c = configparser.ConfigParser()
         c.read(file)
@@ -16,7 +17,8 @@ def create_evaluation(**kwargs):
         evaluation.description = c['Settings']['description']
         evaluation.created_by = faculty
         evaluation.type = c['Settings']['test_type']
-        evaluation.code = c['Settings']['code']
+        evaluation.code = c['Settings']['access_code']
         evaluation.save()
+        setup_api_eval(eval_id=eval_id)
     except Exception as e:
         print(e)
