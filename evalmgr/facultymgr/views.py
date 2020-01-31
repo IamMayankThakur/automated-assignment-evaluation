@@ -7,6 +7,7 @@ email = instructor1@mail.com
 access_code = UE17CS302
 test_type = 1
 [TestName]
+sanity = True
 api_endpoint = api/v1/test
 api_method = GET
 api_message_body = {key: value}
