@@ -1,5 +1,6 @@
 from django.db import models
-from ..facultymgr.models import Evaluation
+from facultymgr.models import Evaluation
+from django.utils import timezone
 # Create your models here.
 
 
@@ -15,12 +16,14 @@ class Team(models.Model):
 
 
 class Submission(models.Model):
-    team = models.ForeignKey(Team)
-    evaluation = models.ForeignKey(Evaluation)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(default=timezone.now)
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
     marks = models.FloatField(default=-1)
     message = models.TextField()
     public_ip_address = models.URLField(blank=False)
     source_code_file = models.FileField(upload_to='source/api_test/')
+    above_specification_choice = models.CharField(max_length=256, blank=True, null=True)
     above_specification = models.TextField()
     above_specification_file = models.FileField(upload_to='source/above_api_specification/')
 

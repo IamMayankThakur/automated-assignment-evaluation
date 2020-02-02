@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'testmgr',
 ]
 
 MIDDLEWARE = [
@@ -115,6 +116,6 @@ USE_TZ = True
 
 CELERY_BROKER_URL = 'redis://redis:6379'
 STATIC_URL = '/evalmgr/static/'
-STATIC_ROOT = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), '/evalmgr/static')
+STATIC_ROOT = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'evalmgr/static')
 MEDIA_URL = '/evalmgr/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'evalmgr/media')

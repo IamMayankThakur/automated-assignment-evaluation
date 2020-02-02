@@ -1,6 +1,6 @@
 import configparser
 from .models import Evaluation, FacultyProfile
-from ..testmgr.api_eval import setup_api_eval
+from testmgr.api_eval import setup_api_eval
 
 
 def create_evaluation(**kwargs):
@@ -9,7 +9,7 @@ def create_evaluation(**kwargs):
         raise RuntimeError
     try:
         evaluation = Evaluation.objects.get(pk=eval_id)
-        file = evaluation.path
+        file = evaluation.conf_file.path
         c = configparser.ConfigParser()
         c.read(file)
         faculty = FacultyProfile.objects.get(email=c['Settings']['email'])
@@ -17,7 +17,7 @@ def create_evaluation(**kwargs):
         evaluation.description = c['Settings']['description']
         evaluation.created_by = faculty
         evaluation.type = c['Settings']['test_type']
-        evaluation.code = c['Settings']['access_code']
+        evaluation.access_code = c['Settings']['access_code']
         evaluation.save()
         setup_api_eval(eval_id=eval_id)
     except Exception as e:

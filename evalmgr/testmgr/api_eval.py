@@ -1,9 +1,11 @@
 import configparser
+import json
+
 import requests
 
+from facultymgr.models import Evaluation
+from studentmgr.models import Submission
 from .models import ApiTestModel
-from ..facultymgr.models import Evaluation
-from ..studentmgr.models import Submission
 
 
 def setup_api_eval(*args, **kwargs):
@@ -11,10 +13,11 @@ def setup_api_eval(*args, **kwargs):
     if eval_id is None:
         raise RuntimeError
     evaluation = Evaluation.objects.get(pk=eval_id)
-    file = evaluation.path
+    file = evaluation.conf_file.path
     c = configparser.ConfigParser()
     c.read(file)
-    sections = c.sections().remove('Settings')
+    sections = c.sections()
+    sections.remove('Settings')
     for s in sections:
         api_test = ApiTestModel()
         api_test.sanity = True if c[s]['sanity'] == "True" else False
@@ -23,7 +26,7 @@ def setup_api_eval(*args, **kwargs):
         api_test.api_message_body = c[s]['api_message_body']
         api_test.expected_status_code = c[s]['expected_status_code']
         api_test.expected_response_body = c[s]['expected_response_body']
-        api_test.evaluation = eval_id
+        api_test.evaluation = Evaluation.objects.get(id=eval_id)
         api_test.save()
 
 
@@ -49,21 +52,46 @@ def do_api_eval(*args, **kwargs):
     return
 
 
+def give_marks(response, test):
+    marks = 0
+    message = 0
+    if response.status_code == test.expected_status_code:
+        marks += 0.5 if test.expected_response_body != "" else 1
+        if test.expected_response_body != "":
+            if response.content == test.expected_response_body:
+                marks += 0.5
+    else:
+        message += "<br> " + test.api_endpoint + "failed" + "<br>"
+    return marks, message
+
+
 def run_tests(test_objects, public_ip):
     marks = 0
     message = ""
+    if ":" in public_ip:
+        marks -= 1
+        message += "<br> Marks reduced as API not on port 80 <br>"
     for test in test_objects:
         if test.api_method == "GET":
             response = requests.get(public_ip+test.api_endpoint)
-            if response.status_code == test.expected_status_code:
-                marks += 1
-                message += "<br> " + test.api_endpoint + " passed"
-            else:
-                message += "<br> " + test.api_endpoint + "failed"
+            marks_for_test, message_for_test = give_marks(response, test)
+            marks += marks_for_test
+            message += message_for_test
         elif test.api_method == "POST":
-            requests.post("todo")
+            response = requests.post(public_ip+test.api_endpoint, data=json.loads(test.api_message_body))
+            marks_for_test, message_for_test = give_marks(response, test)
+            marks += marks_for_test
+            message += message_for_test
         elif test.api_method == "PUT":
-            requests.put("todo")
+            response = requests.put(public_ip + test.api_endpoint, data=json.loads(test.api_message_body))
+            marks_for_test, message_for_test = give_marks(response, test)
+            marks += marks_for_test
+            message += message_for_test
+        elif test.api_method == "DELETE":
+            response = requests.delete(public_ip + test.api_endpoint)
+            marks_for_test, message_for_test = give_marks(response, test)
+            marks += marks_for_test
+            message += message_for_test
     return marks, message
 
 

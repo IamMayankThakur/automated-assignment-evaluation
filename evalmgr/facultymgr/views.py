@@ -25,12 +25,17 @@ from .utils import create_evaluation
 
 
 class ConfigUpload(View):
+    def get(self, request):
+        return render(request, 'choose_file.html')
+
     def post(self, request):
         try:
-            eval_conf = request.FILES['eval_conf']
+            eval_conf = request.FILES['conf_file']
             evaluation = Evaluation()
             evaluation.conf_file = eval_conf
             evaluation.save()
             create_evaluation(eval_id=evaluation.id)
+            return HttpResponse("Config created")
         except Exception as e:
             print(e)
+            return HttpResponse("Error")

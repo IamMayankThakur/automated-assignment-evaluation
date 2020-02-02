@@ -12,9 +12,24 @@
 <body>
 
 <div class="container mt-5 row h-100 d-flex justify-content-center">
+    <h3>Submit new assignment</h3>
+    <br>
     <div class="col-md-3 my-auto">
-    <form>
-    <input type="text" class="form-control" id="access_code" placeholder="Enter Access Key...">
+    <form method="post">
+                {% csrf_token %}
+    <input type="text" class="form-control" id="access_code" placeholder="Enter Access Key..." name="access_code">
+
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
+    </div>
+</div>
+<div class="container mt-5 row h-100 d-flex justify-content-center">
+    <h3>See previous submissions</h3>
+    <br>
+    <div class="col-md-3 my-auto">
+    <form method="post" action={% url 'studentmgr:past_submission_view' %}>
+                {% csrf_token %}
+    <input type="text" class="form-control" id="team_name" placeholder="Enter Team Name" name="team_name">
 
     <button type="submit" class="btn btn-primary mt-3">Submit</button>
     </form>

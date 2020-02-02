@@ -13,9 +13,7 @@
     </facet>
   </component>
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/venv" />
-    </content>
+    <content url="file://$MODULE_DIR$/evalmgr" />
     <orderEntry type="jdk" jdkName="Python 3.7 (venv)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
@@ -24,6 +22,8 @@
     <option name="TEMPLATE_FOLDERS">
       <list>
         <option value="$MODULE_DIR$/venv/lib/python3.7/site-packages/django/forms/templates" />
+        <option value="$MODULE_DIR$/evalmgr/studentmgr/templates" />
+        <option value="$MODULE_DIR$/evalmgr/facultymgr/templates" />
       </list>
     </option>
   </component>
