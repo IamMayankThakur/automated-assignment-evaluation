@@ -33,7 +33,7 @@ def setup_api_eval(*args, **kwargs):
         api_test.save()
 
 
-@shared_task
+# @shared_task
 def do_api_eval(*args, **kwargs):
     sub_id = kwargs.get('sub_id', None)
     if sub_id is None:
