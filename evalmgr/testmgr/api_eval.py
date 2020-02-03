@@ -5,6 +5,7 @@ import requests
 
 from facultymgr.models import Evaluation
 from studentmgr.models import Submission
+from notifymgr.mail import send_mail
 from .models import ApiTestModel
 
 
@@ -49,6 +50,7 @@ def do_api_eval(*args, **kwargs):
     submission.marks = marks
     submission.message = message
     submission.save()
+    send_mail(sub_id)
     return
 
 

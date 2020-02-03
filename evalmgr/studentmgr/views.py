@@ -5,6 +5,7 @@ from django.views import View
 from facultymgr.models import Evaluation
 from .models import Team, Submission
 from.utils import get_route_for_eval_type
+from testmgr.api_eval import do_api_eval
 # Create your views here.
 
 
@@ -31,28 +32,28 @@ class ApiTestView(View):
         return render(request, 'testapi_file.html')
 
     def post(self, request):
-        # try:
+        try:
             sub = Submission()
             import pdb
             pdb.set_trace()
             sub.team = Team.objects.get(team_name=request.POST['team'])
             sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
-            sub.public_ip_address = request.POST['public_ip_address']
+            sub.public_ip_address = "http://"+request.POST['public_ip_address']
             sub.source_code_file = request.FILES['source_code_file']
             sub.above_specification_choice = request.POST['above_specification_choice']
             sub.above_specification = ''.join(request.POST.getlist('above_specification'))
             sub.above_specification_file = request.FILES['above_specification_file']
             sub.save()
+            do_api_eval(sub_id=sub.id)
             return HttpResponse("Your submission has been recorded. Your submission id is "+str(sub.id))
-        # except Exception as e:
-        #     print(e)
-        #     return HttpResponse("Error while API submission")
+        except Exception as e:
+            print(e)
+            return HttpResponse("Error while API submission")
 
 
 class PastSubmissionView(View):
     def post(self, request):
         team_name = request.POST['team_name']
         data = Submission.objects.filter(team__team_name=team_name)
-        # submissions = [{'id': s.pk, 'marks': s.marks, 'timestamp': s.timestamp, 'message':s.message} for s in data]
         submissions = {'submissions': data}
         return render(request, 'submissions.html', submissions)
