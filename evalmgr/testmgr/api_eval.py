@@ -74,7 +74,7 @@ def give_marks(response, test):
 def run_tests(test_objects, public_ip):
     marks = 0
     message = ""
-    if ":" in public_ip:
+    if public_ip.count(":") > 1:
         marks -= 1
         message += "<br> Marks reduced as API not on port 80 <br>"
     try:
