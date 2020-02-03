@@ -33,7 +33,7 @@ def port_csv_to_db(csv_path):
                 email_member_1=row["Email(Member 1)"],
                 email_member_2=row["Email(Member 2)"],
                 email_member_3=row["Email(Member 3)"],
-                email_member_4=row["Email(Member 4)"]
+                email_member_4=row["Email (Member 4)"]
             )
             team_obj.save()
         except Exception as e:
