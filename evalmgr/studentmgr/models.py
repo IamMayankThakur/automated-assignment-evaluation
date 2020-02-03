@@ -7,9 +7,9 @@ from django.utils import timezone
 class Team(models.Model):
     team_name = models.CharField(max_length=64, blank=False, unique=True)
     email_member_1 = models.EmailField(unique=True, blank=False)
-    email_member_2 = models.EmailField(unique=True, blank=True)
-    email_member_3 = models.EmailField(unique=True, blank=True)
-    email_member_4 = models.EmailField(unique=True, blank=True)
+    email_member_2 = models.EmailField(blank=True)
+    email_member_3 = models.EmailField(blank=True)
+    email_member_4 = models.EmailField(blank=True)
 
     def __str__(self):
         return str(self.team_name)
