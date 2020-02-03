@@ -54,7 +54,7 @@ def do_api_eval(*args, **kwargs):
     submission.marks = marks
     submission.message = message
     submission.save()
-    send_mail(sub_id)
+    # send_mail(sub_id)
     return
 
 
