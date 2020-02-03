@@ -2,6 +2,8 @@ import configparser
 import json
 
 import requests
+from celery import shared_task
+
 
 from facultymgr.models import Evaluation
 from notifymgr.mail import send_mail
@@ -31,6 +33,7 @@ def setup_api_eval(*args, **kwargs):
         api_test.save()
 
 
+@shared_task
 def do_api_eval(*args, **kwargs):
     sub_id = kwargs.get('sub_id', None)
     if sub_id is None:

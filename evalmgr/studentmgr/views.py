@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse
 from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
 
 from facultymgr.models import Evaluation
 from testmgr.api_eval import do_api_eval
@@ -43,11 +44,11 @@ class ApiTestView(View):
             sub.above_specification = ''.join(request.POST.getlist('above_specification'))
             sub.above_specification_file = request.FILES['above_specification_file']
             sub.save()
-            do_api_eval(sub_id=sub.id)
+            do_api_eval.apply_async([sub_id=sub.id])
             return HttpResponse("Your submission has been recorded. Your submission id is "+str(sub.id))
-        except Exception as e:
+        except ObjectDoesNotExist as e:
             print(e)
-            return HttpResponse("Error while API submission")
+            return HttpResponse("Team name or evaluation acccess key is wrong")
 
 
 class PastSubmissionView(View):
