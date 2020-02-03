@@ -34,8 +34,6 @@ class ApiTestView(View):
     def post(self, request):
         try:
             sub = Submission()
-            import pdb
-            pdb.set_trace()
             sub.team = Team.objects.get(team_name=request.POST['team'])
             sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
             sub.public_ip_address = "http://"+request.POST['public_ip_address']
