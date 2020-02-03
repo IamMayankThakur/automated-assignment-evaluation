@@ -77,27 +77,30 @@ def run_tests(test_objects, public_ip):
     if ":" in public_ip:
         marks -= 1
         message += "<br> Marks reduced as API not on port 80 <br>"
-    for test in test_objects:
-        if test.api_method == "GET":
-            response = requests.get(public_ip+test.api_endpoint)
-            marks_for_test, message_for_test = give_marks(response, test)
-            marks += marks_for_test
-            message += message_for_test
-        elif test.api_method == "POST":
-            response = requests.post(public_ip+test.api_endpoint, data=ast.literal_eval(test.api_message_body))
-            marks_for_test, message_for_test = give_marks(response, test)
-            marks += marks_for_test
-            message += message_for_test
-        elif test.api_method == "PUT":
-            response = requests.put(public_ip + test.api_endpoint, data=ast.literal_eval(test.api_message_body))
-            marks_for_test, message_for_test = give_marks(response, test)
-            marks += marks_for_test
-            message += message_for_test
-        elif test.api_method == "DELETE":
-            response = requests.delete(public_ip + test.api_endpoint)
-            marks_for_test, message_for_test = give_marks(response, test)
-            marks += marks_for_test
-            message += message_for_test
+    try:
+        for test in test_objects:
+            if test.api_method == "GET":
+                response = requests.get(public_ip+test.api_endpoint)
+                marks_for_test, message_for_test = give_marks(response, test)
+                marks += marks_for_test
+                message += message_for_test
+            elif test.api_method == "POST":
+                response = requests.post(public_ip+test.api_endpoint, data=ast.literal_eval(test.api_message_body))
+                marks_for_test, message_for_test = give_marks(response, test)
+                marks += marks_for_test
+                message += message_for_test
+            elif test.api_method == "PUT":
+                response = requests.put(public_ip + test.api_endpoint, data=ast.literal_eval(test.api_message_body))
+                marks_for_test, message_for_test = give_marks(response, test)
+                marks += marks_for_test
+                message += message_for_test
+            elif test.api_method == "DELETE":
+                response = requests.delete(public_ip + test.api_endpoint)
+                marks_for_test, message_for_test = give_marks(response, test)
+                marks += marks_for_test
+                message += message_for_test
+    except Exception as e:
+        return marks, message+="<br> Error"
     return marks, message
 
 
