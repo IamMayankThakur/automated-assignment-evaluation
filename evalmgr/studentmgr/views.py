@@ -1,12 +1,11 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, reverse
 from django.views import View
+
 from facultymgr.models import Evaluation
-from .models import Team, Submission
-from.utils import get_route_for_eval_type
 from testmgr.api_eval import do_api_eval
-# Create your views here.
+from .models import Team, Submission
+from .utils import get_route_for_eval_type
 
 
 class AccessCodeView(View):

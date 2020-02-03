@@ -4,8 +4,8 @@ import json
 import requests
 
 from facultymgr.models import Evaluation
-from studentmgr.models import Submission
 from notifymgr.mail import send_mail
+from studentmgr.models import Submission
 from .models import ApiTestModel
 
 
