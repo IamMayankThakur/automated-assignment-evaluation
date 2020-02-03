@@ -100,7 +100,8 @@ def run_tests(test_objects, public_ip):
                 marks += marks_for_test
                 message += message_for_test
     except Exception as e:
-        return marks, message+="<br> Error"
+        print("Error", e)
+        return marks, message
     return marks, message
 
 
