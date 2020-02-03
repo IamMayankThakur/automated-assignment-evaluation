@@ -1,5 +1,6 @@
 import configparser
 import json
+import ast
 
 import requests
 from celery import shared_task
@@ -83,12 +84,12 @@ def run_tests(test_objects, public_ip):
             marks += marks_for_test
             message += message_for_test
         elif test.api_method == "POST":
-            response = requests.post(public_ip+test.api_endpoint, data=json.loads(test.api_message_body))
+            response = requests.post(public_ip+test.api_endpoint, data=ast.literal_eval(test.api_message_body))
             marks_for_test, message_for_test = give_marks(response, test)
             marks += marks_for_test
             message += message_for_test
         elif test.api_method == "PUT":
-            response = requests.put(public_ip + test.api_endpoint, data=json.loads(test.api_message_body))
+            response = requests.put(public_ip + test.api_endpoint, data=ast.literal_eval(test.api_message_body))
             marks_for_test, message_for_test = give_marks(response, test)
             marks += marks_for_test
             message += message_for_test
