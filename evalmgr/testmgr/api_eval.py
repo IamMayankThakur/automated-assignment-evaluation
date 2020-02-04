@@ -12,6 +12,7 @@ from studentmgr.models import Submission
 from .models import ApiTestModel
 
 
+# @shared_task
 def setup_api_eval(*args, **kwargs):
     eval_id = kwargs['eval_id'] if 'eval_id' in kwargs else None
     if eval_id is None:
@@ -62,9 +63,9 @@ def give_marks(response, test):
     marks = 0
     message = 0
     if response.status_code == test.expected_status_code:
-        marks += 0.5 if test.expected_response_body != "" else 1
+        marks += (0.5 if test.expected_response_body != "" else 1)
         if test.expected_response_body != "":
-            if response.content == test.expected_response_body:
+            if json.loads(response.content) == ast.literal_eval(test.expected_response_body):
                 marks += 0.5
     else:
         message += "<br> " + test.api_endpoint + "failed" + "<br>"
@@ -74,9 +75,13 @@ def give_marks(response, test):
 def run_tests(test_objects, public_ip):
     marks = 0
     message = ""
+    # import pdb
+    # pdb.set_trace()
     if public_ip.count(":") > 1:
-        marks -= 1
         message += "<br> Marks reduced as API not on port 80 <br>"
+    else:
+        marks += 1
+        message += "<br> Running on port 80 <br>"
     try:
         for test in test_objects:
             if test.api_method == "GET":

@@ -42,7 +42,7 @@ class ApiTestView(View):
             sub.above_specification = ''.join(request.POST.getlist('above_specification'))
             sub.above_specification_file = request.FILES['above_specification_file']
             sub.save()
-            # do_api_eval.apply_async(sub_id=sub.id)
+            # do_api_eval.delay(sub_id=sub.id)
             do_api_eval(sub_id=sub.id)
             return HttpResponse("Your submission has been recorded. Your submission id is "+str(sub.id))
         except ObjectDoesNotExist as e:
