@@ -107,9 +107,9 @@ def run_tests(test_objects, public_ip):
                 marks_for_test, message_for_test = give_marks(response, test)
                 marks += marks_for_test
                 message += message_for_test
+        return marks, message
     except Exception as e:
         print("Error", e)
         return marks, message
-    return marks, message
 
 
