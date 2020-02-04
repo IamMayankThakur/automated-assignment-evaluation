@@ -25,6 +25,7 @@ def setup_api_eval(*args, **kwargs):
     sections.remove('Settings')
     for s in sections:
         api_test = ApiTestModel()
+        api_test.test_name = s
         api_test.sanity = True if c[s]['sanity'] == "True" else False
         api_test.api_endpoint = c[s]['api_endpoint']
         api_test.api_method = c[s]['api_method']
@@ -68,7 +69,7 @@ def give_marks(response, test):
             if json.loads(response.content) == ast.literal_eval(test.expected_response_body):
                 marks += 0.5
     else:
-        message += " " + test.api_endpoint + " failed " + " "
+        message += " " + test.test_name + " failed " + " "
     return marks, message
 
 

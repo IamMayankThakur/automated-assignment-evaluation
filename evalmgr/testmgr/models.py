@@ -3,6 +3,7 @@ from facultymgr.models import Evaluation
 
 
 class ApiTestModel(models.Model):
+    test_name = models.TextField(default='hidden')
     sanity = models.BooleanField(default=False)
     api_endpoint = models.TextField(blank=False)
     api_method = models.CharField(max_length=16, blank=False, null=True)
