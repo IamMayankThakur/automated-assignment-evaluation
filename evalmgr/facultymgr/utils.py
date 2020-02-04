@@ -21,8 +21,8 @@ def create_evaluation(**kwargs):
         evaluation.type = c['Settings']['test_type']
         evaluation.access_code = c['Settings']['access_code']
         evaluation.save()
-        # setup_api_eval.delay(eval_id=eval_id)
-        setup_api_eval(eval_id=eval_id)
+        setup_api_eval.delay(eval_id=eval_id)
+        # setup_api_eval(eval_id=eval_id)
     except Exception as e:
         print(e)
 

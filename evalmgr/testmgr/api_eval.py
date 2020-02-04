@@ -12,7 +12,7 @@ from studentmgr.models import Submission
 from .models import ApiTestModel
 
 
-# @shared_task
+@shared_task(time_limit=200)
 def setup_api_eval(*args, **kwargs):
     eval_id = kwargs['eval_id'] if 'eval_id' in kwargs else None
     if eval_id is None:
@@ -35,7 +35,7 @@ def setup_api_eval(*args, **kwargs):
         api_test.save()
 
 
-# @shared_task
+@shared_task(time_limit=200)
 def do_api_eval(*args, **kwargs):
     sub_id = kwargs.get('sub_id', None)
     if sub_id is None:
