@@ -46,7 +46,7 @@ def do_api_eval(*args, **kwargs):
     normal_tests = ApiTestModel.objects.filter(sanity=False)
     marks_sanity, message_sanity = run_tests(sanity_tests, public_ip)
     if marks_sanity == 0:
-        message_sanity += "<br> Sanity Test Failed. Hence further tests not evaluated."
+        message_sanity += " Sanity Test Failed. Hence further tests not evaluated. "
         submission.marks = 0
         submission.message = message_sanity
         submission.save()
@@ -68,7 +68,7 @@ def give_marks(response, test):
             if json.loads(response.content) == ast.literal_eval(test.expected_response_body):
                 marks += 0.5
     else:
-        message += "<br> " + test.api_endpoint + "failed" + "<br>"
+        message += " " + test.api_endpoint + " failed " + " "
     return marks, message
 
 
@@ -78,10 +78,10 @@ def run_tests(test_objects, public_ip):
     # import pdb
     # pdb.set_trace()
     if public_ip.count(":") > 1:
-        message += "<br> Marks reduced as API not on port 80 <br>"
+        message += " Marks reduced as API not on port 80  "
     else:
         marks += 1
-        message += "<br> Running on port 80 <br>"
+        message += "  Running on port 80  "
     try:
         for test in test_objects:
             if test.api_method == "GET":
