@@ -62,12 +62,14 @@ def do_api_eval(*args, **kwargs):
 
 def give_marks(response, test):
     if response.status_code == int(test.expected_status_code):
+        print(1, " " + test.test_name + " passed " + " ")
         return 1, " " + test.test_name + " passed " + " "
         # marks += (0.5 if test.expected_response_body != "" else 1)
         # if test.expected_response_body != "":
         #     if ast.literal_eval(test.expected_response_body).items() <= json.loads(response.content).items():
         #         marks += 0.5
     else:
+        print(0, " " + test.test_name + " failed " + " ")
         return 0, " " + test.test_name + " failed " + " "
 
 def run_tests(test_objects, public_ip):
@@ -102,6 +104,10 @@ def run_tests(test_objects, public_ip):
                 marks_for_test, message_for_test = give_marks(response, test)
                 marks += marks_for_test
                 message += message_for_test
+            print("ENDPOINT", public_ip+test.api_endpoint)
+            print("RESPONSE ", response)
+            print("MARKS FOR TEST", marks_for_test)
+        print ("MARKS, MESSAGE", marks, message)
         return marks, message
     except Exception as e:
         print("Error", e)
