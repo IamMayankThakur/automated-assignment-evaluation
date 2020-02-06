@@ -4,7 +4,7 @@ from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 
 from facultymgr.models import Evaluation
-from testmgr.api_eval import do_api_eval
+from testmgr.api_eval import do_api_eval, do_api_eval_cc
 from .models import Team, Submission
 from .utils import get_route_for_eval_type
 
@@ -42,7 +42,8 @@ class ApiTestView(View):
             sub.above_specification = ''.join(request.POST.getlist('above_specification'))
             sub.above_specification_file = request.FILES['above_specification_file']
             sub.save()
-            do_api_eval.delay(sub_id=sub.id)
+            # do_api_eval.delay(sub_id=sub.id)
+            do_api_eval_cc.delay(sub_id=sub.id)
             # do_api_eval(sub_id=sub.id)
             return HttpResponse("Your submission has been recorded. Your submission id is "+str(sub.id))
         except ObjectDoesNotExist as e:
