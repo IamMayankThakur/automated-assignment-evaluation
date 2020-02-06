@@ -133,7 +133,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += "Running on port 80"
 
         r = requests.put(public_ip + '/api/v1/users',
-                        data={'username': 'userName', 'password': '3d725109c7e7c0bfb9d709836735b56d943d263f'})
+                        json={'username': 'userName', 'password': '3d725109c7e7c0bfb9d709836735b56d943d263f'})
         if r.status_code == 201:
             marks += 1
             message += " Passed Add user "
@@ -142,7 +142,7 @@ def do_api_eval_cc(*args, **kwargs):
             print(" Failed Add user ")
 
         r = requests.post(public_ip + '/api/v1/rides',
-                        data={'created_by': 'userName', 'timestamp': '21-08-2021:00-00-00', 'source': '1',
+                        json={'created_by': 'userName', 'timestamp': '21-08-2021:00-00-00', 'source': '1',
                                 'destination': '2'})
         if r.status_code == 201:
             marks += 1
@@ -160,6 +160,9 @@ def do_api_eval_cc(*args, **kwargs):
             except Exception as e:
                 print("Cant get rideid ", e)
                 message += " Failed to get ride id. Further tests not evaluated "
+                submission.marks = marks
+                submission.message = message
+                submission.save()
                 return
         else:
             message += " Failed get upcoming ride for source and destination "
