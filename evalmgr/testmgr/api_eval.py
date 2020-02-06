@@ -116,93 +116,98 @@ def run_tests(test_objects, public_ip):
 
 @shared_task(time_limit=300)
 def do_api_eval_cc(*args, **kwargs):
-    marks = 0
-    message = ""
-    sub_id = kwargs.get('sub_id', None)
-    if sub_id is None:
-        print("No sub id")
-        raise RuntimeError
-    submission = Submission.objects.get(id=sub_id)
-    public_ip = submission.public_ip_address
+    try:
+        marks = 0
+        message = ""
+        sub_id = kwargs.get('sub_id', None)
+        if sub_id is None:
+            print("No sub id")
+            raise RuntimeError
+        submission = Submission.objects.get(id=sub_id)
+        public_ip = submission.public_ip_address
 
-    if public_ip.count(":") > 1:
-        message += " Not running on port 80 "
-    else:
-        marks += 1
-        message += "Running on port 80"
+        if public_ip.count(":") > 1:
+            message += " Not running on port 80 "
+        else:
+            marks += 1
+            message += "Running on port 80"
 
-    r = requests.put(public_ip + '/api/v1/users',
-                     data={'username': 'userName', 'password': '3d725109c7e7c0bfb9d709836735b56d943d263f'})
-    if r.status_code == 201:
-        marks += 1
-        message += " Passed Add user "
-    else:
-        message += " Failed Add user "
-        print(" Failed Add user ")
+        r = requests.put(public_ip + '/api/v1/users',
+                        data={'username': 'userName', 'password': '3d725109c7e7c0bfb9d709836735b56d943d263f'})
+        if r.status_code == 201:
+            marks += 1
+            message += " Passed Add user "
+        else:
+            message += " Failed Add user "
+            print(" Failed Add user ")
 
-    r = requests.post(public_ip + '/api/v1/rides',
-                      data={'created_by': 'userName', 'timestamp': '21-08-2021:00-00-00', 'source': '1',
-                            'destination': '2'})
-    if r.status_code == 201:
-        marks += 1
-        message += " Passed Create new ride "
-    else:
-        message += " Failed Failed create new ride "
-        print(" Failed Add user ")
+        r = requests.post(public_ip + '/api/v1/rides',
+                        data={'created_by': 'userName', 'timestamp': '21-08-2021:00-00-00', 'source': '1',
+                                'destination': '2'})
+        if r.status_code == 201:
+            marks += 1
+            message += " Passed Create new ride "
+        else:
+            message += " Failed Failed create new ride "
+            print(" Failed Add user ")
 
-    r = requests.get(public_ip + '/api/v1/rides?source=1&destination=2')
-    if r.status_code == 200:
-        marks += 1
-        message += " Passed get upcoming ride for source and destination "
-        try:
-            ride_id = json.loads(r.content)[0]["rideId"]
-        except Exception as e:
-            print("Cant get rideid ", e)
-            message += " Failed to get ride id. Further tests will fail "
-    else:
-        message += " Failed get upcoming ride for source and destination "
+        r = requests.get(public_ip + '/api/v1/rides?source=1&destination=2')
+        if r.status_code == 200:
+            marks += 1
+            message += " Passed get upcoming ride for source and destination "
+            try:
+                ride_id = json.loads(r.content)[0]["rideId"]
+            except Exception as e:
+                print("Cant get rideid ", e)
+                message += " Failed to get ride id. Further tests will fail "
+        else:
+            message += " Failed get upcoming ride for source and destination "
 
-    r = requests.get(public_ip + '/api/v1/rides/' + ride_id)
-    if r.status_code == 200:
-        marks += 1
-        message += " Passed Get details for ride "
-    else:
-        message += " Failed Get details for given ride "
-        print(" Failed Get details for given ride ")
+        r = requests.get(public_ip + '/api/v1/rides/' + ride_id)
+        if r.status_code == 200:
+            marks += 1
+            message += " Passed Get details for ride "
+        else:
+            message += " Failed Get details for given ride "
+            print(" Failed Get details for given ride ")
 
-    r = requests.delete(public_ip + '/api/v1/rides/' + ride_id)
-    if r.status_code == 200:
-        marks += 1
-        message += " Passed delete ride "
-    else:
-        message += " Failed delete ride "
-        print(" Failed delete ride ")
+        r = requests.delete(public_ip + '/api/v1/rides/' + ride_id)
+        if r.status_code == 200:
+            marks += 1
+            message += " Passed delete ride "
+        else:
+            message += " Failed delete ride "
+            print(" Failed delete ride ")
 
-    r = requests.delete(public_ip + '/api/v1/users/userName')
-    if r.status_code == 200:
-        marks += 1
-        message += " Passed delete user "
-    else:
-        message += " Failed delete user "
-        print(" Failed delete user ")
+        r = requests.delete(public_ip + '/api/v1/users/userName')
+        if r.status_code == 200:
+            marks += 1
+            message += " Passed delete user "
+        else:
+            message += " Failed delete user "
+            print(" Failed delete user ")
 
-    r = requests.delete(public_ip + '/api/v1/users/wrongUser')
-    if r.status_code == 400:
-        marks += 1
-        message += " Passed delete ride "
-    else:
-        message += " Failed delete ride "
-        print(" Failed delete ride ")
+        r = requests.delete(public_ip + '/api/v1/users/wrongUser')
+        if r.status_code == 400:
+            marks += 1
+            message += " Passed delete ride "
+        else:
+            message += " Failed delete ride "
+            print(" Failed delete ride ")
 
-    r = requests.get(public_ip + '/api/v1//api/v1/rides?source=34&destination=11')
-    if r.status_code == 204:
-        marks += 1
-        message += " Passed GetUpcomingRides "
-    else:
-        message += " Failed GetUpcomingRides "
-        print(" Failed GetUpcomingRides ")
-
-    submission.marks = marks
-    submission.message = message
-    submission.save()
-    return
+        r = requests.get(public_ip + '/api/v1//api/v1/rides?source=34&destination=11')
+        if r.status_code == 204:
+            marks += 1
+            message += " Passed GetUpcomingRides "
+        else:
+            message += " Failed GetUpcomingRides "
+            print(" Failed GetUpcomingRides ")
+    
+        submission.marks = marks
+        submission.message = message
+        submission.save()
+        return
+    except Exception as e:
+        submission.marks = 0
+        submission.message = "Fatal Error. Check if VM is running"
+        submission.save()
