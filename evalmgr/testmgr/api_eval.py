@@ -153,10 +153,10 @@ def do_api_eval_cc(*args, **kwargs):
 
         r = requests.get(public_ip + '/api/v1/rides?source=1&destination=2')
         if r.status_code == 200:
-            marks += 1
-            message += " Passed get upcoming ride for source and destination "
             try:
+                marks += 1
                 ride_id = json.loads(r.content)[0]["rideId"]
+                message += " Passed get upcoming ride for source and destination "
             except Exception as e:
                 print("Cant get rideid ", e)
                 message += " Failed to get ride id. Further tests not evaluated "
