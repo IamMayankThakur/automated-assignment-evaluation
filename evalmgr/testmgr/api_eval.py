@@ -137,6 +137,7 @@ def do_api_eval_cc(*args, **kwargs):
         if r.status_code == 201:
             marks += 1
             message += " Passed Add user "
+            print(" Passed Add user ")
         else:
             message += " Failed Add user "
             print(" Failed Add user ")
@@ -147,6 +148,7 @@ def do_api_eval_cc(*args, **kwargs):
         if r.status_code == 201:
             marks += 1
             message += " Passed Create new ride "
+            print(" Passed Create new ride ")
         else:
             message += " Failed Failed create new ride "
             print(" Failed Add ride ")
@@ -154,9 +156,10 @@ def do_api_eval_cc(*args, **kwargs):
         r = requests.get(public_ip + '/api/v1/rides?source=1&destination=2')
         if r.status_code == 200:
             try:
-                marks += 1
                 ride_id = json.loads(r.content)[0]["rideId"]
                 message += " Passed get upcoming ride for source and destination "
+                marks += 1
+                print(" Passed get upcoming ride for source and destination ")
             except Exception as e:
                 print("Cant get rideid ", e)
                 message += " Failed to get ride id. Further tests not evaluated "
@@ -171,6 +174,7 @@ def do_api_eval_cc(*args, **kwargs):
         if r.status_code == 200:
             marks += 1
             message += " Passed Get details for ride "
+            print(" Passed Get details for ride ")
         else:
             message += " Failed Get details for given ride "
             print(" Failed Get details for given ride ")
@@ -179,6 +183,7 @@ def do_api_eval_cc(*args, **kwargs):
         if r.status_code == 200:
             marks += 1
             message += " Passed delete ride "
+            print(" Passed delete ride ")
         else:
             message += " Failed delete ride "
             print(" Failed delete ride ")
@@ -187,6 +192,7 @@ def do_api_eval_cc(*args, **kwargs):
         if r.status_code == 200:
             marks += 1
             message += " Passed delete user "
+            print(" Passed delete user ")
         else:
             message += " Failed delete user "
             print(" Failed delete user ")
@@ -195,6 +201,7 @@ def do_api_eval_cc(*args, **kwargs):
         if r.status_code == 400:
             marks += 1
             message += " Passed delete ride "
+            print(" Passed delete ride ")
         else:
             message += " Failed delete ride "
             print(" Failed delete ride ")
@@ -203,6 +210,7 @@ def do_api_eval_cc(*args, **kwargs):
         if r.status_code == 204:
             marks += 1
             message += " Passed GetUpcomingRides "
+            print(" Passed GetUpcomingRides ")
         else:
             message += " Failed GetUpcomingRides "
             print(" Failed GetUpcomingRides ")
@@ -215,4 +223,5 @@ def do_api_eval_cc(*args, **kwargs):
         submission.marks += 0
         submission.message += "Fatal Error"
         submission.save()
+        print(e)
         return
