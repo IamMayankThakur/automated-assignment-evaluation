@@ -212,7 +212,7 @@ def do_api_eval_cc(*args, **kwargs):
         submission.save()
         return
     except Exception as e:
-        submission.marks = 0
-        submission.message = "Fatal Error. Check if VM is running"
+        submission.marks += 0
+        submission.message += "Fatal Error"
         submission.save()
         return
