@@ -206,7 +206,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed delete ride "
             print(" Failed delete ride ")
 
-        r = requests.get(public_ip + '/api/v1//api/v1/rides?source=34&destination=11')
+        r = requests.get(public_ip + '/api/v1/rides?source=34&destination=11')
         if r.status_code == 204:
             marks += 1
             message += " Passed GetUpcomingRides "
