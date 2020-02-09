@@ -7,8 +7,8 @@ from .models import FacultyProfile, Evaluation
 from testmgr.models import ApiTestModel
 
 
-admin.site.unregister(User)
-admin.site.unregister(Group)
+# admin.site.unregister(User)
+# admin.site.unregister(Group)
 
 admin.site.site_header = 'Evaluation Dashboard'
 
