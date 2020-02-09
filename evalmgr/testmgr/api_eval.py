@@ -205,11 +205,11 @@ def do_api_eval_cc(*args, **kwargs):
         r = requests.delete(public_ip + '/api/v1/users/wrongUser')
         if r.status_code == 400:
             marks += 1
-            message += " Passed delete ride "
-            print(" Passed delete ride ")
+            message += " Passed delete user "
+            print(" Passed delete user ")
         else:
-            message += " Failed delete ride "
-            print(" Failed delete ride ")
+            message += " Failed delete user "
+            print(" Failed delete user ")
 
         r = requests.get(public_ip + '/api/v1/rides?source=34&destination=11')
         if r.status_code == 204:
