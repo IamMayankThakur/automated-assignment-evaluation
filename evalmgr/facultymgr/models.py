@@ -7,6 +7,9 @@ class FacultyProfile(models.Model):
     name = models.TextField(blank=False)
     email = models.EmailField(blank=False, unique=True)
 
+    def __str__(self):
+        return str(self.name)
+
 
 class Evaluation(models.Model):
     conf_file = models.FileField(blank=False, upload_to='conf/eval/')
@@ -18,3 +21,6 @@ class Evaluation(models.Model):
     created_on = models.DateTimeField(default=timezone.now)
     begins_on = models.DateTimeField(default=timezone.now)
     ends_on = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.name)
