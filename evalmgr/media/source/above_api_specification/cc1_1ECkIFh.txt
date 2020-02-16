@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name 3.224.17.132 www.3.224.17.132;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/ubuntu/myproject/cc1.sock;
+    }
+}

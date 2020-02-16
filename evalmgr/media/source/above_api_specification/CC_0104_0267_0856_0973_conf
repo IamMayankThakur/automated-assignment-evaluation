@@ -1,0 +1,14 @@
+server{
+
+        listen  80;
+
+        server_name ec2-3-229-132-95.compute-1.amazonaws.com 3.229.132.95 ;
+
+        location /{
+
+                proxy_pass http://127.0.0.1:5000;
+
+
+}
+
+}

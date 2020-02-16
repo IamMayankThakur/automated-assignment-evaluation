@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name 3.209.22.167 ec2-3-209-22-167.compute-1.amazonaws.com www.ec2-3$
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/ubuntu/myproject/myproject.sock;
+    }
+}

@@ -1,0 +1,10 @@
+[Unit]
+Description=Gunicorn instance to serve myproject
+After=network.target
+
+[Service]
+WorkingDirectory=/home/manoj/myproject
+ExecStart=/home/manoj/myproject/myprojectenv/bin/gunicorn --workers 3 --bind 0.0.0.0:80 wsgi:app
+
+[Install]
+WantedBy=muti-user.target

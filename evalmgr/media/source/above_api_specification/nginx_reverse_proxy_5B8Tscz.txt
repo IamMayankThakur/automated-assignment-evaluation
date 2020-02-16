@@ -1,0 +1,8 @@
+server {
+    listen 80;
+    server_name 52.72.17.236;
+    location / {
+        include proxy_params;
+        proxy_pass http://127.0.0.1:5000;
+    }
+}

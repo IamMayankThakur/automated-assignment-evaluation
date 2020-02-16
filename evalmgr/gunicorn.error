@@ -12,3 +12,155 @@
 [2020-01-29 12:28:33 +0530] [6423] [INFO] Handling signal: int
 [2020-01-29 12:28:33 +0530] [6426] [INFO] Worker exiting (pid: 6426)
 [2020-01-29 12:28:34 +0530] [6423] [INFO] Shutting down: Master
+[2020-02-04 09:04:34 +0000] [15577] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 09:04:34 +0000] [15577] [INFO] Listening at: http://0.0.0.0:8000 (15577)
+[2020-02-04 09:04:34 +0000] [15577] [INFO] Using worker: sync
+[2020-02-04 09:04:34 +0000] [15580] [INFO] Booting worker with pid: 15580
+[2020-02-04 09:15:00 +0000] [15577] [INFO] Handling signal: int
+[2020-02-04 14:45:00 +0530] [15580] [INFO] Worker exiting (pid: 15580)
+[2020-02-04 09:15:00 +0000] [15577] [INFO] Shutting down: Master
+[2020-02-04 09:15:07 +0000] [15586] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 09:15:07 +0000] [15586] [INFO] Listening at: http://0.0.0.0:8000 (15586)
+[2020-02-04 09:15:07 +0000] [15586] [INFO] Using worker: sync
+[2020-02-04 09:15:07 +0000] [15589] [INFO] Booting worker with pid: 15589
+[2020-02-04 19:03:05 +0530] [15589] [INFO] Worker reloading: /home/ubuntu/automated-assignment-evaluation/evalmgr/evalmgr/__init__.py modified
+[2020-02-04 19:03:06 +0530] [15589] [INFO] Worker exiting (pid: 15589)
+[2020-02-04 13:33:06 +0000] [15890] [INFO] Booting worker with pid: 15890
+[2020-02-04 19:04:11 +0530] [15890] [INFO] Parent changed, shutting down: <Worker 15890>
+[2020-02-04 19:04:11 +0530] [15890] [INFO] Worker exiting (pid: 15890)
+[2020-02-04 13:43:09 +0000] [16017] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 13:43:09 +0000] [16017] [INFO] Listening at: http://0.0.0.0:8000 (16017)
+[2020-02-04 13:43:09 +0000] [16017] [INFO] Using worker: sync
+[2020-02-04 13:43:09 +0000] [16020] [INFO] Booting worker with pid: 16020
+[2020-02-04 20:22:03 +0530] [16020] [INFO] Parent changed, shutting down: <Worker 16020>
+[2020-02-04 20:22:03 +0530] [16020] [INFO] Worker exiting (pid: 16020)
+[2020-02-04 14:56:56 +0000] [16313] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 14:56:56 +0000] [16313] [INFO] Listening at: http://0.0.0.0:8000 (16313)
+[2020-02-04 14:56:56 +0000] [16313] [INFO] Using worker: sync
+[2020-02-04 14:56:56 +0000] [16316] [INFO] Booting worker with pid: 16316
+[2020-02-04 20:35:07 +0530] [16316] [INFO] Parent changed, shutting down: <Worker 16316>
+[2020-02-04 20:35:07 +0530] [16316] [INFO] Worker exiting (pid: 16316)
+[2020-02-04 15:05:58 +0000] [16362] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 15:05:58 +0000] [16362] [INFO] Listening at: http://0.0.0.0:8000 (16362)
+[2020-02-04 15:05:58 +0000] [16362] [INFO] Using worker: sync
+[2020-02-04 15:05:58 +0000] [16365] [INFO] Booting worker with pid: 16365
+[2020-02-04 20:48:16 +0530] [16365] [INFO] Parent changed, shutting down: <Worker 16365>
+[2020-02-04 20:48:16 +0530] [16365] [INFO] Worker exiting (pid: 16365)
+[2020-02-04 15:26:28 +0000] [16606] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 15:26:28 +0000] [16606] [INFO] Listening at: http://0.0.0.0:8000 (16606)
+[2020-02-04 15:26:28 +0000] [16606] [INFO] Using worker: sync
+[2020-02-04 15:26:28 +0000] [16609] [INFO] Booting worker with pid: 16609
+[2020-02-04 22:20:26 +0530] [16609] [INFO] Parent changed, shutting down: <Worker 16609>
+[2020-02-04 22:20:26 +0530] [16609] [INFO] Worker exiting (pid: 16609)
+[2020-02-04 16:53:34 +0000] [16710] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 16:53:34 +0000] [16710] [INFO] Listening at: http://0.0.0.0:8000 (16710)
+[2020-02-04 16:53:34 +0000] [16710] [INFO] Using worker: sync
+[2020-02-04 16:53:34 +0000] [16713] [INFO] Booting worker with pid: 16713
+[2020-02-04 22:32:55 +0530] [16713] [INFO] Parent changed, shutting down: <Worker 16713>
+[2020-02-04 22:32:55 +0530] [16713] [INFO] Worker exiting (pid: 16713)
+[2020-02-04 17:08:04 +0000] [16890] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 17:08:04 +0000] [16890] [INFO] Listening at: http://0.0.0.0:8000 (16890)
+[2020-02-04 17:08:04 +0000] [16890] [INFO] Using worker: sync
+[2020-02-04 17:08:04 +0000] [16893] [INFO] Booting worker with pid: 16893
+[2020-02-04 22:54:03 +0530] [16893] [INFO] Parent changed, shutting down: <Worker 16893>
+[2020-02-04 22:54:03 +0530] [16893] [INFO] Worker exiting (pid: 16893)
+[2020-02-04 17:24:57 +0000] [16953] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 17:24:57 +0000] [16953] [INFO] Listening at: http://0.0.0.0:8000 (16953)
+[2020-02-04 17:24:57 +0000] [16953] [INFO] Using worker: sync
+[2020-02-04 17:24:57 +0000] [16956] [INFO] Booting worker with pid: 16956
+[2020-02-04 23:12:13 +0530] [16956] [INFO] Parent changed, shutting down: <Worker 16956>
+[2020-02-04 23:12:13 +0530] [16956] [INFO] Worker exiting (pid: 16956)
+[2020-02-04 17:44:07 +0000] [17009] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 17:44:07 +0000] [17009] [INFO] Listening at: http://0.0.0.0:8000 (17009)
+[2020-02-04 17:44:07 +0000] [17009] [INFO] Using worker: sync
+[2020-02-04 17:44:07 +0000] [17012] [INFO] Booting worker with pid: 17012
+[2020-02-04 23:18:33 +0530] [17012] [INFO] Parent changed, shutting down: <Worker 17012>
+[2020-02-04 23:18:33 +0530] [17012] [INFO] Worker exiting (pid: 17012)
+[2020-02-04 17:53:11 +0000] [17055] [INFO] Starting gunicorn 19.7.1
+[2020-02-04 17:53:11 +0000] [17055] [INFO] Listening at: http://0.0.0.0:8000 (17055)
+[2020-02-04 17:53:11 +0000] [17055] [INFO] Using worker: sync
+[2020-02-04 17:53:11 +0000] [17058] [INFO] Booting worker with pid: 17058
+[2020-02-04 23:32:06 +0530] [17058] [INFO] Parent changed, shutting down: <Worker 17058>
+[2020-02-04 23:32:06 +0530] [17058] [INFO] Worker exiting (pid: 17058)
+[2020-02-06 06:12:32 +0000] [12932] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 06:12:32 +0000] [12932] [INFO] Listening at: http://0.0.0.0:8000 (12932)
+[2020-02-06 06:12:32 +0000] [12932] [INFO] Using worker: sync
+[2020-02-06 06:12:32 +0000] [12935] [INFO] Booting worker with pid: 12935
+[2020-02-06 12:45:25 +0530] [12935] [INFO] Parent changed, shutting down: <Worker 12935>
+[2020-02-06 12:45:25 +0530] [12935] [INFO] Worker exiting (pid: 12935)
+[2020-02-06 07:46:36 +0000] [13845] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 07:46:36 +0000] [13845] [INFO] Listening at: http://0.0.0.0:8000 (13845)
+[2020-02-06 07:46:36 +0000] [13845] [INFO] Using worker: sync
+[2020-02-06 07:46:36 +0000] [13848] [INFO] Booting worker with pid: 13848
+[2020-02-06 14:39:03 +0530] [13848] [INFO] Parent changed, shutting down: <Worker 13848>
+[2020-02-06 14:39:03 +0530] [13848] [INFO] Worker exiting (pid: 13848)
+[2020-02-06 09:09:32 +0000] [14054] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 09:09:32 +0000] [14054] [INFO] Listening at: http://0.0.0.0:8000 (14054)
+[2020-02-06 09:09:32 +0000] [14054] [INFO] Using worker: sync
+[2020-02-06 09:09:32 +0000] [14057] [INFO] Booting worker with pid: 14057
+[2020-02-06 14:59:31 +0530] [14057] [INFO] Parent changed, shutting down: <Worker 14057>
+[2020-02-06 14:59:31 +0530] [14057] [INFO] Worker exiting (pid: 14057)
+[2020-02-06 09:31:43 +0000] [14128] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 09:31:43 +0000] [14128] [INFO] Listening at: http://0.0.0.0:8000 (14128)
+[2020-02-06 09:31:43 +0000] [14128] [INFO] Using worker: sync
+[2020-02-06 09:31:43 +0000] [14131] [INFO] Booting worker with pid: 14131
+[2020-02-06 15:12:10 +0530] [14131] [INFO] Parent changed, shutting down: <Worker 14131>
+[2020-02-06 15:12:10 +0530] [14131] [INFO] Worker exiting (pid: 14131)
+[2020-02-06 09:44:13 +0000] [14182] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 09:44:13 +0000] [14182] [INFO] Listening at: http://0.0.0.0:8000 (14182)
+[2020-02-06 09:44:13 +0000] [14182] [INFO] Using worker: sync
+[2020-02-06 09:44:13 +0000] [14185] [INFO] Booting worker with pid: 14185
+[2020-02-06 15:23:01 +0530] [14185] [INFO] Parent changed, shutting down: <Worker 14185>
+[2020-02-06 15:23:01 +0530] [14185] [INFO] Worker exiting (pid: 14185)
+[2020-02-06 09:53:25 +0000] [14326] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 09:53:25 +0000] [14326] [INFO] Listening at: http://0.0.0.0:8000 (14326)
+[2020-02-06 09:53:25 +0000] [14326] [INFO] Using worker: sync
+[2020-02-06 09:53:25 +0000] [14329] [INFO] Booting worker with pid: 14329
+[2020-02-06 15:33:15 +0530] [14329] [INFO] Parent changed, shutting down: <Worker 14329>
+[2020-02-06 15:33:15 +0530] [14329] [INFO] Worker exiting (pid: 14329)
+[2020-02-06 10:05:40 +0000] [14378] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 10:05:40 +0000] [14378] [INFO] Listening at: http://0.0.0.0:8000 (14378)
+[2020-02-06 10:05:40 +0000] [14378] [INFO] Using worker: sync
+[2020-02-06 10:05:40 +0000] [14381] [INFO] Booting worker with pid: 14381
+[2020-02-06 15:39:43 +0530] [14381] [INFO] Parent changed, shutting down: <Worker 14381>
+[2020-02-06 15:39:43 +0530] [14381] [INFO] Worker exiting (pid: 14381)
+[2020-02-06 10:10:12 +0000] [14420] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 10:10:12 +0000] [14420] [INFO] Listening at: http://0.0.0.0:8000 (14420)
+[2020-02-06 10:10:12 +0000] [14420] [INFO] Using worker: sync
+[2020-02-06 10:10:12 +0000] [14423] [INFO] Booting worker with pid: 14423
+[2020-02-06 15:47:36 +0530] [14423] [INFO] Parent changed, shutting down: <Worker 14423>
+[2020-02-06 15:47:36 +0530] [14423] [INFO] Worker exiting (pid: 14423)
+[2020-02-06 10:18:01 +0000] [14466] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 10:18:01 +0000] [14466] [INFO] Listening at: http://0.0.0.0:8000 (14466)
+[2020-02-06 10:18:01 +0000] [14466] [INFO] Using worker: sync
+[2020-02-06 10:18:01 +0000] [14469] [INFO] Booting worker with pid: 14469
+[2020-02-06 16:21:09 +0530] [14469] [INFO] Parent changed, shutting down: <Worker 14469>
+[2020-02-06 16:21:09 +0530] [14469] [INFO] Worker exiting (pid: 14469)
+[2020-02-06 10:51:46 +0000] [14521] [INFO] Starting gunicorn 19.7.1
+[2020-02-06 10:51:46 +0000] [14521] [INFO] Listening at: http://0.0.0.0:8000 (14521)
+[2020-02-06 10:51:46 +0000] [14521] [INFO] Using worker: sync
+[2020-02-06 10:51:46 +0000] [14524] [INFO] Booting worker with pid: 14524
+[2020-02-08 09:56:18 +0530] [14524] [INFO] Parent changed, shutting down: <Worker 14524>
+[2020-02-08 09:56:18 +0530] [14524] [INFO] Worker exiting (pid: 14524)
+[2020-02-08 04:27:15 +0000] [5087] [INFO] Starting gunicorn 19.7.1
+[2020-02-08 04:27:15 +0000] [5087] [INFO] Listening at: http://0.0.0.0:8000 (5087)
+[2020-02-08 04:27:15 +0000] [5087] [INFO] Using worker: sync
+[2020-02-08 04:27:15 +0000] [5090] [INFO] Booting worker with pid: 5090
+[2020-02-09 08:00:18 +0530] [5090] [INFO] Parent changed, shutting down: <Worker 5090>
+[2020-02-09 08:00:18 +0530] [5090] [INFO] Worker exiting (pid: 5090)
+[2020-02-09 02:32:58 +0000] [25970] [INFO] Starting gunicorn 19.7.1
+[2020-02-09 02:32:58 +0000] [25970] [INFO] Listening at: http://0.0.0.0:8000 (25970)
+[2020-02-09 02:32:58 +0000] [25970] [INFO] Using worker: sync
+[2020-02-09 02:32:58 +0000] [25973] [INFO] Booting worker with pid: 25973
+[2020-02-09 11:42:52 +0530] [25973] [INFO] Parent changed, shutting down: <Worker 25973>
+[2020-02-09 11:42:52 +0530] [25973] [INFO] Worker exiting (pid: 25973)
+[2020-02-16 13:59:00 +0000] [3363] [INFO] Starting gunicorn 19.7.1
+[2020-02-16 13:59:00 +0000] [3363] [INFO] Listening at: http://0.0.0.0:8000 (3363)
+[2020-02-16 13:59:00 +0000] [3363] [INFO] Using worker: sync
+[2020-02-16 13:59:00 +0000] [3366] [INFO] Booting worker with pid: 3366
+[2020-02-16 19:30:37 +0530] [3366] [INFO] Parent changed, shutting down: <Worker 3366>
+[2020-02-16 19:30:37 +0530] [3366] [INFO] Worker exiting (pid: 3366)
+[2020-02-16 14:03:00 +0000] [3377] [INFO] Starting gunicorn 19.7.1
+[2020-02-16 14:03:00 +0000] [3377] [INFO] Listening at: http://0.0.0.0:8000 (3377)
+[2020-02-16 14:03:00 +0000] [3377] [INFO] Using worker: sync
+[2020-02-16 14:03:00 +0000] [3380] [INFO] Booting worker with pid: 3380

@@ -1,0 +1,12 @@
+server {
+
+ server_name ec2-52-207-151-124.compute-1.amazonaws.com;
+ listen 80 default_server;
+
+ location / {
+ proxy_pass http://127.0.0.1:5000;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ }
+
+}

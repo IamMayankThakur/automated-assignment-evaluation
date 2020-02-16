@@ -1,0 +1,29 @@
+proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=rideshare_cache:20m max_size=2g 
+                 inactive=60m use_temp_path=off;
+
+
+
+server {
+
+
+ server_name ec2-54-86-194-226.compute-1.amazonaws.com;
+ listen 80 default_server;
+
+
+ location / {
+
+  proxy_cache_bypass 1;
+  proxy_buffering on;
+  proxy_cache rideshare_cache;
+  proxy_cache_valid 200 60m;
+  add_header Cache-Status $upstream_cache_status;
+  # proxy_cache_use_stale error timeout
+    # http_500 http_502 http_503 http_504;
+  proxy_pass http://127.0.0.1:5000;
+  proxy_set_header Host $host;
+  proxy_set_header X-Real-IP $remote_addr;
+
+ }
+
+
+}

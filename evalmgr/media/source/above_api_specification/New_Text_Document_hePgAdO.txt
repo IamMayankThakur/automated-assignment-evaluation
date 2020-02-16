@@ -1,0 +1,11 @@
+ssh -i PESCCKP1.pem ubuntu@ec2-54-86-40-169.compute-1.amazonaws.com
+
+scp -i PESCCKP1.pem Assignment1/rideshare.py ubuntu@ec2-3-83-14-119.compute-1.amazonaws.com:~/cc_assignment1 
+
+curl --header "Content-Type: application/json" --request PUT --data '{"username":"xyz", "password":"aaaaa"}' localhost:5000/api/v1/users
+
+
+sachetan - 3.209.193.75
+
+
+
