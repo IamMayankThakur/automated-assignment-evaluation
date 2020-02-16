@@ -46,9 +46,9 @@ class ApiTestView(View):
             do_api_eval_cc.delay(sub_id=sub.id)
             # do_api_eval(sub_id=sub.id)
             return HttpResponse("Your submission has been recorded. Your submission id is "+str(sub.id))
-        except ObjectDoesNotExist as e:
+        except Exception as e:
             print(e)
-            return HttpResponse("Team name or evaluation acccess key is wrong")
+            return HttpResponse("Error in input, ensure all fields are filled")
 
 
 class PastSubmissionView(View):
