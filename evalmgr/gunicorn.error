@@ -164,3 +164,11 @@
 [2020-02-16 14:03:00 +0000] [3377] [INFO] Listening at: http://0.0.0.0:8000 (3377)
 [2020-02-16 14:03:00 +0000] [3377] [INFO] Using worker: sync
 [2020-02-16 14:03:00 +0000] [3380] [INFO] Booting worker with pid: 3380
+[2020-02-16 20:15:46 +0530] [3380] [INFO] Parent changed, shutting down: <Worker 3380>
+[2020-02-16 20:15:46 +0530] [3380] [INFO] Worker exiting (pid: 3380)
+[2020-02-16 14:45:55 +0000] [3513] [INFO] Starting gunicorn 19.7.1
+[2020-02-16 14:45:55 +0000] [3513] [INFO] Listening at: http://0.0.0.0:8000 (3513)
+[2020-02-16 14:45:55 +0000] [3513] [INFO] Using worker: sync
+[2020-02-16 14:45:55 +0000] [3516] [INFO] Booting worker with pid: 3516
+[2020-02-18 09:20:03 +0530] [3516] [INFO] Parent changed, shutting down: <Worker 3516>
+[2020-02-18 09:20:03 +0530] [3516] [INFO] Worker exiting (pid: 3516)

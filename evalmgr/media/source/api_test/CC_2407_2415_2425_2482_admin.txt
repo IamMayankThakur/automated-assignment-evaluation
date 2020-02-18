@@ -1,0 +1,82 @@
+from django.contrib import admin
+
+# Register your models here.
+
+
+
+
+from django.apps import AppConfig
+
+
+class RideshareConfig(AppConfig):
+    name = 'rideshare'
+
+
+from django.db import models
+
+# Create your models here.
+
+class Rides(models.Model):
+    created_by = models.CharField(max_length=30)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    source = models.CharField(max_length=30)
+    destination = models.CharField(max_length=30)
+
+
+
+from django.contrib.auth.models import User,UserManager
+from rest_framework import serializers, filters , generics
+from django.contrib.auth.hashers import make_password
+from . import models
+import django_filters
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ['url', 'username', 'email', 'groups','password']
+
+    validate_password = make_password   
+
+class RideShareSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Rides
+        fields = ['created_by','timestamp','source','destination']
+
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+
+from django.shortcuts import render
+
+# Create your views here.
+from django.contrib.auth.models import User, Group, UserManager
+from rest_framework import serializers, filters , generics, viewsets
+from rideshare.serializers import UserSerializer, RideShareSerializer, Db
+from . import models
+from django_filters.rest_framework import DjangoFilterBackend
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+
+# UserManager.create_user()
+class RideshareViewSet(viewsets.ModelViewSet):
+    queryset = models.Rides.objects.all()
+    serializer_class = RideShareSerializer
+
+class RideshareViewSearch(generics.ListAPIView):
+    queryset = models.Rides.objects.all()
+    serializer_class = RideShareSerializer
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = ('source','destination')
+    
+
+    
+
