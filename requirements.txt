@@ -1,0 +1,6 @@
+requests
+django
+gunicorn
+celery
+redis
+psycopg2-binary

@@ -1,0 +1,232 @@
+import configparser
+import json
+import ast
+
+import requests
+from celery import shared_task
+
+from facultymgr.models import Evaluation
+from notifymgr.mail import send_mail
+from studentmgr.models import Submission
+from .models import ApiTestModel
+
+
+@shared_task(time_limit=200)
+def setup_api_eval(*args, **kwargs):
+    eval_id = kwargs['eval_id'] if 'eval_id' in kwargs else None
+    if eval_id is None:
+        raise RuntimeError
+    evaluation = Evaluation.objects.get(pk=eval_id)
+    file = evaluation.conf_file.path
+    c = configparser.ConfigParser()
+    c.read(file)
+    sections = c.sections()
+    sections.remove('Settings')
+    for s in sections:
+        api_test = ApiTestModel()
+        api_test.test_name = s
+        api_test.sanity = True if c[s]['sanity'] == "True" else False
+        api_test.api_endpoint = c[s]['api_endpoint']
+        api_test.api_method = c[s]['api_method']
+        api_test.api_message_body = c[s]['api_message_body']
+        api_test.expected_status_code = c[s]['expected_status_code']
+        api_test.expected_response_body = c[s]['expected_response_body']
+        api_test.evaluation = Evaluation.objects.get(id=eval_id)
+        api_test.save()
+
+
+@shared_task(time_limit=200)
+def do_api_eval(*args, **kwargs):
+    sub_id = kwargs.get('sub_id', None)
+    if sub_id is None:
+        raise RuntimeError
+    submission = Submission.objects.get(id=sub_id)
+    public_ip = submission.public_ip_address
+    sanity_tests = ApiTestModel.objects.filter(sanity=True)
+    normal_tests = ApiTestModel.objects.filter(sanity=False)
+    marks_sanity, message_sanity = run_tests(sanity_tests, public_ip)
+    if marks_sanity == 0:
+        message_sanity += " Sanity Test Failed. Hence further tests not evaluated. "
+        submission.marks = 0
+        submission.message = message_sanity
+        submission.save()
+        return
+    marks, message = run_tests(normal_tests, public_ip)
+    submission.marks = marks
+    submission.message = message
+    submission.save()
+    # send_mail(sub_id)
+    return
+
+
+def give_marks(response, test):
+    marks = 0
+    message = ""
+    if response.status_code == int(test.expected_status_code):
+        marks += (0.5 if test.expected_response_body != "" else 1)
+        if test.expected_response_body != "":
+            if ast.literal_eval(test.expected_response_body).items() <= json.loads(response.content).items():
+                marks += 0.5
+    else:
+        message += " " + test.test_name + " failed " + " "
+    return marks, message
+
+
+def run_tests(test_objects, public_ip):
+    marks = 0
+    message = ""
+    # import pdb
+    # pdb.set_trace()
+    if public_ip.count(":") > 1:
+        message += " Marks reduced as API not on port 80  "
+    else:
+        marks += 1
+        message += "  Running on port 80  "
+    try:
+        for test in test_objects:
+            if test.api_method == "GET":
+                response = requests.get(public_ip + test.api_endpoint)
+                marks_for_test, message_for_test = give_marks(response, test)
+                marks += marks_for_test
+                message += message_for_test
+            elif test.api_method == "POST":
+                response = requests.post(public_ip + test.api_endpoint, data=ast.literal_eval(test.api_message_body))
+                marks_for_test, message_for_test = give_marks(response, test)
+                marks += marks_for_test
+                message += message_for_test
+            elif test.api_method == "PUT":
+                response = requests.put(public_ip + test.api_endpoint, data=ast.literal_eval(test.api_message_body))
+                marks_for_test, message_for_test = give_marks(response, test)
+                marks += marks_for_test
+                message += message_for_test
+            elif test.api_method == "DELETE":
+                response = requests.delete(public_ip + test.api_endpoint)
+                marks_for_test, message_for_test = give_marks(response, test)
+                marks += marks_for_test
+                message += message_for_test
+            print("ENDPOINT", public_ip + test.api_endpoint)
+            print("RESPONSE ", response)
+            print("MARKS FOR TEST", marks_for_test)
+        print("MARKS, MESSAGE", marks, message)
+        return marks, message
+    except Exception as e:
+        print("Error", e)
+        return marks, message
+
+
+@shared_task(time_limit=300)
+def do_api_eval_cc(*args, **kwargs):
+    try:
+        marks = 0
+        message = ""
+        sub_id = kwargs.get('sub_id', None)
+        if sub_id is None:
+            print("No sub id")
+            raise RuntimeError
+        submission = Submission.objects.get(id=sub_id)
+        public_ip = submission.public_ip_address
+
+        if public_ip.count(":") > 1:
+            message += " Not running on port 80 "
+        else:
+            marks += 1
+            message += "Running on port 80"
+
+        r = requests.put(public_ip + '/api/v1/users',
+                        json={'username': 'userName', 'password': '3d725109c7e7c0bfb9d709836735b56d943d263f'})
+        if r.status_code == 201:
+            marks += 1
+            message += " Passed Add user "
+            print(" Passed Add user ")
+        else:
+            message += " Failed Add user "
+            print(" Failed Add user ")
+
+        r = requests.post(public_ip + '/api/v1/rides',
+                        json={'created_by': 'userName', 'timestamp': '21-08-2021:00-00-00', 'source': '1',
+                                'destination': '2'})
+        if r.status_code == 201:
+            marks += 1
+            message += " Passed Create new ride "
+            print(" Passed Create new ride ")
+        else:
+            message += " Failed Failed create new ride "
+            print(" Failed Add ride ")
+
+        r = requests.get(public_ip + '/api/v1/rides?source=1&destination=2')
+        if r.status_code == 200:
+            try:
+                ride_id = str(json.loads(r.content)[0]["rideId"])
+                message += " Passed get upcoming ride for source and destination "
+                marks += 1
+                print(" Passed get upcoming ride for source and destination ")
+            except Exception as e:
+                print("Cant get rideid ", e)
+                message += " Failed to get ride id. Further tests not evaluated "
+                submission.marks = marks
+                submission.message = message
+                submission.save()
+                return
+        else:
+            message += " Failed get upcoming ride for source and destination "
+            message += " Failed to get ride id. Further tests not evaluated "
+            submission.marks = marks
+            submission.message = message
+            submission.save()
+            return
+
+        r = requests.get(public_ip + '/api/v1/rides/' + ride_id)
+        if r.status_code == 200:
+            marks += 1
+            message += " Passed Get details for ride "
+            print(" Passed Get details for ride ")
+        else:
+            message += " Failed Get details for given ride "
+            print(" Failed Get details for given ride ")
+
+        r = requests.delete(public_ip + '/api/v1/rides/' + ride_id)
+        if r.status_code == 200:
+            marks += 1
+            message += " Passed delete ride "
+            print(" Passed delete ride ")
+        else:
+            message += " Failed delete ride "
+            print(" Failed delete ride ")
+
+        r = requests.delete(public_ip + '/api/v1/users/userName')
+        if r.status_code == 200:
+            marks += 1
+            message += " Passed delete user "
+            print(" Passed delete user ")
+        else:
+            message += " Failed delete user "
+            print(" Failed delete user ")
+
+        r = requests.delete(public_ip + '/api/v1/users/wrongUser')
+        if r.status_code == 400:
+            marks += 1
+            message += " Passed delete user "
+            print(" Passed delete user ")
+        else:
+            message += " Failed delete user "
+            print(" Failed delete user ")
+
+        r = requests.get(public_ip + '/api/v1/rides?source=34&destination=11')
+        if r.status_code == 204:
+            marks += 1
+            message += " Passed GetUpcomingRides "
+            print(" Passed GetUpcomingRides ")
+        else:
+            message += " Failed GetUpcomingRides "
+            print(" Failed GetUpcomingRides ")
+    
+        submission.marks = marks
+        submission.message = message
+        submission.save()
+        return
+    except Exception as e:
+        submission.marks += 0
+        submission.message += "Fatal Error"
+        submission.save()
+        print(e)
+        return

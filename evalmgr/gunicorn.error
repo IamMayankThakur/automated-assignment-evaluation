@@ -1,0 +1,14 @@
+[2020-01-29 12:11:29 +0530] [5863] [INFO] Starting gunicorn 20.0.4
+[2020-01-29 12:11:29 +0530] [5863] [INFO] Listening at: http://0.0.0.0:8000 (5863)
+[2020-01-29 12:11:29 +0530] [5863] [INFO] Using worker: sync
+[2020-01-29 12:11:29 +0530] [5866] [INFO] Booting worker with pid: 5866
+[2020-01-29 12:12:13 +0530] [5863] [INFO] Handling signal: int
+[2020-01-29 12:12:13 +0530] [5866] [INFO] Worker exiting (pid: 5866)
+[2020-01-29 12:12:13 +0530] [5863] [INFO] Shutting down: Master
+[2020-01-29 12:26:25 +0530] [6423] [INFO] Starting gunicorn 20.0.4
+[2020-01-29 12:26:25 +0530] [6423] [INFO] Listening at: http://0.0.0.0:8001 (6423)
+[2020-01-29 12:26:25 +0530] [6423] [INFO] Using worker: sync
+[2020-01-29 12:26:25 +0530] [6426] [INFO] Booting worker with pid: 6426
+[2020-01-29 12:28:33 +0530] [6423] [INFO] Handling signal: int
+[2020-01-29 12:28:33 +0530] [6426] [INFO] Worker exiting (pid: 6426)
+[2020-01-29 12:28:34 +0530] [6423] [INFO] Shutting down: Master
