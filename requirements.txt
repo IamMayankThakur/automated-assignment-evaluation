@@ -4,3 +4,4 @@ gunicorn
 celery
 redis
 psycopg2-binary
+pandas

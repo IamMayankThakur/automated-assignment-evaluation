@@ -8,20 +8,20 @@ services:
     image: redis:6.0-rc1-alpine
   django:
     build: .
-    command: "cd evalmgr &&
-             python manage.py collectstatic &&
+    command: sh -c "cd evalmgr &&
+             python manage.py collectstatic --noinput &&
              python manage.py makemigrations &&
              python manage.py migrate &&
              gunicorn --reload evalmgr.wsgi:application -b 0.0.0.0:8000"
     restart: on-failure
     volumes:
-      - media_volume:/code/automated-assignment-evaluation/evalmggr/media
+      - media_volume:/code/automated-assignment-evaluation/evalmgr/media
     depends_on:
       - db
       - redis
   celery:
     build: .
-    command: "cd evalmgr && celery -A evalmgr worker -l info"
+    command: sh -c "cd evalmgr && celery -A evalmgr worker -l info"
     depends_on:
       - db
       - redis
@@ -30,9 +30,10 @@ services:
     image: nginx:latest
     ports:
      - 80:80
+     - 443:443
     volumes:
-     - ./config/nginx/conf.d:/etc/nginx/conf.d
-     - media_volume:/opt/services/djangoapp/src/evalmgr/media 
+     - ./nginx.conf:/etc/nginx/nginx.conf
+     - media_volume:/code/automated-assignment-evaluation/evalmgr/media 
     depends_on:
      - django
 volumes:

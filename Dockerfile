@@ -3,9 +3,9 @@ ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /code/automated-assignment-evaluation
 
-COPY ./requirements /code/automated-assignment-evaluation/requirements.txt
+COPY ./requirements.txt /code/automated-assignment-evaluation/requirements.txt
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN cd /code/automated-assignment-evaluation && pip install -r requirements.txt
 
 COPY . /code/automated-assignment-evaluation
 
