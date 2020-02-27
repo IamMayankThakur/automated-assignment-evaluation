@@ -6,47 +6,35 @@ services:
       - postgres_data:/var/lib/postgresql/data
   redis:
     image: redis:6.0-rc1-alpine
-    expose:
-      - "5672"
   django:
     build: .
-    command: >
-      sh -c "cd evalmgr &&
-             python manage.py collectstatic --noinput &&
-             python manage.py makemigrations --noinput &&
-             python manage.py migrate --noinput &&
-             gunicorn --reload evalmgr.wsgi:application -b 0.0.0.0:8001 --error-logfile gunicorn.error"
-    restart: "no"
+    command: "cd evalmgr &&
+             python manage.py collectstatic &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             gunicorn --reload evalmgr.wsgi:application -b 0.0.0.0:8000"
+    restart: on-failure
     volumes:
-      - .:/opt/services/djangoapp/src
-      - static_volume:/opt/services/djangoapp/src/evalmgr/static  # <-- bind the static volume
-      - media_volume:/opt/services/djangoapp/src/evalmgr/media  # <-- bind the media volume
+      - media_volume:/code/automated-assignment-evaluation/evalmggr/media
     depends_on:
       - db
       - redis
   celery:
     build: .
-    command: >
-      sh -c "cd evalmgr && celery -A evalmgr worker -l info"
-    volumes:
-      - .:/code
+    command: "cd evalmgr && celery -A evalmgr worker -l info"
     depends_on:
       - db
       - redis
       - django
-    links:
-      - redis
   nginx:
     image: nginx:latest
     ports:
      - 80:80
     volumes:
      - ./config/nginx/conf.d:/etc/nginx/conf.d
-     - static_volume:/opt/services/djangoapp/src/evalmgr/static  # <-- bind the static volume
-     - media_volume:/opt/services/djangoapp/src/evalmgr/media  # <-- bind the media volume
+     - media_volume:/opt/services/djangoapp/src/evalmgr/media 
     depends_on:
      - django
 volumes:
   postgres_data:
-  static_volume:
   media_volume:
