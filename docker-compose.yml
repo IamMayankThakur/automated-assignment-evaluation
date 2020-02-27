@@ -4,6 +4,10 @@ services:
     image: postgres:12.1-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
   redis:
     image: redis:6.0-rc1-alpine
   django:
