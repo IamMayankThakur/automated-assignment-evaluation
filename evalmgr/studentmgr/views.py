@@ -1,10 +1,10 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse
 from django.views import View
-from django.core.exceptions import ObjectDoesNotExist
 
 from facultymgr.models import Evaluation
 from testmgr.api_eval import do_api_eval, do_api_eval_cc
+from testmgr.container_eval import do_container_eval_cc
 from .models import Team, Submission
 from .utils import get_route_for_eval_type
 
@@ -53,7 +53,31 @@ class ApiTestView(View):
 
 class PastSubmissionView(View):
     def post(self, request):
-        team_name = request.POST['team_name']
-        data = Submission.objects.filter(team__team_name=team_name)
-        submissions = {'submissions': data}
-        return render(request, 'submissions.html', submissions)
+        # team_name = request.POST['team_name']
+        # data = Submission.objects.filter(team__team_name=team_name)
+        # submissions = {'submissions': data}
+        # return render(request, 'submissions.html', submissions)
+        return HttpResponse("Marks will not be shown at this point")
+
+
+class ContainerTestView(View):
+    def get(self, request):
+        if request.session.get("access_code") is None:
+            return HttpResponse("No access code")
+        return render(request, 'cc_a2.html')
+
+    def post(self, request):
+        try:
+            sub = Submission()
+            sub.hostname = request.POST['hostname']
+            sub.private_key_file = request.FILES['private_key_file']
+            sub.public_ip_address = request.POST['public_ip_address']
+            sub.save()
+            do_container_eval_cc.delay(sub_id=sub.id)
+            return HttpResponse("Submission Recorded with submission id "+str(sub.id))
+        except Exception as e:
+            print(e)
+            return HttpResponse("Submission failed. Enter valid data")
+
+
+
