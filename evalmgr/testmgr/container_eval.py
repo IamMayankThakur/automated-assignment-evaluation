@@ -31,28 +31,24 @@ def do_container_eval_cc(*args, **kwargs):
             marks += 0.5
         else:
             message += "Rides container not running. "
-        stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.ID}} {{.Image}}  {{.Names}}' | grep users:latest | cut -d ' ' -f 3")
+        stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.ID}} {{.Image}}' | grep users:latest | cut -d ' ' -f 1")
         con_id = str(stdout.read().decode())
+        con_id = con_id.strip()
         stdin, stdout, stderr = ssh.exec_command("sudo docker exec "+con_id+" env printenv TEAM_NAME")
         team_name = str(stdout.read().decode())
         print("CONID", con_id)
-        con_id = con_id.strip()
-        print("CONID", con_id)
-        print("sudo docker exec "+con_id+" env printenv TEAM_NAME")
         print("TEAMNAME", team_name)
         if sub.team.team_name in team_name:
             message += "Team name set in users container. "
             marks += 0.5
         else:
             message += "Team name not set in users container. "
-        stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.ID}} {{.Image}} {{.Names}}' | grep rides:latest | cut -d ' ' -f 3")
+        stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.ID}} {{.Image}}' | grep rides:latest | cut -d ' ' -f 1")
         con_id = str(stdout.read().decode())
+        con_id = con_id.strip()
         stdin, stdout, stderr = ssh.exec_command("sudo docker exec " + con_id + " env printenv TEAM_NAME")
         team_name = str(stdout.read().decode())
         print("CONID", con_id)
-        con_id = con_id.strip()
-        print("CONID", con_id)
-        print("sudo docker exec " + con_id + " env printenv TEAM_NAME")
         print("TEAMNAME", team_name)
         if sub.team.team_name in team_name:
             message += "Team name set in rides container. "
