@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name ec2-18-204-235-205.compute-1.amazonaws.com;
+
+    location  {
+        proxy_pass http://127.0.0.18000;
+    }
+
+}

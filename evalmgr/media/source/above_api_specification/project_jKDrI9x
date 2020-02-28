@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name 52.207.1.214 www.52.207.1.214;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/ubuntu/Project/project.sock;
+    }
+}

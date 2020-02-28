@@ -1,0 +1,373 @@
+from flask import Flask, render_template, jsonify, request, abort
+import flask
+import mysql.connector
+import string
+import csv
+import pandas as pd
+import json
+import requests
+import ast
+
+app = Flask(__name__)
+
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    passwd="Sarang99!",
+    auth_plugin='mysql_native_password'
+)
+mycursor = mydb.cursor(buffered=True)
+mycursor.execute("DROP DATABASE IF EXISTS a1")
+mycursor.execute("CREATE DATABASE a1")
+mycursor.execute("USE a1")
+mycursor.execute("CREATE TABLE users (uname VARCHAR(255),pswd VARCHAR(255))")
+mycursor.execute(
+    "CREATE TABLE rides (ride_ID INT AUTO_INCREMENT,uname VARCHAR(255),timestamp VARCHAR(255),source INT,dest INT,PRIMARY KEY(ride_ID,uname))")
+locations = []
+df = pd.read_csv('area.csv')
+print("read csv")
+
+# ------------------------------------------------1--------------------------------------------------
+@app.route("/api/v1/users", methods=["PUT"])
+def addUser():
+    uname = request.get_json()["username"]
+    pswd = request.get_json()["password"]
+    users = []
+    obj = {
+        "columns": "uname,pswd",
+        "where": "uname='"+uname+"'",
+        "table": "users"
+    }
+    obj = json.dumps(obj)  # stringified json
+    obj = json.loads(obj)  # content-type:application/json
+    # send request to db api
+    x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+    print(x.text)
+    # Parse the text response (mycursor.fetchall() list) from read api to list
+    users = ast.literal_eval(x.text)
+    if(len(users) != 0):
+        return abort(400)
+    else:
+        pswd = pswd.lower()
+        if(len(pswd) != 40 or not all(c in string.hexdigits for c in pswd)):
+            return abort(405)
+        # JSONify request object so db api can understand
+        obj = {
+            "operation": "insert",
+            "column": "(uname,pswd)",
+            "insert": "['"+uname+"','"+pswd+"']",
+            "table": "users"
+        }
+        obj = json.dumps(obj)  # stringified json
+        obj = json.loads(obj)  # content-type:application/json
+        # send request to db api
+        x = requests.post("http://127.0.0.1:5000/api/v1/db/write", json=obj)
+        return ("{}", 201)
+
+
+# ------------------------------------------------2--------------------------------------------------
+@app.route("/api/v1/users/<username>", methods=["DELETE"])
+def delUser(username):
+    users = []
+
+    obj = {
+        "columns": "uname,pswd",
+        "where": "uname='"+username+"'",
+        "table": "users"
+    }
+    obj = json.dumps(obj)  # stringified json
+    obj = json.loads(obj)  # content-type:application/json
+    # send request to db api
+    x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+    print(x.text)
+    # Parse the text response (mycursor.fetchall() list) from read api to list
+    users = ast.literal_eval(x.text)
+
+    if(len(users) == 0):
+        return abort(400)
+    else:
+        obj = {
+            "operation": "delete",
+            "column": "uname",
+            "insert": "'"+username+"'",
+            "table": "users"
+        }
+        obj = json.dumps(obj)  # stringified json
+        obj = json.loads(obj)  # content-type:application/json
+        # send request to db api
+        x = requests.post("http://127.0.0.1:5000/api/v1/db/write", json=obj)
+        mydb.commit()
+        return ("{}", 201)
+
+
+# ----------------------------------------------------3--------------------------------------------
+@app.route("/api/v1/rides", methods=["POST"])
+def addRide():
+    uname = request.get_json()["created_by"]
+    time = request.get_json()["timestamp"]
+    source = request.get_json()["source"]
+    dest = request.get_json()["destination"]
+    if source == dest:
+        return abort(405)
+    if int(source) in df['Area No'] and int(dest) in df['Area No']:
+        users = []
+
+        obj = {
+            "columns": "uname",
+            "where": "uname='"+uname+"'",
+            "table": "users"
+        }
+        obj = json.dumps(obj)  # stringified json
+        obj = json.loads(obj)  # content-type:application/json
+        # send request to db api
+        x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+        # print(x.text)
+        # Parse the text response (mycursor.fetchall() list) from read api to list
+        users = ast.literal_eval(x.text)
+        # users = []
+        # query = "SELECT uname FROM users WHERE uname ='"+uname+"'"
+        # mycursor.execute(query)
+        # users = mycursor.fetchall()
+        if(len(users) == 0):
+            return abort(400)
+        else:
+            obj = {
+                "operation": "insert",
+                "column": "(uname,timestamp,source,dest)",
+                "insert": "('"+uname+"','"+time+"',"+source+","+dest+")",
+                "table": "rides"
+            }
+            obj = json.dumps(obj)  # stringified json
+            obj = json.loads(obj)  # content-type:application/json
+            # send request to db api
+            x = requests.post(
+                "http://127.0.0.1:5000/api/v1/db/write", json=obj)
+            mydb.commit()
+            return ("{}", 201)
+    else:
+        return abort(400)
+
+
+# -------------------------------------------4-------------------------------------------------------
+@app.route("/api/v1/rides", methods=["GET"])
+def upcRides():
+    source = flask.request.args.get('source')
+    destination = flask.request.args.get('destination')
+    print(source, destination, type(destination))
+    if(int(source) in df['Area No'] and int(destination) in df['Area No']):
+        obj = {
+            "columns": "uname,timestamp,source,dest",
+            "where": "source="+source+",dest="+destination,
+            "table": "rides"
+        }
+        obj = json.dumps(obj)  # stringified json
+        obj = json.loads(obj)  # content-type:application/json
+        # send request to db api
+        x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+        print(x.text)
+        # return(x.text)
+        # print(x.text)
+        rideDetails = ast.literal_eval(x.text)
+        for ride in rideDetails:
+            obj = {
+                "columns": "uname",
+                "where": "uname= '"+ride[0]+"'",
+                "table": "users"
+            }
+            # query = 'SELECT uname FROM users WHERE uname="'+ride[1]+'"'
+            obj = json.dumps(obj)  # stringified json
+            obj = json.loads(obj)
+            x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+            users = ast.literal_eval(x.text)
+            if(len(users) == 0):
+                return abort(400)
+        return (str(rideDetails), 200)
+    return abort(405)
+
+# ---------------------------------------------------5---------------------------------------------------
+# Get ride details given the rideID
+@app.route("/api/v1/rides/<rideId>", methods=["GET"])
+def rideDetails(rideId):
+    obj = {
+        "columns": "uname,timestamp,source,dest",
+        "where": "ride_ID = "+rideId,
+        "table": "rides"
+    }
+    obj = json.dumps(obj)  # stringified json
+    obj = json.loads(obj)
+    x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+    rideDetails = ast.literal_eval(x.text)
+    # query = "SELECT * FROM rides WHERE ride_ID='"+rideId+"'"
+    # mycursor.execute(query)
+    # rideDetails = mycursor.fetchall()
+    if(len(rideDetails) == 0):
+        return abort(400)
+    return(json.dumps(rideDetails), 200)
+
+# ---------------------------------------------------6---------------------------------------------------
+# Join rides
+@app.route("/api/v1/rides/<rideId>", methods=["POST"])
+def joinRide(rideId):
+    uname = request.get_json()["username"]
+    obj = {
+        "columns": "uname",
+        "where": "uname= '"+uname+"'",
+        "table": "users"
+    }
+    # query = 'SELECT uname FROM users WHERE uname="'+ride[1]+'"'
+    obj = json.dumps(obj)  # stringified json
+    obj = json.loads(obj)
+    x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+    users = ast.literal_eval(x.text)
+
+    # query = "SELECT uname FROM users WHERE uname ='"+uname+"'"
+    # mycursor.execute(query)
+    # users = mycursor.fetchall()
+    if(len(users) == 0):
+        return abort(400)
+
+    uname = request.get_json()["username"]
+    obj = {
+        "columns": "uname,timestamp,source,dest",
+        "where": "ride_ID= "+rideId,
+        "table": "rides"
+    }
+    obj = json.dumps(obj)  # stringified json
+    obj = json.loads(obj)
+    x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+    users1 = ast.literal_eval(x.text)
+    # q1 = "SELECT * FROM rides WHERE ride_ID ='"+rideId+"'"
+    # mycursor.execute(q1)
+    # users1 = mycursor.fetchall()
+    if(len(users1) == 0):
+        return abort(405)
+    users1 = users1[0]
+    # print("-------------\n", users1, len(users1))
+    obj = {
+        "operation": "insert",
+        "column": "(ride_ID,uname,timestamp,source,dest)",
+        "insert": "("+str(rideId)+",'"+uname+"','"+str(users1[1])+"',"+str(users1[2])+","+str(users1[3])+")",
+        "table": "rides"
+    }
+    obj = json.dumps(obj)  # stringified json
+    obj = json.loads(obj)  # content-type:application/json
+    # send request to db api
+    x = requests.post("http://127.0.0.1:5000/api/v1/db/write", json=obj)
+    mydb.commit()
+    # sql = "INSERT INTO rides(ride_ID,uname,timestamp,source,dest) VALUES ('" + str(
+    #     users1[0])+"','" + uname+"','"+users1[2]+"','"+str(users1[3])+"','"+str(users1[4])+"')"
+    # mycursor.execute(sql)
+    return ("{}", 200)
+
+# ----------------------------------------------------7----------------------------------------------
+# Delete by rideId
+@app.route("/api/v1/rides/<rideId>", methods=["DELETE"])
+def delRide(rideId):
+    obj = {
+        "columns": "uname,timestamp,source,dest",
+        "where": "ride_ID= "+str(rideId),
+        "table": "rides"
+    }
+    obj = json.dumps(obj)  # stringified json
+    obj = json.loads(obj)
+    x = requests.post("http://127.0.0.1:5000/api/v1/db/read", json=obj)
+    users = ast.literal_eval(x.text)
+    # query = 'SELECT rideId FROM rides WHERE ride_ID ="'+rideId+'"'
+    # # val = (username)
+    # mycursor.execute(query)
+    # users = mycursor.fetchall()
+    print(users)
+    if(len(users) == 0):
+        return abort(405)
+    else:
+        obj = {
+            "operation": "delete",
+            "column": "ride_ID",
+            "insert": rideId,
+            "table": "rides"
+        }
+        obj = json.dumps(obj)  # stringified json
+        obj = json.loads(obj)  # content-type:application/json
+        # send request to db api
+        x = requests.post("http://127.0.0.1:5000/api/v1/db/write", json=obj)
+        mydb.commit()
+        # query = 'DELETE FROM rides WHERE ride_ID="'+rideId+'"'
+        # # val = (username)
+        # mycursor.execute(query)
+        # mydb.commit()
+        return ("{}", 201)
+
+
+# -------------------------------------------------8-------------------------------------------------
+# Write into a DB
+@app.route("/api/v1/db/write", methods=["POST"])
+def insert():
+    op = request.get_json()["operation"]
+    column = request.get_json()["column"]
+    insert = request.get_json()["insert"]
+    table = request.get_json()["table"]
+    query = ''
+    if(op == "insert"):
+        query += 'INSERT INTO ' + table+' '+column+' VALUES ('
+        insert = insert[1:len(insert)-1]
+        insert = insert.split(",")
+        # insert = list(map(lambda x:str(x),insert))
+        for i in range(len(insert)):
+            if(i != 0):
+                query += ","
+            query += insert[i]
+        query += ")"
+
+    else:
+        query += 'DELETE FROM '+table+' WHERE ('
+        column = column.split(",")
+        insert = insert.split(",")
+        if(len(column) != len(insert)):
+            abort(400)
+        for i in range(len(column)):
+            if(i != 0):
+                query += 'AND'
+            query += column[i]+'='+insert[i]
+        query += ")"
+    print(query)
+    mycursor.execute(query)
+    return ("{}", 200)
+
+# -------------------------------------------------9-------------------------------------------------
+# Read into a DB
+@app.route("/api/v1/db/read", methods=["POST"])
+def read():
+    query = 'SELECT '
+    columns = request.get_json()["columns"]
+    where = request.get_json()["where"]
+    table = request.get_json()["table"]
+    '''
+    Made the read a little more flexible with respect to where conditions and select * condition
+    '''
+    if len(columns) != 1:
+        for col in columns.split(','):
+            query += col+','
+        query = query[0:-1]
+    else:
+        query = 'SELECT '+columns
+    if where != '':
+        query = query+' FROM '+table+' WHERE ('
+        where = where.split(",")
+        for i in range(len(where)):
+            if(i != 0):
+                query += ' AND '
+            query += where[i]
+        query += ")"
+    else:
+        query = query+' FROM '+table
+    print("$$$$$$$$$$$$$$\n", query)
+    mycursor.execute(query)
+    s = mycursor.fetchall()
+    # Return a string of mycursor.fetchall() that the calling api can parse into a list easily
+    return (str(s), 200)
+
+
+if __name__ == '__main__':
+    app.debug = True
+    app.run()
+    mydb.close()

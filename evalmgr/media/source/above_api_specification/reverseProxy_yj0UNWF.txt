@@ -1,0 +1,8 @@
+server {
+    listen 80;
+    server_name 54.175.126.172 ec2-54-175-126-172.compute-1.amazonaws.com www.ec2-54-175-126-172.compute-1.amazonaws.co$
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/ubuntu/myproject/myproject.sock;
+    }
+}
