@@ -69,6 +69,8 @@ class ContainerTestView(View):
     def post(self, request):
         try:
             sub = Submission()
+            sub.team = Team.objects.get(team_name=request.POST['team'])
+            sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
             sub.username = request.POST['username']
             sub.private_key_file = request.FILES['private_key_file']
             sub.public_ip_address = request.POST['public_ip_address']
