@@ -36,6 +36,8 @@ def do_container_eval_cc(*args, **kwargs):
         stdin, stdout, stderr = ssh.exec_command("sudo docker exec "+con_id+" env printenv TEAM_NAME")
         team_name = stdout.read().decode()
         print("CONID", con_id)
+        con_id = con_id.strip()
+        print("CONID", con_id)
         print("sudo docker exec "+con_id+" env printenv TEAM_NAME")
         print("TEAMNAME", team_name)
         if sub.team.team_name in team_name:
@@ -47,6 +49,8 @@ def do_container_eval_cc(*args, **kwargs):
         con_id = stdout.read().decode()
         stdin, stdout, stderr = ssh.exec_command("sudo docker exec " + con_id + " env printenv TEAM_NAME")
         team_name = stdout.read().decode()
+        print("CONID", con_id)
+        con_id = con_id.strip()
         print("CONID", con_id)
         print("sudo docker exec " + con_id + " env printenv TEAM_NAME")
         print("TEAMNAME", team_name)
