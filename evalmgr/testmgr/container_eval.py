@@ -72,12 +72,12 @@ def do_container_eval_cc(*args, **kwargs):
         else:
             message += "Failed add user. "
 
-        r = requests.post("http://" + sub.public_ip_address + ":8080/api/v1/users")
+        r = requests.get("http://" + sub.public_ip_address + ":8080/api/v1/users")
         if r.status_code == 200:
             marks += 0.5
-            message += "Clear db API success on rides microservice. "
+            message += "List all users API success on users microservice. "
         else:
-            message += "Clear db API failure on rides microservice. "
+            message += "List all users API failure on users microservice. "
         sub.marks = marks
         sub.message = message
         sub.save()
