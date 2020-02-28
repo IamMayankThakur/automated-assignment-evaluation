@@ -35,6 +35,8 @@ def do_container_eval_cc(*args, **kwargs):
         con_id = stdout.read().decode()
         stdin, stdout, stderr = ssh.exec_command("sudo docker exec "+con_id+" env | grep TEAM_NAME")
         team_name = stdout.read().decode()
+        print("sudo docker exec "+con_id+" env | grep TEAM_NAME")
+        print(team_name)
         if sub.team.team_name in team_name:
             message += "Team name set in users container. "
             marks += 0.5
@@ -44,6 +46,8 @@ def do_container_eval_cc(*args, **kwargs):
         con_id = stdout.read().decode()
         stdin, stdout, stderr = ssh.exec_command("sudo docker exec " + con_id + " env | grep TEAM_NAME")
         team_name = stdout.read().decode()
+        print("sudo docker exec " + con_id + " env | grep TEAM_NAME")
+        print(team_name)
         if sub.team.team_name in team_name:
             message += "Team name set in rides container. "
             marks += 0.5
