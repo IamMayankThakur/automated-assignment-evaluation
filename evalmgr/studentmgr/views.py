@@ -67,20 +67,20 @@ class ContainerTestView(View):
         return render(request, 'cc_a2.html')
 
     def post(self, request):
-        try:
-            sub = Submission()
-            sub.team = Team.objects.get(team_name=request.POST['team'])
-            sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
-            sub.username = request.POST['username']
-            sub.private_key_file = request.FILES['private_key_file']
-            sub.public_ip_address = request.POST['public_ip_address']
-            sub.save()
-            print(sub.username, sub.public_ip_address, sub.id)
-            do_container_eval_cc.delay(sub_id=sub.id)
-            return HttpResponse("Submission Recorded with submission id "+str(sub.id))
-        except Exception as e:
-            print(e)
-            return HttpResponse("Submission failed. Enter valid data")
+        # try:
+        sub = Submission()
+        sub.team = Team.objects.get(team_name=request.POST['team'])
+        sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
+        sub.username = request.POST['username']
+        sub.private_key_file = request.FILES['private_key_file']
+        sub.public_ip_address = request.POST['public_ip_address']
+        sub.save()
+        print(sub.username, sub.public_ip_address, sub.id)
+        do_container_eval_cc.delay(sub_id=sub.id)
+        return HttpResponse("Submission Recorded with submission id "+str(sub.id))
+        # except Exception as e:
+        #     print(e)
+        #     return HttpResponse("Submission failed. Enter valid data")
 
 
 
