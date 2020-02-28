@@ -73,6 +73,7 @@ class ContainerTestView(View):
             sub.private_key_file = request.FILES['private_key_file']
             sub.public_ip_address = request.POST['public_ip_address']
             sub.save()
+            print(sub.username, sub.public_ip_address, sub.id)
             do_container_eval_cc.delay(sub_id=sub.id)
             return HttpResponse("Submission Recorded with submission id "+str(sub.id))
         except Exception as e:
