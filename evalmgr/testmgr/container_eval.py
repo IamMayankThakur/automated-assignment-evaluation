@@ -91,7 +91,7 @@ def do_container_eval_cc(*args, **kwargs):
     except Exception as e:
         print("ERROR: ", e)
         marks += 0
-        message += "Fatal Error.! Check if your instance is running/ pem file is correct etc"
+        message += "Fatal Error.! Check if your instance is running / port is open / pem file is correct etc"
         sub.message = message
         sub.marks = marks
         sub.save()

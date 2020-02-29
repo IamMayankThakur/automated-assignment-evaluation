@@ -220,7 +220,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed GetUpcomingRides "
             print(" Failed GetUpcomingRides ")
     
-        submission.marks = marks
+        submission.marks = marks * 0.6
         submission.message = message
         submission.save()
         return
