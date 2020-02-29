@@ -73,6 +73,7 @@ class ContainerTestView(View):
             sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
             sub.username = request.POST['username']
             sub.private_key_file = request.FILES['private_key_file']
+            sub.source_code_file = request.FILES['source_code_file']
             sub.public_ip_address = request.POST['public_ip_address']
             sub.save()
             print(sub.username, sub.public_ip_address, sub.id)
