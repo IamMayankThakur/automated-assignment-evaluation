@@ -1,0 +1,7 @@
+FROM base-image:latest
+
+ENV TEAM_NAME=CC_0119_1296_1421_1575
+ENV NAME="RIDES"
+EXPOSE 80
+
+CMD ["./code/servs/setup.sh"]

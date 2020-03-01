@@ -1,0 +1,17 @@
+#FROM python:3.8.0-alpine
+FROM python
+
+ADD . /Rides_management
+WORKDIR /Rides_management
+
+#ENV LISTEN_PORT 5432
+#EXPOSE 5432
+#RUN apk update \
+#    && apk add postgresql-dev gcc python3-dev musl-dev
+
+RUN pip install --upgrade pip
+RUN pip install -r install_packages.txt
+
+ENV TEAM_NAME=CC_0225_0283
+
+ENTRYPOINT ["/Rides_management/entry_point.sh"]

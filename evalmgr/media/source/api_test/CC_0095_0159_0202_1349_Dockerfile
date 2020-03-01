@@ -1,0 +1,15 @@
+FROM node:10-alpine AS build-env
+
+ADD package.json /tmp/package.json
+RUN cd /tmp && npm install --production
+RUN mkdir -p /app && cp -a /tmp/node_modules /app/
+
+COPY . /app
+
+FROM m03geek/alpine-node:femto-12
+ENV TEAM_NAME=CC_0095_0159_0202_1349
+
+WORKDIR /app
+COPY --from=build-env /app .
+CMD ["node", "/app/index.js"]
+EXPOSE 5000

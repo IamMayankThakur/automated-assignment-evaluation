@@ -1,0 +1,13 @@
+FROM python:3.7
+
+EXPOSE 5000
+
+RUN mkdir -p /rides
+WORKDIR /rides
+
+COPY . .
+
+RUN python -m pip install -r requirements.txt
+
+# CMD ["python", "main.py"]
+CMD ["/usr/local/bin/gunicorn", "wsgi:app", "-c", "gunicorn.config.py"]

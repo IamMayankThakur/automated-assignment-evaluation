@@ -1,0 +1,15 @@
+from alpine:latest
+
+RUN apk add --no-cache python3-dev \
+        && pip3 install --upgrade pip
+
+WORKDIR /app
+COPY . /app
+RUN pip3 --no-cache-dir install -r requirements.txt
+EXPOSE 5000
+
+ENV TEAM_NAME=CC_0204_0219_1354
+
+ENTRYPOINT ["python3"]
+CMD ["rides.py"]
+

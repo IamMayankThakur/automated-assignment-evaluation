@@ -1,0 +1,17 @@
+FROM ubuntu:18.04
+
+RUN apt update && \
+    apt install -y python3 && \
+    apt-get install -y python3-pip && \
+    pip3 install flask sqlalchemy Flask-SQLAlchemy flask_sqlalchemy_session requests pandas
+
+WORKDIR /app
+
+COPY . /app
+
+EXPOSE 5006
+
+ENV TEAM_NAME = CC_0092_0223_0651_0707
+
+CMD ["python3","rides_api.py"]
+

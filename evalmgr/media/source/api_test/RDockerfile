@@ -1,0 +1,21 @@
+FROM python:3
+MAINTAINER Niharika <pniharika369@gmail.com>
+
+RUN apt-get update
+RUN apt-get upgrade -y
+
+RUN mkdir -p /app
+WORKDIR /app
+
+COPY requirements.txt .
+COPY ride.py .
+COPY AreaNameEnum.csv .
+
+ENV DB_HOST_URL ridesdb
+ENV DB_USER root
+ENV DB_PASS root@123
+ENV DB_NAME rideshare
+ENV TEAM_NAME CC_0215_0274_0407
+
+RUN pip3 install -r requirements.txt
+CMD python3 ride.py

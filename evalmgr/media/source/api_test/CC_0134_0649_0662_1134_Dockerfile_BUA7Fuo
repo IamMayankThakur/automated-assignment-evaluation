@@ -1,0 +1,15 @@
+FROM node:10-alpine
+
+ENV TEAM_NAME CC_0134_0649_0662_1134
+
+WORKDIR /usr/src/rides_microservice
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . . 
+
+EXPOSE 80 
+
+CMD [ "npm", "start" ] 

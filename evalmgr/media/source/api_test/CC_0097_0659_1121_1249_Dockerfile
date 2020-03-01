@@ -1,0 +1,11 @@
+FROM baseimg:latest
+LABEL maintainer=sriramsk1999@gmail.com
+
+ENV TEAM_NAME=CC_0097_0659_1121_1249
+
+ADD . /serve
+WORKDIR /serve
+
+RUN mv rideflask /etc/nginx/sites-available
+RUN ln -s /etc/nginx/sites-available/rideflask /etc/nginx/sites-enabled 
+RUN rm /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default

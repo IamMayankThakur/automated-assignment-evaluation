@@ -1,0 +1,6 @@
+FROM python:3
+ADD . /docker/rides
+WORKDIR /docker/rides
+ENV TEAM_NNAME = CC_0083_0112_1789_1801
+RUN pip install -r requirements.txt
+CMD ["python", "rides.py"]

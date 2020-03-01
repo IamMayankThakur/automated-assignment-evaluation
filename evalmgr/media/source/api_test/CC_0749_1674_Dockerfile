@@ -1,0 +1,23 @@
+FROM ubuntu:latest
+
+#FROM ubuntu:latest
+
+ENV TEAM_NAME=CC_0749_1674
+
+RUN apt-get update -y && \
+    apt-get install -y python-pip python-dev
+
+# COPY ./requirements.txt /app/requirements.txt
+
+WORKDIR /appr
+
+ENV PYTHONUNBUFFERED 1
+RUN mkdir -p /opt/services/flaskappr/src
+#VOLUME ["/opt/services/flaskapp/src"]
+
+COPY requirements.txt /opt/services/flaskappr/src/
+WORKDIR /opt/services/flaskappr/src
+RUN apt-get install sqlite3
+RUN pip install -r requirements.txt
+COPY . /opt/services/flaskappr/src
+EXPOSE 7000

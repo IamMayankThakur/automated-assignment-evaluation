@@ -1,0 +1,9 @@
+FROM node:10
+WORKDIR /app
+ENV TEAM_NAME CC_0152_0250_1016_1135
+COPY package.json package.json
+RUN npm install
+COPY . .
+EXPOSE 8000
+RUN npm install -g pm2
+CMD [ "pm2-runtime", "index.js" ]

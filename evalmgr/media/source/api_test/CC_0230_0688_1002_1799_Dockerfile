@@ -1,0 +1,6 @@
+FROM python
+ADD . /assignment2
+WORKDIR /assignment2
+RUN pip install -r requirements.txt
+EXPOSE 8000
+CMD ["python3", "rides.py"]

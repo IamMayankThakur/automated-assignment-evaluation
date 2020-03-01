@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+    rides:
+        build:
+            context: .
+            args:
+                requirements: ./flask-mongodb-example/requirements.txt
+            network: host
+        image: rides-image
+        ports:
+            - "8000:5000"
+        entrypoint: python ./flask-mongodb-example/rides.py
+        deploy:
+          restart_policy:
+            condition: on-failure
+        depends_on:
+            - mongo
+
+    users:
+        build:
+            context: .
+            args:
+                requirements: ./flask-mongodb-example/requirements.txt
+            network: host
+        image: users-image
+        ports:
+            - "8000:5000"
+        entrypoint: python ./flask-mongodb-example/users.py
+        deploy:
+          restart_policy:
+            condition: on-failure
+        depends_on:
+            - mongo
+
+    mongo:
+        image: mongo:4.2-bionic
+        deploy:
+            restart_policy:
+                condition: always
+        ports:
+            - "27020:27020"

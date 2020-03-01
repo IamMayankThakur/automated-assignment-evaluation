@@ -1,0 +1,7 @@
+# rides
+FROM python:2-alpine
+COPY . /web
+WORKDIR /web/ride
+RUN pip install -r ./requirements.txt
+ENTRYPOINT ["python"]
+CMD ["ride_api.py"]

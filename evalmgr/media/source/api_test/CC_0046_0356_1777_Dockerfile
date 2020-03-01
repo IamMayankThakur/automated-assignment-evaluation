@@ -1,0 +1,13 @@
+FROM python:3-buster
+
+RUN apt-get update && apt-get upgrade -y --no-install-recommends
+
+WORKDIR /app
+
+COPY ./requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN ls
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers=3", "wsgi:app"]

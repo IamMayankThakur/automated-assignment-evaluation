@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+    rides-nginx:
+        image: nginx:latest
+        restart: always
+        container_name: rides-nginx
+        volumes:
+            - /etc/nginx/proxy_params:/etc/nginx/proxy_params
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        ports:
+            - "8000:80"
+        networks:
+            - rides
+        environment:
+            - TEAM_NAME=CC_0090_0111_1120_1615
+    rides-mongo:
+        image: mongo:latest
+        restart: always
+        container_name: rides-mongo
+        networks:
+            - rides
+        environment:
+            - TEAM_NAME=CC_0090_0111_1120_1615
+    rides:
+        build: .
+        image: rides:latest
+        restart: always
+        container_name: rides
+        volumes:
+            - ./AreaNameEnum.csv:/AreaNameEnum.csv
+            - ./src/app.py:/src/app.py
+        networks:
+            - rides
+        environment:
+            - TEAM_NAME=CC_0090_0111_1120_1615
+
+networks:
+    rides:
+        name: rides

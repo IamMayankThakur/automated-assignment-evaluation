@@ -1,0 +1,11 @@
+FROM python:3.6
+COPY . /rides
+WORKDIR /rides/api
+RUN pip install -r ./requirements.txt
+ENV TEAM_NAME=CC_0016_0096_0674_1129
+RUN pip3 install --upgrade pip
+RUN pip3.6 install -r ./requirements.txt
+ENTRYPOINT ["python"]
+CMD ["dbb.py"]
+CMD ["ride.py"]
+

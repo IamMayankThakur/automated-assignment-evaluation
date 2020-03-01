@@ -1,0 +1,6 @@
+FROM python
+ADD . /A-02
+WORKDIR /A-02
+RUN pip install -r requirements.txt
+CMD ["rides.py"]
+ENV team_name "CC_0816_1404_1773_1774"

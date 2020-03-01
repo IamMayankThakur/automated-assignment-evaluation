@@ -1,0 +1,6 @@
+FROM tiangolo/uwsgi-nginx-flask:python3.6
+COPY ./requirements.txt /tmp/
+RUN pip install -U pip
+RUN pip install -r /tmp/requirements.txt
+COPY ./ride_manage /app
+ENV TEAM_NAME=CC_1348_1561_1576_1597

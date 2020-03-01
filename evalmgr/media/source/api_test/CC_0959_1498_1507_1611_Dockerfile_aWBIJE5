@@ -1,0 +1,5 @@
+FROM img:latest
+WORKDIR /code
+COPY . .
+RUN chmod +x ride_script.sh
+CMD ["bash", "ride_script.sh"]

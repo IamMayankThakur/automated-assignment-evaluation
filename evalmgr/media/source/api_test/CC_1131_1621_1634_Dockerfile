@@ -1,0 +1,7 @@
+FROM python:3.6
+ADD . /CC_1131_6121_1634_rides
+WORKDIR /CC_1131_6121_1634_rides
+RUN pip install flask gunicorn requests 
+
+EXPOSE 8000
+

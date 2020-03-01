@@ -1,0 +1,18 @@
+FROM tiangolo/uwsgi-nginx-flask:python3.7
+
+#copy over our requirements.txt file
+COPY ./requirements.txt /tmp/
+
+#upgrade pip install required python packages
+RUN pip install -U pip
+RUN pip install -r /tmp/requirements.txt
+
+#copy the app code
+#COPY ./user_manage /app
+COPY ./app /app
+
+#COPY ./app /app
+
+ENV TEAM_NAME "CC_0094_0155_0260_1509"
+
+

@@ -1,0 +1,13 @@
+# Use custom image with python3 sqlite and flask installed on ubuntu base image
+FROM py3_sqlite_flask
+# The ports on which a container will listen for connections. Since our Flask app listens to port 8000, we expose it
+EXPOSE 8000
+# Set the asked environment variable
+ENV TEAM_NAME CC_0231_0896_1084_1090
+# Sets the working directory for following COPY and CMD instructions; creates a directory with this name if it doesn’t exist
+WORKDIR /app
+# Copy required files into the working directory 
+COPY rides_microservice_app.py /app
+COPY AreaNameEnum.csv /app
+# Run app when the container launches
+CMD python3 rides_microservice_app.py
