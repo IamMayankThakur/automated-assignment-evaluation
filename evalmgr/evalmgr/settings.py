@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'facultymgr.apps.FacultymgrConfig',
     'studentmgr.apps.StudentmgrConfig',
+    'django_celery_results',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -1,6 +1,7 @@
 import configparser
 from .models import Evaluation, FacultyProfile
 from testmgr.api_eval import setup_api_eval
+from testmgr.container_eval_final import setup_container_eval
 from studentmgr.models import Team
 import pandas as pd
 
@@ -21,7 +22,10 @@ def create_evaluation(**kwargs):
         evaluation.type = c['Settings']['test_type']
         evaluation.access_code = c['Settings']['access_code']
         evaluation.save()
-        setup_api_eval.delay(eval_id=eval_id)
+        if(c['Settings']['test_type']==1):
+            setup_api_eval.delay(eval_id=eval_id)
+        elif(c['Settings']['test_type']==2):
+            setup_container_eval.delay(eval_id=eval_id)
         # setup_api_eval(eval_id=eval_id)
     except Exception as e:
         print(e)
