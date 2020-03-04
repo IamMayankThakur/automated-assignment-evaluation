@@ -4,4 +4,5 @@ app_name = 'facultymgr'
 
 urlpatterns = [
     path('upload_config', views.ConfigUpload.as_view()),
+    path('upload_config2',views.ConfigUpload2.as_view()),
 ]
