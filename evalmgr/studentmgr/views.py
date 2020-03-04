@@ -5,6 +5,7 @@ from django.views import View
 from facultymgr.models import Evaluation
 from testmgr.api_eval import do_api_eval, do_api_eval_cc
 from testmgr.container_eval import do_container_eval_cc
+from testmgr.container_eval_final import do_container_eval
 from .models import Team, Submission
 from .utils import get_route_for_eval_type
 
@@ -72,12 +73,15 @@ class ContainerTestView(View):
             sub.team = Team.objects.get(team_name=request.POST['team'])
             sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
             sub.username = request.POST['username']
-            sub.private_key_file = request.FILES['private_key_file']
-            sub.source_code_file = request.FILES['source_code_file']
+            try:
+                sub.private_key_file = request.FILES['private_key_file']
+            except:
+                pass
+            # sub.source_code_file = request.FILES['source_code_file']
             sub.public_ip_address = request.POST['public_ip_address']
             sub.save()
             print(sub.username, sub.public_ip_address, sub.id)
-            do_container_eval_cc.delay(sub_id=sub.id)
+            do_container_eval.delay(sub_id=sub.id)
             return HttpResponse("Submission Recorded with submission id "+str(sub.id))
         except Exception as e:
             print(e)
