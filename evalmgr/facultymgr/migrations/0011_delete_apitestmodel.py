@@ -6,11 +6,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('facultymgr', '0010_apitestmodel_test_name'),
+        ("facultymgr", "0010_apitestmodel_test_name"),
     ]
 
     operations = [
-        migrations.DeleteModel(
-            name='ApiTestModel',
-        ),
+        migrations.DeleteModel(name="ApiTestModel",),
     ]
