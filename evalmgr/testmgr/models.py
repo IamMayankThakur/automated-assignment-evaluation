@@ -3,7 +3,7 @@ from facultymgr.models import Evaluation
 
 
 class ApiTestModel(models.Model):
-    test_name = models.TextField(default='hidden')
+    test_name = models.TextField(default="hidden")
     sanity = models.BooleanField(default=False)
     api_endpoint = models.TextField(blank=False)
     api_method = models.CharField(max_length=16, blank=False, null=True)
@@ -15,11 +15,12 @@ class ApiTestModel(models.Model):
     objects = models.Manager()
 
     class Meta:
-        app_label = 'facultymgr'
+        app_label = "facultymgr"
         managed = True
 
+
 class ContainerTestModel(models.Model):
-    test_name = models.TextField(default='hidden')
+    test_name = models.TextField(default="hidden")
     container_name = models.TextField(blank=False)
     container_image = models.TextField(blank=False)
     ports_exposed = models.TextField(blank=True)
@@ -28,10 +29,10 @@ class ContainerTestModel(models.Model):
     volumes = models.TextField(blank=True)
     commands = models.TextField(blank=True)
     num_cpus = models.IntegerField(blank=True)
-    evaluation = models.ForeignKey(Evaluation,on_delete=models.CASCADE)
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
 
     objects = models.Manager()
 
     class Meta:
-        app_label = 'facultymgr'
+        app_label = "facultymgr"
         managed = True

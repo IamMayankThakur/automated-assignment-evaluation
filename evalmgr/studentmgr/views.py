@@ -12,7 +12,7 @@ from .utils import get_route_for_eval_type
 
 class AccessCodeView(View):
     def get(self, request):
-        return render(request, 'accesskey_file.html')
+        return render(request, "accesskey_file.html")
 
     def post(self, request):
         try:
@@ -30,23 +30,30 @@ class ApiTestView(View):
     def get(self, request):
         if request.session.get("access_code") is None:
             return HttpResponse("No access code")
-        return render(request, 'testapi_file.html')
+        return render(request, "testapi_file.html")
 
     def post(self, request):
         try:
             sub = Submission()
-            sub.team = Team.objects.get(team_name=request.POST['team'])
-            sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
-            sub.public_ip_address = "http://"+request.POST['public_ip_address']
-            sub.source_code_file = request.FILES['source_code_file']
-            sub.above_specification_choice = request.POST['above_specification_choice']
-            sub.above_specification = ''.join(request.POST.getlist('above_specification'))
-            sub.above_specification_file = request.FILES['above_specification_file']
+            sub.team = Team.objects.get(team_name=request.POST["team"])
+            sub.evaluation = Evaluation.objects.get(
+                access_code=request.session["access_code"]
+            )
+            sub.public_ip_address = "http://" + request.POST["public_ip_address"]
+            sub.source_code_file = request.FILES["source_code_file"]
+            sub.above_specification_choice = request.POST["above_specification_choice"]
+            sub.above_specification = "".join(
+                request.POST.getlist("above_specification")
+            )
+            sub.above_specification_file = request.FILES["above_specification_file"]
             sub.save()
             # do_api_eval.delay(sub_id=sub.id)
             do_api_eval_cc.delay(sub_id=sub.id)
             # do_api_eval(sub_id=sub.id)
-            return HttpResponse("Your submission has been recorded. Your submission id is "+str(sub.id))
+            return HttpResponse(
+                "Your submission has been recorded. Your submission id is "
+                + str(sub.id)
+            )
         except Exception as e:
             print(e)
             return HttpResponse("Error in input, ensure all fields are filled")
@@ -65,27 +72,26 @@ class ContainerTestView(View):
     def get(self, request):
         if request.session.get("access_code") is None:
             return HttpResponse("No access code")
-        return render(request, 'cc_a2.html')
+        return render(request, "cc_a2.html")
 
     def post(self, request):
         try:
             sub = Submission()
-            sub.team = Team.objects.get(team_name=request.POST['team'])
-            sub.evaluation = Evaluation.objects.get(access_code=request.session['access_code'])
-            sub.username = request.POST['username']
+            sub.team = Team.objects.get(team_name=request.POST["team"])
+            sub.evaluation = Evaluation.objects.get(
+                access_code=request.session["access_code"]
+            )
+            sub.username = request.POST["username"]
             try:
-                sub.private_key_file = request.FILES['private_key_file']
-            except:
+                sub.private_key_file = request.FILES["private_key_file"]
+            except Exception:
                 pass
             # sub.source_code_file = request.FILES['source_code_file']
-            sub.public_ip_address = request.POST['public_ip_address']
+            sub.public_ip_address = request.POST["public_ip_address"]
             sub.save()
             print(sub.username, sub.public_ip_address, sub.id)
             do_container_eval.delay(sub_id=sub.id)
-            return HttpResponse("Submission Recorded with submission id "+str(sub.id))
+            return HttpResponse("Submission Recorded with submission id " + str(sub.id))
         except Exception as e:
             print(e)
             return HttpResponse("Submission failed. Enter valid data")
-
-
-

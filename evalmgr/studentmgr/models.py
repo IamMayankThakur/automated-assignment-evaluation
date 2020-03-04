@@ -3,11 +3,11 @@ from facultymgr.models import Evaluation
 from django.utils import timezone
 from django.core.files.storage import FileSystemStorage
 import os
+
 # Create your models here.
 
 
 class OverwriteStorage(FileSystemStorage):
-
     def get_available_name(self, name, max_length=None):
         if self.exists(name):
             os.remove(os.path.join(self.location, name))
@@ -33,12 +33,15 @@ class Submission(models.Model):
     marks = models.FloatField(default=-1)
     message = models.TextField()
     public_ip_address = models.URLField(blank=False)
-    source_code_file = models.FileField(upload_to='source/api_test/', blank=True)
+    source_code_file = models.FileField(upload_to="source/api_test/", blank=True)
     above_specification_choice = models.CharField(max_length=256, blank=True, null=True)
     above_specification = models.TextField()
-    above_specification_file = models.FileField(upload_to='source/above_api_specification/')
-    private_key_file = models.FileField(upload_to='key', storage=OverwriteStorage(), blank=True)
+    above_specification_file = models.FileField(
+        upload_to="source/above_api_specification/"
+    )
+    private_key_file = models.FileField(
+        upload_to="key", storage=OverwriteStorage(), blank=True
+    )
 
     def __str__(self):
         return str(self.id)
-

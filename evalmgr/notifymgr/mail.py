@@ -12,22 +12,33 @@ def send_mail(submission_id):
     message["Subject"] = "Big Data Assignment Result"
     message["From"] = "noreplybigdata@gmail.com"
 
-    html = "Hi \n Your submission for " + sub.evaluation.name + " with submission id " + str(submission_id) + " has been evaluated \n" \
-        "<html> " \
-        "<body> " \
-        "<h3> Scores </h3> " \
-        "<p> Marks: " + str(sub.marks) + "</p>" \
-        "<h3> Remarks </h3> " + str(sub.message) + "<br>" \
-        "</body> "  \
+    html = (
+        "Hi \n Your submission for "
+        + sub.evaluation.name
+        + " with submission id "
+        + str(submission_id)
+        + " has been evaluated \n"
+        "<html> "
+        "<body> "
+        "<h3> Scores </h3> "
+        "<p> Marks: " + str(sub.marks) + "</p>"
+        "<h3> Remarks </h3> " + str(sub.message) + "<br>"
+        "</body> "
         "</html>"
+    )
 
     part = MIMEText(html, "html")
 
     message.attach(part)
 
-    emails = [team.email_member_1, team.email_member_2, team.email_member_3, team.email_member_4]
+    emails = [
+        team.email_member_1,
+        team.email_member_2,
+        team.email_member_3,
+        team.email_member_4,
+    ]
     for email in emails:
-        if email != 'nan':
+        if email != "nan":
             _send(email, message)
 
 
