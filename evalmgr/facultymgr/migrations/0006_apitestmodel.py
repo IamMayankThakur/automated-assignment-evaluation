@@ -7,23 +7,35 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('facultymgr', '0005_auto_20200202_1145'),
+        ("facultymgr", "0005_auto_20200202_1145"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ApiTestModel',
+            name="ApiTestModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('api_endpoint', models.TextField()),
-                ('api_method', models.IntegerField()),
-                ('api_message_body', models.TextField(blank=True)),
-                ('expected_status_code', models.IntegerField()),
-                ('expected_response_body', models.TextField(blank=True)),
-                ('evaluation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='facultymgr.Evaluation')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("api_endpoint", models.TextField()),
+                ("api_method", models.IntegerField()),
+                ("api_message_body", models.TextField(blank=True)),
+                ("expected_status_code", models.IntegerField()),
+                ("expected_response_body", models.TextField(blank=True)),
+                (
+                    "evaluation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="facultymgr.Evaluation",
+                    ),
+                ),
             ],
-            options={
-                'managed': True,
-            },
+            options={"managed": True,},
         ),
     ]

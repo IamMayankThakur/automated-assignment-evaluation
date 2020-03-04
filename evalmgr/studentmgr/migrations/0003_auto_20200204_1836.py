@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studentmgr', '0002_auto_20200202_1837'),
+        ("studentmgr", "0002_auto_20200202_1837"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='team',
-            name='email_member_2',
+            model_name="team",
+            name="email_member_2",
             field=models.EmailField(blank=True, max_length=254),
         ),
         migrations.AlterField(
-            model_name='team',
-            name='email_member_3',
+            model_name="team",
+            name="email_member_3",
             field=models.EmailField(blank=True, max_length=254),
         ),
         migrations.AlterField(
-            model_name='team',
-            name='email_member_4',
+            model_name="team",
+            name="email_member_4",
             field=models.EmailField(blank=True, max_length=254),
         ),
     ]

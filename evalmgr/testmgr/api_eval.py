@@ -13,7 +13,7 @@ from .models import ApiTestModel
 
 @shared_task(time_limit=200)
 def setup_api_eval(*args, **kwargs):
-    eval_id = kwargs['eval_id'] if 'eval_id' in kwargs else None
+    eval_id = kwargs["eval_id"] if "eval_id" in kwargs else None
     if eval_id is None:
         raise RuntimeError
     evaluation = Evaluation.objects.get(pk=eval_id)
@@ -21,23 +21,23 @@ def setup_api_eval(*args, **kwargs):
     c = configparser.ConfigParser()
     c.read(file)
     sections = c.sections()
-    sections.remove('Settings')
+    sections.remove("Settings")
     for s in sections:
         api_test = ApiTestModel()
         api_test.test_name = s
-        api_test.sanity = True if c[s]['sanity'] == "True" else False
-        api_test.api_endpoint = c[s]['api_endpoint']
-        api_test.api_method = c[s]['api_method']
-        api_test.api_message_body = c[s]['api_message_body']
-        api_test.expected_status_code = c[s]['expected_status_code']
-        api_test.expected_response_body = c[s]['expected_response_body']
+        api_test.sanity = True if c[s]["sanity"] == "True" else False
+        api_test.api_endpoint = c[s]["api_endpoint"]
+        api_test.api_method = c[s]["api_method"]
+        api_test.api_message_body = c[s]["api_message_body"]
+        api_test.expected_status_code = c[s]["expected_status_code"]
+        api_test.expected_response_body = c[s]["expected_response_body"]
         api_test.evaluation = Evaluation.objects.get(id=eval_id)
         api_test.save()
 
 
 @shared_task(time_limit=200)
 def do_api_eval(*args, **kwargs):
-    sub_id = kwargs.get('sub_id', None)
+    sub_id = kwargs.get("sub_id", None)
     if sub_id is None:
         raise RuntimeError
     submission = Submission.objects.get(id=sub_id)
@@ -63,9 +63,12 @@ def give_marks(response, test):
     marks = 0
     message = ""
     if response.status_code == int(test.expected_status_code):
-        marks += (0.5 if test.expected_response_body != "" else 1)
+        marks += 0.5 if test.expected_response_body != "" else 1
         if test.expected_response_body != "":
-            if ast.literal_eval(test.expected_response_body).items() <= json.loads(response.content).items():
+            if (
+                ast.literal_eval(test.expected_response_body).items()
+                <= json.loads(response.content).items()
+            ):
                 marks += 0.5
     else:
         message += " " + test.test_name + " failed " + " "
@@ -90,12 +93,18 @@ def run_tests(test_objects, public_ip):
                 marks += marks_for_test
                 message += message_for_test
             elif test.api_method == "POST":
-                response = requests.post(public_ip + test.api_endpoint, data=ast.literal_eval(test.api_message_body))
+                response = requests.post(
+                    public_ip + test.api_endpoint,
+                    data=ast.literal_eval(test.api_message_body),
+                )
                 marks_for_test, message_for_test = give_marks(response, test)
                 marks += marks_for_test
                 message += message_for_test
             elif test.api_method == "PUT":
-                response = requests.put(public_ip + test.api_endpoint, data=ast.literal_eval(test.api_message_body))
+                response = requests.put(
+                    public_ip + test.api_endpoint,
+                    data=ast.literal_eval(test.api_message_body),
+                )
                 marks_for_test, message_for_test = give_marks(response, test)
                 marks += marks_for_test
                 message += message_for_test
@@ -119,7 +128,7 @@ def do_api_eval_cc(*args, **kwargs):
     try:
         marks = 0
         message = ""
-        sub_id = kwargs.get('sub_id', None)
+        sub_id = kwargs.get("sub_id", None)
         if sub_id is None:
             print("No sub id")
             raise RuntimeError
@@ -132,8 +141,13 @@ def do_api_eval_cc(*args, **kwargs):
             marks += 1
             message += "Running on port 80"
 
-        r = requests.put(public_ip + '/api/v1/users',
-                        json={'username': 'userName', 'password': '3d725109c7e7c0bfb9d709836735b56d943d263f'})
+        r = requests.put(
+            public_ip + "/api/v1/users",
+            json={
+                "username": "userName",
+                "password": "3d725109c7e7c0bfb9d709836735b56d943d263f",
+            },
+        )
         if r.status_code == 201:
             marks += 1
             message += " Passed Add user "
@@ -142,9 +156,15 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed Add user "
             print(" Failed Add user ")
 
-        r = requests.post(public_ip + '/api/v1/rides',
-                        json={'created_by': 'userName', 'timestamp': '21-08-2021:00-00-00', 'source': '1',
-                                'destination': '2'})
+        r = requests.post(
+            public_ip + "/api/v1/rides",
+            json={
+                "created_by": "userName",
+                "timestamp": "21-08-2021:00-00-00",
+                "source": "1",
+                "destination": "2",
+            },
+        )
         if r.status_code == 201:
             marks += 1
             message += " Passed Create new ride "
@@ -153,7 +173,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed Failed create new ride "
             print(" Failed Add ride ")
 
-        r = requests.get(public_ip + '/api/v1/rides?source=1&destination=2')
+        r = requests.get(public_ip + "/api/v1/rides?source=1&destination=2")
         if r.status_code == 200:
             try:
                 ride_id = str(json.loads(r.content)[0]["rideId"])
@@ -175,7 +195,7 @@ def do_api_eval_cc(*args, **kwargs):
             submission.save()
             return
 
-        r = requests.get(public_ip + '/api/v1/rides/' + ride_id)
+        r = requests.get(public_ip + "/api/v1/rides/" + ride_id)
         if r.status_code == 200:
             marks += 1
             message += " Passed Get details for ride "
@@ -184,7 +204,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed Get details for given ride "
             print(" Failed Get details for given ride ")
 
-        r = requests.delete(public_ip + '/api/v1/rides/' + ride_id)
+        r = requests.delete(public_ip + "/api/v1/rides/" + ride_id)
         if r.status_code == 200:
             marks += 1
             message += " Passed delete ride "
@@ -193,7 +213,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed delete ride "
             print(" Failed delete ride ")
 
-        r = requests.delete(public_ip + '/api/v1/users/userName')
+        r = requests.delete(public_ip + "/api/v1/users/userName")
         if r.status_code == 200:
             marks += 1
             message += " Passed delete user "
@@ -202,7 +222,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed delete user "
             print(" Failed delete user ")
 
-        r = requests.delete(public_ip + '/api/v1/users/wrongUser')
+        r = requests.delete(public_ip + "/api/v1/users/wrongUser")
         if r.status_code == 400:
             marks += 1
             message += " Passed delete user "
@@ -211,7 +231,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed delete user "
             print(" Failed delete user ")
 
-        r = requests.get(public_ip + '/api/v1/rides?source=34&destination=11')
+        r = requests.get(public_ip + "/api/v1/rides?source=34&destination=11")
         if r.status_code == 204:
             marks += 1
             message += " Passed GetUpcomingRides "
@@ -219,7 +239,7 @@ def do_api_eval_cc(*args, **kwargs):
         else:
             message += " Failed GetUpcomingRides "
             print(" Failed GetUpcomingRides ")
-    
+
         submission.marks = marks * 0.6
         submission.message = message
         submission.save()

@@ -6,7 +6,7 @@ import pandas as pd
 
 
 def create_evaluation(**kwargs):
-    eval_id = kwargs['eval_id'] if 'eval_id' in kwargs else None
+    eval_id = kwargs["eval_id"] if "eval_id" in kwargs else None
     if eval_id is None:
         raise RuntimeError
     try:
@@ -14,12 +14,12 @@ def create_evaluation(**kwargs):
         file = evaluation.conf_file.path
         c = configparser.ConfigParser()
         c.read(file)
-        faculty = FacultyProfile.objects.get(email=c['Settings']['email'])
-        evaluation.name = c['Settings']['name']
-        evaluation.description = c['Settings']['description']
+        faculty = FacultyProfile.objects.get(email=c["Settings"]["email"])
+        evaluation.name = c["Settings"]["name"]
+        evaluation.description = c["Settings"]["description"]
         evaluation.created_by = faculty
-        evaluation.type = c['Settings']['test_type']
-        evaluation.access_code = c['Settings']['access_code']
+        evaluation.type = c["Settings"]["test_type"]
+        evaluation.access_code = c["Settings"]["access_code"]
         evaluation.save()
         setup_api_eval.delay(eval_id=eval_id)
         # setup_api_eval(eval_id=eval_id)
@@ -36,7 +36,7 @@ def port_csv_to_db(csv_path):
                 email_member_1=row["Email(Member 1)"],
                 email_member_2=row["Email(Member 2)"],
                 email_member_3=row["Email(Member 3)"],
-                email_member_4=row["Email (Member 4)"]
+                email_member_4=row["Email (Member 4)"],
             )
             team_obj.save()
         except Exception as e:

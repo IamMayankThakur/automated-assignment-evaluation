@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('facultymgr', '0009_apitestmodel_sanity'),
+        ("facultymgr", "0009_apitestmodel_sanity"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='apitestmodel',
-            name='test_name',
-            field=models.TextField(default='hidden'),
+            model_name="apitestmodel",
+            name="test_name",
+            field=models.TextField(default="hidden"),
         ),
     ]
