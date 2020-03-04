@@ -6,3 +6,6 @@ redis
 psycopg2-binary
 pandas
 paramiko
+pre-commit
+black
+flake8

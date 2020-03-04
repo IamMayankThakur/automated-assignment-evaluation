@@ -9,30 +9,51 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='FacultyProfile',
+            name="FacultyProfile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField()),
-                ('email', models.EmailField(max_length=254, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField()),
+                ("email", models.EmailField(max_length=254, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Evaluation',
+            name="Evaluation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('conf_file', models.FileField(upload_to='conf/eval/')),
-                ('name', models.CharField(max_length=128, unique=True)),
-                ('type', models.IntegerField()),
-                ('description', models.TextField(blank=True)),
-                ('created_on', models.DateTimeField(default=django.utils.timezone.now)),
-                ('begins_on', models.DateTimeField(default=django.utils.timezone.now)),
-                ('ends_on', models.DateTimeField(blank=True)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='facultymgr.FacultyProfile')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("conf_file", models.FileField(upload_to="conf/eval/")),
+                ("name", models.CharField(max_length=128, unique=True)),
+                ("type", models.IntegerField()),
+                ("description", models.TextField(blank=True)),
+                ("created_on", models.DateTimeField(default=django.utils.timezone.now)),
+                ("begins_on", models.DateTimeField(default=django.utils.timezone.now)),
+                ("ends_on", models.DateTimeField(blank=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="facultymgr.FacultyProfile",
+                    ),
+                ),
             ],
         ),
     ]

@@ -6,7 +6,7 @@ from studentmgr.models import Submission
 
 @shared_task(time_limit=300)
 def do_container_eval_cc(*args, **kwargs):
-    sub = Submission.objects.get(id=kwargs.get('sub_id'))
+    sub = Submission.objects.get(id=kwargs.get("sub_id"))
     ip = sub.public_ip_address
     username = sub.username
     path_to_key = sub.private_key_file.path
@@ -31,10 +31,14 @@ def do_container_eval_cc(*args, **kwargs):
             marks += 0.5
         else:
             message += "Rides container not running. "
-        stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.ID}} {{.Image}}' | grep users:latest | cut -d ' ' -f 1")
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker ps --format '{{.ID}} {{.Image}}' | grep users:latest | cut -d ' ' -f 1"
+        )
         con_id = str(stdout.read().decode())
         con_id = con_id.strip()
-        stdin, stdout, stderr = ssh.exec_command("sudo docker exec "+con_id+" env printenv TEAM_NAME")
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker exec " + con_id + " env printenv TEAM_NAME"
+        )
         team_name = str(stdout.read().decode())
         print("CONID", con_id)
         print("TEAMNAME", team_name)
@@ -43,10 +47,14 @@ def do_container_eval_cc(*args, **kwargs):
             marks += 0.5
         else:
             message += "Team name not set in users container. "
-        stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.ID}} {{.Image}}' | grep rides:latest | cut -d ' ' -f 1")
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker ps --format '{{.ID}} {{.Image}}' | grep rides:latest | cut -d ' ' -f 1"
+        )
         con_id = str(stdout.read().decode())
         con_id = con_id.strip()
-        stdin, stdout, stderr = ssh.exec_command("sudo docker exec " + con_id + " env printenv TEAM_NAME")
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker exec " + con_id + " env printenv TEAM_NAME"
+        )
         team_name = str(stdout.read().decode())
         print("CONID", con_id)
         print("TEAMNAME", team_name)
@@ -56,7 +64,7 @@ def do_container_eval_cc(*args, **kwargs):
         else:
             message += "Team name not set in rides container. "
 
-        r = requests.post("http://"+sub.public_ip_address+":8080/api/v1/db/clear")
+        r = requests.post("http://" + sub.public_ip_address + ":8080/api/v1/db/clear")
         if r.status_code == 200:
             marks += 0.5
             message += "Clear db API success on users microservice. "
@@ -70,8 +78,13 @@ def do_container_eval_cc(*args, **kwargs):
         else:
             message += "Clear db API failure on rides microservice. "
 
-        r = requests.put("http://" + sub.public_ip_address + ':8080/api/v1/users',
-                         json={'username': 'userName', 'password': '3d725109c7e7c0bfb9d709836735b56d943d263f'})
+        r = requests.put(
+            "http://" + sub.public_ip_address + ":8080/api/v1/users",
+            json={
+                "username": "userName",
+                "password": "3d725109c7e7c0bfb9d709836735b56d943d263f",
+            },
+        )
         if r.status_code == 201:
             marks += 0.5
             message += "Passed Add user. "
@@ -95,5 +108,3 @@ def do_container_eval_cc(*args, **kwargs):
         sub.message = message
         sub.marks = marks
         sub.save()
-
-

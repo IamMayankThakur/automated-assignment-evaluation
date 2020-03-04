@@ -7,18 +7,22 @@ import studentmgr.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studentmgr', '0003_auto_20200204_1836'),
+        ("studentmgr", "0003_auto_20200204_1836"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='submission',
-            name='private_key_file',
-            field=models.FileField(blank=True, storage=studentmgr.models.OverwriteStorage(), upload_to='key'),
+            model_name="submission",
+            name="private_key_file",
+            field=models.FileField(
+                blank=True,
+                storage=studentmgr.models.OverwriteStorage(),
+                upload_to="key",
+            ),
         ),
         migrations.AddField(
-            model_name='submission',
-            name='username',
+            model_name="submission",
+            name="username",
             field=models.CharField(blank=True, max_length=128),
         ),
     ]

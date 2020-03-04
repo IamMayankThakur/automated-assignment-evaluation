@@ -27,11 +27,11 @@ from testmgr.models import CodeEvalModel
 
 class ConfigUpload(View):
     def get(self, request):
-        return render(request, 'choose_file.html')
+        return render(request, "choose_file.html")
 
     def post(self, request):
         try:
-            eval_conf = request.FILES['conf_file']
+            eval_conf = request.FILES["conf_file"]
             evaluation = Evaluation()
             evaluation.conf_file = eval_conf
             evaluation.save()
@@ -41,19 +41,20 @@ class ConfigUpload(View):
             print(e)
             return HttpResponse("Error")
 
+
 class ConfigUpload2(View):
     def get(self, request):
-        return render(request, 'code_eval_faculty_file.html')
+        return render(request, "code_eval_faculty_file.html")
 
     def post(self, request):
         try:
-            eval_conf = request.FILES['conf_file']
+            eval_conf = request.FILES["conf_file"]
             evaluation = Evaluation()
             evaluation.conf_file = eval_conf
             evaluation.save()
             create_evaluation_code_eval(eval_id=evaluation.id)
-            eval_dock = request.FILES['docker_file']
-            eval_main = request.FILES['main_file']
+            eval_dock = request.FILES["docker_file"]
+            eval_main = request.FILES["main_file"]
             code_eval_model = CodeEvalModel()
             code_eval_model.dock_file = eval_dock
             code_eval_model.main_file = eval_main

@@ -7,18 +7,18 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studentmgr', '0001_initial'),
+        ("studentmgr", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='submission',
-            name='above_specification_choice',
+            model_name="submission",
+            name="above_specification_choice",
             field=models.CharField(blank=True, max_length=256, null=True),
         ),
         migrations.AddField(
-            model_name='submission',
-            name='timestamp',
+            model_name="submission",
+            name="timestamp",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]
