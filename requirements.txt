@@ -8,3 +8,4 @@ pandas
 paramiko
 pre-commit
 black
+flake8
