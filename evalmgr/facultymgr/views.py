@@ -20,8 +20,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
+from django.db.module import InternalError, DatabaseError
 from .models import Evaluation
-from .utils import create_evaluation
+from .utils import create_evaluation, create_evaluation_code_eval
+from testmgr.models import CodeEvalModel
 
 
 class ConfigUpload(View):
@@ -39,3 +41,29 @@ class ConfigUpload(View):
         except Exception as e:
             print(e)
             return HttpResponse("Error")
+
+
+class ConfigUploadCodeEval(View):
+    def get(self, request):
+        return render(request, "code_eval_faculty_file.html")
+
+    def post(self, request):
+        try:
+            eval_conf = request.FILES["conf_file"]
+            evaluation = Evaluation()
+            evaluation.conf_file = eval_conf
+            evaluation.save()
+        except InternalError:
+            return HttpResponse("Error Evaluation Object could not be created")
+        create_evaluation_code_eval(eval_id=evaluation.id)
+        try:
+            eval_dock = request.FILES["docker_file"]
+            eval_main = request.FILES["main_file"]
+            code_eval_model = CodeEvalModel()
+            code_eval_model.docker_file = eval_dock
+            code_eval_model.main_file = eval_main
+            code_eval_model.evaluation = Evaluation.objects.get(id=evaluation.id)
+            code_eval_model.save()
+            return HttpResponse("Config created and docker and main in table")
+        except ObjectDoesNotExist:
+            return HttpResponse("Error in creating object in CodeEvalModel")

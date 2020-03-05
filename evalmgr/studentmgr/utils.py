@@ -4,3 +4,6 @@ def get_route_for_eval_type(eval_type):
 
     if eval_type == 2:
         return "studentmgr:container_view"
+
+    if eval_type == 3:
+        return "studentmgr:code_eval_view"
