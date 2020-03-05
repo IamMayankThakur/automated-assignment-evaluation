@@ -4,6 +4,8 @@ from testmgr.api_eval import setup_api_eval
 from studentmgr.models import Team
 import pandas as pd
 from testmgr.code_eval import setup_code_eval
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
 
 
 def create_evaluation(**kwargs):
@@ -54,6 +56,9 @@ def create_evaluation_code_eval(**kwargs):
         file = evaluation.conf_file.path
         c = configparser.ConfigParser()
         c.read(file)
+    except ObjectDoesNotExist:
+        return HttpResponse("Evaluation object not created")
+    try:
         faculty = FacultyProfile.objects.get(email=c["Settings"]["email"])
         evaluation.name = c["Settings"]["name"]
         evaluation.description = c["Settings"]["description"]
@@ -62,6 +67,5 @@ def create_evaluation_code_eval(**kwargs):
         evaluation.access_code = c["Settings"]["access_code"]
         evaluation.save()
         setup_code_eval.delay(eval_id=eval_id)
-        # setup_api_eval(eval_id=eval_id)
-    except Exception as e:
-        print(e)
+    except ObjectDoesNotExist:
+        return HttpResponse("FacultyProfile object not found")

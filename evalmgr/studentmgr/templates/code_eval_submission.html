@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>API Test</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-5 border border-dark px-5 py-5">
+
+  <form action="" method="POST" enctype="multipart/form-data" class="was-validated">
+        {% csrf_token %}
+    <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Team Name</label>
+        <input type="text" class="form-control w-50" id="team_name" placeholder="Enter Team Name.." name="team" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+    <label class="font-weight-bold">Upload the file with source code</label>
+    <br>
+    <div class="custom-file w-25">
+        <input type="file" class="custom-file-input" id="source_code" name="source_code_file" required>
+        <label class="custom-file-label" for="source_code">Choose file</label>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+    </div>
+   <br>
+   <br>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+</body>
+</html>

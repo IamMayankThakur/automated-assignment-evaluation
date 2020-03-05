@@ -20,11 +20,13 @@ class ApiTestModel(models.Model):
 
 
 class CodeEvalModel(models.Model):
-    dock_file = models.FileField(blank=False, upload_to="conf/eval/")
-    main_file = models.FileField(blank=False, upload_to="conf/eval/")
+    docker_file = models.FileField(blank=False, upload_to="conf/dockerfile/")
+    main_file = models.FileField(blank=False, upload_to="conf/mainfile/")
     evaluation = models.ForeignKey(
         Evaluation, on_delete=models.CASCADE, null=True, blank=True
     )
+
+    objects = models.Manager()
 
     class Meta:
         app_label = "facultymgr"

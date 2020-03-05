@@ -29,6 +29,10 @@ def setup_code_eval(*args, **kwargs):
         code_test.input1 = c[s]["input1"]
         code_test.input2 = c[s]["input2"]
         code_test.expected_output = c[s]["expected_output"]
-
         code_test.evaluation = Evaluation.objects.get(id=eval_id)
         code_test.save()
+
+
+@shared_task(time_limit=200)
+def do_code_eval(*args, **kwargs):
+    return "okay"

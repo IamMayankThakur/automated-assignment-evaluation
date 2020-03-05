@@ -5,6 +5,7 @@ from django.views import View
 from facultymgr.models import Evaluation
 from testmgr.api_eval import do_api_eval, do_api_eval_cc
 from testmgr.container_eval import do_container_eval_cc
+from testmgr.code_eval import do_code_eval
 from .models import Team, Submission
 from .utils import get_route_for_eval_type
 
@@ -91,3 +92,28 @@ class ContainerTestView(View):
         except Exception as e:
             print(e)
             return HttpResponse("Submission failed. Enter valid data")
+
+
+class CodeEvalTestView(View):
+    def get(self, request):
+        if request.session.get("access_code") is None:
+            return HttpResponse("No access code")
+        return render(request, "code_eval_submission.html")
+
+    def post(self, request):
+        try:
+            sub = Submission()
+            sub.team = Team.objects.get(team_name=request.POST["team"])
+            sub.evaluation = Evaluation.objects.get(
+                access_code=request.session["access_code"]
+            )
+            sub.source_code_file = request.FILES["source_code_file"]
+            sub.save()
+            do_code_eval.delay(sub_id=sub.id)
+            return HttpResponse(
+                "Your submission has been recorded. Your submission id is "
+                + str(sub.id)
+            )
+        except Exception as e:
+            print(e)
+            return HttpResponse("Error in input, ensure all fields are filled")
