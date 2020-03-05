@@ -31,7 +31,8 @@ def setup_container_eval(*args, **kwargs):
         container_test.container_name = c[s]["container_name"]
         container_test.container_image = c[s]["container_image"]
         container_test.ports_exposed = c[s]["ports_exposed"]
-        container_test.network = c[s]["network"]
+        container_test.networks = c[s]["networks"]
+        container_test.connected_to_networks = c[s]["connected_to_networks"]
         container_test.env_variables = c[s]["env_variables"]
         container_test.volumes = c[s]["volumes"]
         container_test.commands = c[s]["volumes"]
@@ -43,7 +44,8 @@ def setup_container_eval(*args, **kwargs):
 # container_name = users
 # container_image = alpine
 # ports_exposed = 8080:8080,4567:4567
-# network = testnetwork,mynetwork
+# networks = testnetwork,mynetwork
+# connected_to_networks = testnetwork
 # env_variables = TEAM_NAME,value
 #     DATA,testdata
 #     VAL,testval
@@ -68,6 +70,7 @@ def do_container_eval(*args, **kwargs):
 
     for test in tests:
         # test1 container name
+        message += "---Container test running---\n"
         stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.Names}}'")
         output = stdout.read().decode()
         print(output)
@@ -77,9 +80,24 @@ def do_container_eval(*args, **kwargs):
             marks += 1
         else:
             message += test.container_name + " container is not running\n"
+
             break
 
+        # test2 Container image
+        stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.Image}}'")
+        output = stdout.read().decode()
+        if test.container_image in output:
+            message += "Container was run using " + test.container_image + " image\n"
+            marks += 1
+            message += "---Container test passed---\n"
+        else:
+            message += (
+                "Container was not run using " + test.container_image + " image\n"
+            )
+            message += "---Container test failed---\n"
+
         # test3 ports exposed
+        message += "---Ports test running---\n"
         stdin, stdout, stderr = ssh.exec_command(
             "sudo docker port " + test.container_name
         )
@@ -120,17 +138,103 @@ def do_container_eval(*args, **kwargs):
                 break
         if portfound is True:
             marks += 1
-            message += "All required ports are mapped\n"
-        print("===============FINAL OUTPUT================")
-        print(message)
-        print(marks)
-        print("===============FINAL OUTPUT================")
+            message += "---Ports test passed---\n"
+        else:
+            message += "---Ports test failed---\n"
 
-        # test4 network
+        # test4 networks created
+        message += "---Network test running---\n"
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker network ls --format '{{.Name}}'"
+        )
+        output = stdout.read().decode()
+        networks = test.networks.split(",")
+        networkpresent = True
+        for network in networks:
+            if network in output:
+                message += "Network " + network + " is created\n"
+            else:
+                message += "Network " + network + " is not created\n"
+                networkpresent = False
+        if networkpresent:
+            marks += 1
+            message += "---Network test passed---\n"
+        else:
+            message += "---Network test failed---\n"
 
-        # test5 env variables
+        # test5 connected to networks
+        message += "---Connected networks test running---\n"
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker inspect "
+            + test.container_name
+            + " --format '{{json .NetworkSettings.Networks}}'"
+        )
+        output = stdout.read().decode()
+        container_networks = json.loads(output)
+        required_networks = test.connected_to_networks.split(",")
+        networkconnected = True
+        for required_network in required_networks:
+            if required_network in container_networks.keys():
+                message += (
+                    "Container "
+                    + test.container_name
+                    + " connected to "
+                    + required_network
+                    + "\n"
+                )
+            else:
+                message += (
+                    "Container "
+                    + test.container_name
+                    + " not connected to "
+                    + required_network
+                    + "\n"
+                )
+                networkconnected = False
+        if networkconnected:
+            message += "---Connected network tests passed---\n"
+            marks += 1
+        else:
+            message += "---Conneced network tests failed---\n"
 
-        # test6 volumes
+        # test6 env variables
+        # message += "---Env variables test running---\n"
+        # stdin, stdout, stderr = ssh.exec_command(
+        #     "sudo docker exec " + test.container_name + " env"
+        # )
+        # output = stdout.read().decode()
+        # container_env_variables = output.split("\n")
+        # env_variables = test.env_variables.split("\n")
+        # setcorrectly = True
+        # for env_variable in env_variables:
+        #     env_string = env_variable.replace(",", "=")
+        #     # Because ENV_VARIABLE=test=sample is also a valid env variable, splitting on = might get messy
+        #     # Hence total string comparison is done ("ENV_VARIABLE=test=sample" is compared)
+        #     if env_string in container_env_variables:
+        #         message += (
+        #             "Variable "
+        #             + env_variable.split(",", 1)[0]
+        #             + " is set correctly as "
+        #             + env_variable.split(",", 1)[1]
+        #             + "\n"
+        #         )
+        #     else:
+        #         message += (
+        #             "Variable "
+        #             + env_variable.split(",", 1)[0]
+        #             + " is not set as "
+        #             + env_variable.split(",", 1)[1]
+        #             + "\n"
+        #         )
+        #         setcorrectly = False
+        # if setcorrectly:
+        #     marks += 1
+        #     message += "---Env variables test passed---\n"
+        # else:
+        #     message += "---Env variables test failed---\n"
+        # print(message)
+
+        # test7 volumes
 
         # test7 commands
 
