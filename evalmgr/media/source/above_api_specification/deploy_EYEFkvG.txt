@@ -1,7 +1,0 @@
-1)add_user worked.
-2)delete_user worked.
-3)add ride worked.for 0 it worked and for -1 it didn't and if source and dest are same 400 bad request
-4)ride details worked
-5)delete_ride worked.
-
-
