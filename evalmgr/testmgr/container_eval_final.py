@@ -175,52 +175,38 @@ def do_container_eval(*args, **kwargs):
                     + " container\n"
                 )
                 testpassed = False
-            marksfortest, messagefortest = give_marks(testpassed, "Network connection")
-            marks += marksfortest
-            message += messagefortest
+        marksfortest, messagefortest = give_marks(testpassed, "Network connection")
+        marks += marksfortest
+        message += messagefortest
 
         # test6 env variables
-        # message += "---Env variables test running---\n"
-        # stdin, stdout, stderr = ssh.exec_command(
-        #     "sudo docker exec " + test.container_name + " env"
-        # )
-        # output = stdout.read().decode()
-        # container_env_variables = output.split("\n")
-        # env_variables = test.env_variables.split("\n")
-        # setcorrectly = True
-        # for env_variable in env_variables:
-        #     env_string = env_variable.replace(",", "=")
-        #     # Because ENV_VARIABLE=test=sample is also a valid env variable, splitting on = might get messy
-        #     # Hence total string comparison is done ("ENV_VARIABLE=test=sample" is compared)
-        #     if env_string in container_env_variables:
-        #         message += (
-        #             "Variable "
-        #             + env_variable.split(",", 1)[0]
-        #             + " is set correctly as "
-        #             + env_variable.split(",", 1)[1]
-        #             + "\n"
-        #         )
-        #     else:
-        #         message += (
-        #             "Variable "
-        #             + env_variable.split(",", 1)[0]
-        #             + " is not set as "
-        #             + env_variable.split(",", 1)[1]
-        #             + "\n"
-        #         )
-        #         setcorrectly = False
-        # if setcorrectly:
-        #     marks += 1
-        #     message += "---Env variables test passed---\n"
-        # else:
-        #     message += "---Env variables test failed---\n"
-        # print(message)
+        message += "Env variables test running\n"
+        testpassed = True
+        env_variables = test.env_variables.split("\n")
+        for env_variable in env_variables:
+            env_var, env_value = env_variable.split(",", 1)
+            stdin, stdout, stderr = ssh.exec_command(
+                "sudo docker exec " + test.container_name + " env printenv " + env_var
+            )
+            container_value = stdout.read().decode().strip()
+            if container_value != env_value:
+                facultymessage += (
+                    "Environment variable "
+                    + env_variable
+                    + " not set or not set as "
+                    + env_value
+                    + "\n"
+                )
+                testpassed = False
+        marksfortest, messagefortest = give_marks(testpassed, "Env variables")
+        marks += marksfortest
+        message += messagefortest
 
         # test7 volumes
 
-        # test7 commands
+        # test8 commands
 
-        # test8 num_cpus
+        # test9 num_cpus
 
 
 def give_marks(testpassed, testname):
