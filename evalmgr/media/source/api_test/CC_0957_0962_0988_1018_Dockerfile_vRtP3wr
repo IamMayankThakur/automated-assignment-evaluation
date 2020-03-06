@@ -1,6 +1,0 @@
-FROM python:3-alpine
-ADD . /todo
-WORKDIR /todo
-ENV TEAM_NAME=CC_0957_0962_0988_1018
-RUN pip3 install -r requirements.txt
-EXPOSE 80

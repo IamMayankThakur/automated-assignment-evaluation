@@ -1,2 +1,0 @@
-FROM rides:latest
-CMD python3 Cloud-Computing-Course/Assignment\ 2/Ride/waitress_server.py

@@ -84,7 +84,7 @@ def do_container_eval_cc(*args, **kwargs):
             message += "List all users API success on users microservice. "
         else:
             message += "List all users API failure on users microservice. "
-        sub.marks = marks
+        sub.marks = marks*0.75
         sub.message = message
         sub.save()
 

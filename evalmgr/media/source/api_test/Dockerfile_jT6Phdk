@@ -1,8 +1,0 @@
-FROM python:3.7-alpine
-COPY ./app /app
-WORKDIR /app
-RUN apk add python3
-RUN pip install -r requirements.txt
-ENV TEAM_NAME=CC_0149_0169_0181_0293
-ENV PYTHONPATH /usr/local/lib/python3.7/site-packages:/usr/lib/python3.6/site-packages:/usr/lib/python3.8/site-packages
-CMD gunicorn --log-level DEBUG -b 0.0.0.0:8000 -w 4 app:app

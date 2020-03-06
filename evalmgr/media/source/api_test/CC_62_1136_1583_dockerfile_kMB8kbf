@@ -1,5 +1,0 @@
-FROM python:3.7-buster
-WORKDIR /app
-ENV TEAM_NAME=CC_62_1136_1583
-RUN pip install flask flask-sqlalchemy requests gunicorn
-ENTRYPOINT python3 $app.py

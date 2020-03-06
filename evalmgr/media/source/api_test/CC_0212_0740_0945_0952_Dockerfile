@@ -1,7 +1,0 @@
-FROM python
-ADD . /rides
-WORKDIR /rides
-ENV TEAM_NAME="CC_0212_0740_0945_0952"
-RUN pip install -r req.txt
-EXPOSE 8000
-CMD ["python3","rides.py"]

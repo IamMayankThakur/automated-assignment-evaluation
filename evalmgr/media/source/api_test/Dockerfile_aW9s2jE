@@ -1,9 +1,0 @@
-FROM python:latest
-RUN pip install flask
-RUN pip install requests
-RUN pip install pymysql
-WORKDIR /user
-COPY . /user
-ENTRYPOINT [ "python" ]
-CMD ["user.py"]
-ENV TEAM_NAME=CC_2123_2434_2426_2121

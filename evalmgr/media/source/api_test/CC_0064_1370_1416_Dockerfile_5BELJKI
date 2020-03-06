@@ -1,8 +1,0 @@
-FROM python
-COPY . /composesample/compose-sample/ride
-WORKDIR /composesample/compose-sample/ride
-RUN pip install -r requirements.txt
-EXPOSE 8000
-ENTRYPOINT ["python"]
-CMD ["app2.py"]
-ENV TEAM_NAME=CC_0064_1370_1416

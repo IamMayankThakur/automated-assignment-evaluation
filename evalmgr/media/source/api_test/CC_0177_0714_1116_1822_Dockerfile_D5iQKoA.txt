@@ -1,7 +1,0 @@
-FROM python
-ADD . /todo
-WORKDIR /todo
-EXPOSE 8000
-RUN pip install -r requirements.txt
-CMD python app.py
-ENC TEAM_NAME_CC_0177_0714_1116_1822

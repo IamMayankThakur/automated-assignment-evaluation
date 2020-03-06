@@ -1,7 +1,0 @@
-FROM python:alpine 
-RUN pip install flask pymongo requests
-COPY src /src/
-#ec2 instance 5000 port is not exposed outside. in app.py file we will b calling 8000 and 8080 ports
-EXPOSE 5000
-#executing this command will run the application. this is the entry point
-ENTRYPOINT ["python", "/src/app.py"]

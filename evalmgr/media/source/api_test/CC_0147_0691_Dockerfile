@@ -1,7 +1,0 @@
-FROM python:3.6
-COPY . /appenv/rides
-WORKDIR /appenv/rides/api
-ENV TEAM_NAME=appenv
-RUN pip install -r ./requirements.txt
-ENTRYPOINT ["python"]
-CMD ["ride_app.py"]

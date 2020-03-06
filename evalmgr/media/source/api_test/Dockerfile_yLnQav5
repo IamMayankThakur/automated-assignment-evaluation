@@ -1,6 +1,0 @@
-FROM python
-ADD ./docker-db
-WORKDIR ./docker-db
-ENV TEAM_NAME=CC_0009_0795
-RUN pip3 freeze > "requirements.txt"
-EXPOSE 8080, 8000

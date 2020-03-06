@@ -1,4 +1,0 @@
-FROM python 
-WORKDIR /usr/src/app
-ENV TEAMNAME=CC_0197_1342_1558_1582
-RUN pip install flask flask_sqlalchemy requests
