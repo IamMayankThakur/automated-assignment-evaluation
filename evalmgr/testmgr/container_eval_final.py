@@ -63,6 +63,7 @@ def do_container_eval(*args, **kwargs):
     tests = ContainerTestModel.objects.filter(evaluation=sub.evaluation)
     marks = 0
     message = ""
+    facultymessage = ""
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -70,132 +71,113 @@ def do_container_eval(*args, **kwargs):
 
     for test in tests:
         # test1 container name
-        message += "---Container test running---\n"
+        message += "Container test running\n"
+        testpassed = False
         stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.Names}}'")
         output = stdout.read().decode()
-        print(output)
-        print(test.container_name)
-        if test.container_name in output:
-            message += test.container_name + " container is running\n"
-            marks += 1
-        else:
-            message += test.container_name + " container is not running\n"
 
+        if test.container_name in output:
+            testpassed = True
+
+        marksfortest, messagefortest = give_marks(testpassed, "Container")
+        message += messagefortest
+        marks += marksfortest
+
+        if not testpassed:
+            message += "Fatal Error: Container not running\n"
+            facultymessage += (
+                "Fatal Error: "
+                + test.container_name
+                + " container is not running\nStopping all tests\n"
+            )
             break
 
         # test2 Container image
+        message += "Container Image test running\n"
+        testpassed = False
         stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.Image}}'")
         output = stdout.read().decode()
+
         if test.container_image in output:
-            message += "Container was run using " + test.container_image + " image\n"
-            marks += 1
-            message += "---Container test passed---\n"
+            testpassed = True
         else:
-            message += (
+            facultymessage += (
                 "Container was not run using " + test.container_image + " image\n"
             )
-            message += "---Container test failed---\n"
 
-        # test3 ports exposed
-        message += "---Ports test running---\n"
-        stdin, stdout, stderr = ssh.exec_command(
-            "sudo docker port " + test.container_name
-        )
-        output = stdout.read().decode()
-        container_ports = output.split("\n")
-        container_ports = list(filter(lambda x: x != "", container_ports))
+        marksfortest, messagefortest = give_marks(testpassed, "Container Image")
+        message += messagefortest
+        marks += marksfortest
 
+        # test3 alternative approach
+        message += "Ports test running\n"
+        testpassed = True
         test_ports = test.ports_exposed.split(",")
         for port_map in test_ports:
             port = port_map.split(":")
-            if "/udp" not in port[1]:
-                port[1] += "/tcp"
-            portfound = False
-            for container_port_map in container_ports:
-                container_port = container_port_map.split("->")
-                container_port = [x.strip() for x in container_port]
-                if (
-                    container_port[0] == port[1]
-                    and container_port[1].split(":")[1] == port[0]
-                ):
-                    message += (
-                        "Port "
-                        + port[1]
-                        + " in container mapped to port "
-                        + port[0]
-                        + " of host\n"
-                    )
-                    portfound = True
-                    break
-            if not portfound:
-                message += (
+            stdin, stdout, stderr = ssh.exec_command(
+                "sudo docker port " + test.container_name + " " + port[1]
+            )
+            errormessage = stderr.read().decode().split(":")
+            containerport = stdout.read().decode().split(":", 1)
+            if errormessage[0] == "Error" or containerport[1].strip() != port[0]:
+                facultymessage += (
                     "Port "
                     + port[1]
-                    + " in container not mapped to port "
+                    + " in "
+                    + test.container_name
+                    + " container not mapped to port "
                     + port[0]
                     + " of host\n"
                 )
-                break
-        if portfound is True:
-            marks += 1
-            message += "---Ports test passed---\n"
-        else:
-            message += "---Ports test failed---\n"
+                testpassed = False
+
+        marksfortest, messagefortest = give_marks(testpassed, "Ports")
+        message += messagefortest
+        marks += marksfortest
 
         # test4 networks created
-        message += "---Network test running---\n"
-        stdin, stdout, stderr = ssh.exec_command(
-            "sudo docker network ls --format '{{.Name}}'"
-        )
-        output = stdout.read().decode()
+        message += "Network test running\n"
+        testpassed = True
         networks = test.networks.split(",")
-        networkpresent = True
         for network in networks:
-            if network in output:
-                message += "Network " + network + " is created\n"
-            else:
-                message += "Network " + network + " is not created\n"
-                networkpresent = False
-        if networkpresent:
-            marks += 1
-            message += "---Network test passed---\n"
-        else:
-            message += "---Network test failed---\n"
+            stdin, stdout, stderr = ssh.exec_command(
+                "sudo docker network inspect " + network
+            )
+            errormessage = stderr.read().decode()
+            if len(errormessage) != 0:
+                facultymessage += "Network " + network + " is not created\n"
+                testpassed = False
+        marksfortest, messagefortest = give_marks(testpassed, "Network")
+        marks += marksfortest
+        message += messagefortest
 
         # test5 connected to networks
-        message += "---Connected networks test running---\n"
-        stdin, stdout, stderr = ssh.exec_command(
-            "sudo docker inspect "
-            + test.container_name
-            + " --format '{{json .NetworkSettings.Networks}}'"
-        )
-        output = stdout.read().decode()
-        container_networks = json.loads(output)
+        message += "Network connection test running\n"
+        testpassed = True
         required_networks = test.connected_to_networks.split(",")
-        networkconnected = True
+
         for required_network in required_networks:
-            if required_network in container_networks.keys():
-                message += (
-                    "Container "
-                    + test.container_name
-                    + " connected to "
+            stdin, stdout, stderr = ssh.exec_command(
+                "sudo docker inspect "
+                + test.container_name
+                + " --format '{{json .NetworkSettings.Networks."
+                + required_network
+                + "}}'"
+            )
+            output = stdout.read().decode()
+            if output.strip() == "null":
+                facultymessage += (
+                    "Network "
                     + required_network
-                    + "\n"
-                )
-            else:
-                message += (
-                    "Container "
+                    + " is not connected to "
                     + test.container_name
-                    + " not connected to "
-                    + required_network
-                    + "\n"
+                    + " container\n"
                 )
-                networkconnected = False
-        if networkconnected:
-            message += "---Connected network tests passed---\n"
-            marks += 1
-        else:
-            message += "---Conneced network tests failed---\n"
+                testpassed = False
+            marksfortest, messagefortest = give_marks(testpassed, "Network connection")
+            marks += marksfortest
+            message += messagefortest
 
         # test6 env variables
         # message += "---Env variables test running---\n"
@@ -239,3 +221,14 @@ def do_container_eval(*args, **kwargs):
         # test7 commands
 
         # test8 num_cpus
+
+
+def give_marks(testpassed, testname):
+    marks = 0
+    message = ""
+    if testpassed:
+        marks = 1
+        message += testname + " test passed\n\n"
+    else:
+        message += testname + " test failed\n\n"
+    return marks, message

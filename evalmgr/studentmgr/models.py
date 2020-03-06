@@ -32,13 +32,9 @@ class Submission(models.Model):
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
     marks = models.FloatField(default=-1)
     message = models.TextField()
+    faculty_message = models.TextField(blank=True)
     public_ip_address = models.URLField(blank=False)
     source_code_file = models.FileField(upload_to="source/api_test/", blank=True)
-    # above_specification_choice = models.CharField(max_length=256, blank=True, null=True)
-    # above_specification = models.TextField()
-    # above_specification_file = models.FileField(
-    #     upload_to="source/above_api_specification/"
-    # )
     private_key_file = models.FileField(
         upload_to="key", storage=OverwriteStorage(), blank=True
     )
