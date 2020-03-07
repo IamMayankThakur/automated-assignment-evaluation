@@ -35,7 +35,7 @@ def setup_container_eval(*args, **kwargs):
         container_test.connected_to_networks = c[s]["connected_to_networks"]
         container_test.env_variables = c[s]["env_variables"]
         container_test.volumes = c[s]["volumes"]
-        container_test.commands = c[s]["volumes"]
+        container_test.commands = c[s]["commands"]
         container_test.num_cpus = c[s]["num_cpus"]
         container_test.evaluation = Evaluation.objects.get(id=eval_id)
         container_test.save()
@@ -50,7 +50,7 @@ def setup_container_eval(*args, **kwargs):
 #     DATA,testdata
 #     VAL,testval
 # volumes = shared-data,personal-data
-# commands = sleep 3, echo all done
+# commands = sleep 3, echo all done:false
 # num_cpus = 1
 
 
@@ -65,14 +65,27 @@ def do_container_eval(*args, **kwargs):
     message = ""
     facultymessage = ""
 
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(hostname=ip, username=username, key_filename=path_to_key)
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(hostname=ip, username=username, key_filename=path_to_key)
+    except Exception as e:
+        print("ERROR: ", e)
+        message += "Fatal Error.! Check if your instance is running / port is open / pem file is correct etc"
+        sub.message = message
+        sub.marks = marks
+        sub.save()
+        return
 
+    # command = "sudo docker ps --format '{{.Names}}'"
+    # message,marks = container_name_test(test,command,)
+
+    # check_for_output(command,test.container_name)
     for test in tests:
         # test1 container name
         message += "Container test running\n"
         testpassed = False
+
         stdin, stdout, stderr = ssh.exec_command("sudo docker ps --format '{{.Names}}'")
         output = stdout.read().decode()
 
@@ -109,7 +122,7 @@ def do_container_eval(*args, **kwargs):
         message += messagefortest
         marks += marksfortest
 
-        # test3 alternative approach
+        # test3 port test
         message += "Ports test running\n"
         testpassed = True
         test_ports = test.ports_exposed.split(",")
@@ -205,8 +218,49 @@ def do_container_eval(*args, **kwargs):
         # test7 volumes
 
         # test8 commands
+        # message += "Commands test running\n"
+        # testpassed = True
+        # commands = test.commands.split("\n")
+        # for command in commands:
+        #     ip, errorexpected = command.split(":", 1)
+        #     if "sudo" not in ip:
+        #         ip = "sudo " + ip
+        #     stdin, stdout, stderr = ssh.exec_command(ip)
+        #     output = stdout.read().decode()
+        #     errors = stderr.read().decode()
+        #     if not errorexpected and len(errors.strip()) != 0:
+        #         facultymessage += errors
+        #         testpassed = False
+        #     if errorexpected and len(errors.strip()) == 0:
+        #         testpassed = False
+        #         facultymessage += errors
+        # marksfortest, messagefortest = give_marks(testpassed, "Commands")
+        # marks += marksfortest
+        # message += messagefortest
 
         # test9 num_cpus
+        message += "CPU test running\n"
+        testpassed = True
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker inspect "
+            + test.container_name
+            + " -f '{{json .HostConfig.NanoCpus}}'"
+        )
+        cpus = stdout.read().decode().strip()
+        cpus = int(cpus) / 10 ** 9
+        if int(cpus) != test.num_cpus:
+            facultymessage += (
+                "Container is not using " + str(test.num_cpus) + " cpu(s)\n"
+            )
+            testpassed = False
+        marksfortest, messagefortest = give_marks(testpassed, "CPU")
+        marks += marksfortest
+        message += messagefortest
+        print("============+AFTER CPU TesT=============")
+        print(message)
+        print(facultymessage)
+        print(marks)
+        print("============+AFTER CPU TesT=============")
 
 
 def give_marks(testpassed, testname):
