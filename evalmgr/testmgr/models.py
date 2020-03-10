@@ -31,7 +31,6 @@ class ContainerTestModel(models.Model):
     commands = models.TextField(blank=True)
     num_cpus = models.IntegerField(blank=True)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
-
     objects = models.Manager()
 
     class Meta:
