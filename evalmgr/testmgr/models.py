@@ -24,7 +24,6 @@ class ContainerTestModel(models.Model):
     container_name = models.TextField(blank=False)
     container_image = models.TextField(blank=False)
     ports_exposed = models.TextField(blank=True)
-    networks = models.TextField(blank=True)
     connected_to_networks = models.TextField(blank=True)
     env_variables = models.TextField(blank=True)
     volumes = models.TextField(blank=True)
