@@ -40,19 +40,6 @@ def setup_container_eval(*args, **kwargs):
         container_test.save()
 
 
-# container_name = users
-# container_image = alpine
-# ports_exposed = 8080:8080,4567:4567
-# networks = testnetwork,mynetwork
-# connected_to_networks = testnetwork
-# env_variables = TEAM_NAME,value
-#     DATA,testdata
-#     VAL,testval
-# volumes = shared-data,personal-data
-# commands = sleep 3, echo all done:false
-# num_cpus = 1
-
-
 @shared_task(time_limit=200)
 def do_container_eval(*args, **kwargs):
     sub = Submission.objects.get(id=kwargs.get("sub_id"))
@@ -179,11 +166,6 @@ def do_container_eval(*args, **kwargs):
         sub.facultymessage = facultymessage
         sub.message = message
         sub.save()
-        # print("============+AFTER CPU TesT=============")
-        # print(message)
-        # print(facultymessage)
-        # print(marks)
-        # print("============+AFTER CPU TesT=============")
 
 
 def cpu_test(num_cpus, test, containerdata):
