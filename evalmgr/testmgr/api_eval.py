@@ -413,7 +413,14 @@ def do_assignment_3_eval(*args, **kwargs):
             marks += 0.5
             message += " Count API returned correct count. "
         else:
-            message += " Count API did not return correct count. "
+            message += (
+                " Count API did not return correct count. "
+                + " Returned "
+                + str(r_users.content)
+                + " for users and "
+                + str(r_rides.content)
+                + " for rides. "
+            )
             submission.marks = marks
             submission.message = message
             submission.save()
