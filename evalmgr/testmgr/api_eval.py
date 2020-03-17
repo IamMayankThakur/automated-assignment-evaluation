@@ -396,7 +396,7 @@ def do_assignment_3_eval(*args, **kwargs):
 
         r_users = requests.get(users_ip + "/api/v1/_count")
         r_rides = requests.get(rides_ip + "/api/v1/_count")
-        if "600" in str(r_users.content) and "600" in str(r_rides.content):
+        if "600" in str(r_users.content) and "601" in str(r_rides.content):
             marks += 0.5
             message += " Count API returned correct count. "
         else:
