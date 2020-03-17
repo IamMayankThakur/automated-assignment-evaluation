@@ -400,10 +400,15 @@ def do_assignment_3_eval(*args, **kwargs):
                 },
             )
 
+        for _ in range(rand_rides_wrong):
+            requests.get(lb_ip + "/api/v1/rides?source=1&destination=2")
+
         expected_users_count = str(
             rand_users_correct + rand_users_wrong + rand_rides_correct + 1
         )
-        expected_rides_count = str(rand_rides_correct + rand_rides_wrong + 1)
+        expected_rides_count = str(
+            rand_rides_correct + rand_rides_wrong + 1 + rand_rides_wrong
+        )
 
         r_users = requests.get(users_ip + "/api/v1/_count")
         r_rides = requests.get(rides_ip + "/api/v1/_count")
