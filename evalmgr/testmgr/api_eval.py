@@ -341,6 +341,12 @@ def do_assignment_3_eval(*args, **kwargs):
         requests.post(users_ip + "/api/v1/db/clear")
         requests.post(rides_ip + "/api/v1/db/clear")
 
+        rand_users_correct = random.randrange(200, 400)
+        rand_users_wrong = random.randrange(300, 500)
+
+        rand_rides_correct = random.randrange(250, 500)
+        rand_rides_wrong = random.randrange(100, 400)
+
         requests.put(
             lb_ip + "/api/v1/users",
             json={
@@ -349,13 +355,13 @@ def do_assignment_3_eval(*args, **kwargs):
             },
         )
 
-        for _ in range(99):
+        for _ in range(rand_users_correct):
             name = random_name()
             requests.put(
                 lb_ip + "/api/v1/users", json={"username": name, "password": password,},
             )
 
-        for _ in range(100):
+        for _ in range(rand_rides_correct):
             requests.post(
                 lb_ip + "/api/v1/rides",
                 json={
@@ -377,13 +383,13 @@ def do_assignment_3_eval(*args, **kwargs):
             submission.save()
             return
 
-        for _ in range(500):
+        for _ in range(rand_users_wrong):
             name = random_name()
             requests.post(
                 lb_ip + "/api/v1/users", json={"username": name, "password": password,},
             )
 
-        for _ in range(500):
+        for _ in range(rand_rides_wrong):
             requests.put(
                 lb_ip + "/api/v1/rides",
                 json={
@@ -394,9 +400,16 @@ def do_assignment_3_eval(*args, **kwargs):
                 },
             )
 
+        expected_users_count = str(
+            rand_users_correct + rand_users_wrong + rand_rides_correct + 1
+        )
+        expected_rides_count = str(rand_rides_correct + rand_rides_wrong + 1)
+
         r_users = requests.get(users_ip + "/api/v1/_count")
         r_rides = requests.get(rides_ip + "/api/v1/_count")
-        if "600" in str(r_users.content) and "601" in str(r_rides.content):
+        if expected_users_count in str(r_users.content) and expected_rides_count in str(
+            r_rides.content
+        ):
             marks += 0.5
             message += " Count API returned correct count. "
         else:
