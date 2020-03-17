@@ -277,7 +277,9 @@ def do_assignment_3_eval(*args, **kwargs):
         r_rides = requests.get(rides_ip + "/api/v1/_count")
         if "0" in str(r_users.content) and "0" in str(r_rides.content):
             marks += 0.5
-            message += " Count initialized to 0 on either users or rides microservice. "
+            message += (
+                " Count initialized to 0 on either users and rides microservice. "
+            )
         else:
             message += (
                 " Count not initialized to 0 on either users or rides microservice. "
