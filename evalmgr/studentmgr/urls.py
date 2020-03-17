@@ -11,4 +11,5 @@ urlpatterns = [
         "submissions/", views.PastSubmissionView.as_view(), name="past_submission_view"
     ),
     path("code_eval_test/", views.CodeEvalTestView.as_view(), name="code_eval_view"),
+    path("load_balancer_test/", views.LoadBalancerTestView.as_view(), name="lb_eval_view"),
 ]
