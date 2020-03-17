@@ -338,6 +338,9 @@ def do_assignment_3_eval(*args, **kwargs):
             message += " Count not reset to 0. "
             return
 
+        requests.post(users_ip + "/api/v1/db/clear")
+        requests.post(rides_ip + "/api/v1/db/clear")
+
         requests.put(
             lb_ip + "/api/v1/users",
             json={
@@ -410,7 +413,7 @@ def do_assignment_3_eval(*args, **kwargs):
         requests.delete(users_ip + "/api/v1/_count")
         requests.delete(rides_ip + "/api/v1/_count")
         requests.post(users_ip + "/api/v1/db/clear")
-        requests.delete(rides_ip + "/api/v1/db/clear")
+        requests.post(rides_ip + "/api/v1/db/clear")
 
     except Exception as e:
         print(e)
