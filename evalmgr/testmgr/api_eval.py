@@ -373,7 +373,7 @@ def do_assignment_3_eval(*args, **kwargs):
             )
 
         count_rides = requests.get(lb_ip + "/api/v1/rides/count")
-        if "100" in str(count_rides.content):
+        if str(rand_rides_correct) in str(count_rides.content):
             marks += 0.5
             message += " Correct Ride Count Returned. "
         else:
