@@ -2,13 +2,14 @@ import configparser
 import json
 import ast
 import random
+import string
 
 import requests
 from celery import shared_task
 
 from facultymgr.models import Evaluation
 from notifymgr.mail import send_mail
-from studentmgr.models import Submission
+from studentmgr.models import Submission, SubmissionAssignment3
 from .models import ApiTestModel
 
 
@@ -67,8 +68,8 @@ def give_marks(response, test):
         marks += 0.5 if test.expected_response_body != "" else 1
         if test.expected_response_body != "":
             if (
-                ast.literal_eval(test.expected_response_body).items() <=
-                json.loads(response.content).items()
+                ast.literal_eval(test.expected_response_body).items()
+                <= json.loads(response.content).items()
             ):
                 marks += 0.5
     else:
@@ -254,7 +255,7 @@ def do_api_eval_cc(*args, **kwargs):
 
 
 def random_name():
-    return ''.join(random.choice(string.lowercase) for i in range(10))
+    return "".join(random.choice(string.ascii_lowercase) for i in range(10))
 
 
 @shared_task(time_limit=600)
@@ -266,7 +267,7 @@ def do_assignment_3_eval(*args, **kwargs):
         if sub_id is None:
             print("No sub id")
             raise RuntimeError
-        submission = Submission.objects.get(id=sub_id)
+        submission = SubmissionAssignment3.objects.get(id=sub_id)
         password = "3d725109c7e7c0bfb9d709836735b56d943d263f"
         lb_ip = submission.lb_ip
         users_ip = submission.users_ip
@@ -278,7 +279,12 @@ def do_assignment_3_eval(*args, **kwargs):
             marks += 0.5
             message += " Count initialized to 0 on either users or rides microservice. "
         else:
-            message += " Count not initialized to 0 on either users or rides microservice. "
+            message += (
+                " Count not initialized to 0 on either users or rides microservice. "
+            )
+            submission.marks = marks
+            submission.message = message
+            submission.save()
             return
 
         r1 = requests.put(
@@ -292,10 +298,10 @@ def do_assignment_3_eval(*args, **kwargs):
         r2 = requests.post(
             lb_ip + "/api/v1/rides",
             json={
-                    "created_by": "userName",
-                    "timestamp": "21-08-2021:00-00-00",
-                    "source": "1",
-                    "destination": "2",
+                "created_by": "userName",
+                "timestamp": "21-08-2021:00-00-00",
+                "source": "1",
+                "destination": "2",
             },
         )
 
@@ -304,6 +310,9 @@ def do_assignment_3_eval(*args, **kwargs):
             message += " Load Balancer working. "
         else:
             message += " Load Balancer not working. "
+            submission.marks = marks
+            submission.message = message
+            submission.save()
             return
 
         r_users = requests.delete(users_ip + "/api/v1/_count")
@@ -313,6 +322,10 @@ def do_assignment_3_eval(*args, **kwargs):
             message += " Reset count API returning 200 HTTP response. "
         else:
             message += " Reset count API not returning 200 HTTP response. "
+            submission.marks = marks
+            submission.message = message
+            submission.save()
+            return
 
         r_users = requests.get(users_ip + "/api/v1/_count")
         r_rides = requests.get(rides_ip + "/api/v1/_count")
@@ -334,11 +347,8 @@ def do_assignment_3_eval(*args, **kwargs):
         for _ in range(99):
             name = random_name()
             requests.put(
-                lb_ip + "/api/v1/users",
-                json={
-                    "username": name,
-                    "password": password,
-                },)
+                lb_ip + "/api/v1/users", json={"username": name, "password": password,},
+            )
 
         for _ in range(100):
             requests.post(
@@ -351,21 +361,22 @@ def do_assignment_3_eval(*args, **kwargs):
                 },
             )
 
-        count_rides = requests.get(lb_ip + "​/api/v1/rides/count")
+        count_rides = requests.get(lb_ip + "/api/v1/rides/count")
         if "100" in str(count_rides.content):
             marks += 0.5
             message += " Correct Ride Count Returned. "
         else:
             message += " Incorrect Ride Count Returned. "
+            submission.marks = marks
+            submission.message = message
+            submission.save()
+            return
 
         for _ in range(500):
             name = random_name()
             requests.post(
-                lb_ip + "/api/v1/users",
-                json={
-                    "username": name,
-                    "password": password,
-                },)
+                lb_ip + "/api/v1/users", json={"username": name, "password": password,},
+            )
 
         for _ in range(500):
             requests.put(
@@ -385,6 +396,9 @@ def do_assignment_3_eval(*args, **kwargs):
             message += " Count API returned correct count. "
         else:
             message += " Count API did not return correct count. "
+            submission.marks = marks
+            submission.message = message
+            submission.save()
             return
 
         submission.marks = marks
@@ -397,6 +411,9 @@ def do_assignment_3_eval(*args, **kwargs):
         requests.delete(rides_ip + "/api/v1/db/clear")
 
     except Exception as e:
-        message += " Unknown Error. Ensure your instance is running and APIs are reachable. "
+        print(e)
+        message += (
+            " Unknown Error. Ensure your instance is running and APIs are reachable. "
+        )
         submission.message = message
         submission.save()

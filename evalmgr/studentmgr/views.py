@@ -61,11 +61,11 @@ class ApiTestView(View):
 
 class PastSubmissionView(View):
     def post(self, request):
-        team_name = request.POST['team_name']
+        team_name = request.POST["team_name"]
         data = Submission.objects.filter(team__team_name=team_name)
-        submissions = {'submissions': data}
-        # return render(request, 'submissions.html', submissions)
-        return HttpResponse("Marks will not be shown at this point")
+        submissions = {"submissions": data}
+        return render(request, "submissions.html", submissions)
+        # return HttpResponse("Marks will not be shown at this point")
 
 
 class ContainerTestView(View):
@@ -119,6 +119,7 @@ class CodeEvalTestView(View):
             print(e)
             return HttpResponse("Error in input, ensure all fields are filled")
 
+
 class LoadBalancerTestView(View):
     def get(self, request):
         if request.session.get("access_code") is None:
@@ -138,10 +139,12 @@ class LoadBalancerTestView(View):
             sub.rides_ip = "http://" + request.POST["rides_ip"]
             sub.lb_ip = "http://" + request.POST["lb_ip"]
             sub.save()
+            # do_assignment_3_eval(sub_id=sub.id)
             do_assignment_3_eval.delay(sub_id=sub.id)
             return HttpResponse(
                 "Your submission has been recorded. Your submission id is "
-                + str(sub.id) + ". Keep your instance switched on for at least two-three hours after submissions to ensure that all the tests are run."
+                + str(sub.id)
+                + ". Keep your instance switched on for at least two-three hours after submissions to ensure that all the tests are run."
             )
         except Exception as e:
             print(e)
