@@ -20,7 +20,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.db.module import InternalError, DatabaseError
+# from django.db.module import InternalError, DatabaseError
 from .models import Evaluation
 from .utils import create_evaluation, create_evaluation_code_eval
 from testmgr.models import CodeEvalModel
@@ -53,7 +53,7 @@ class ConfigUploadCodeEval(View):
             evaluation = Evaluation()
             evaluation.conf_file = eval_conf
             evaluation.save()
-        except InternalError:
+        except Exception:
             return HttpResponse("Error Evaluation Object could not be created")
         create_evaluation_code_eval(eval_id=evaluation.id)
         try:
