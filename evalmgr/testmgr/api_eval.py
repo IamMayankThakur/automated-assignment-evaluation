@@ -442,8 +442,8 @@ def do_assignment_3_eval(*args, **kwargs):
 
     except Exception as e:
         print(e)
-        message += (
+        submission.marks = marks
+        submission.message += (
             " Unknown Error. Ensure your instance is running and APIs are reachable. "
         )
-        submission.message = message
         submission.save()
