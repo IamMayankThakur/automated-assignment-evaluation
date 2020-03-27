@@ -64,8 +64,8 @@ class PastSubmissionView(View):
         team_name = request.POST['team_name']
         data = Submission.objects.filter(team__team_name=team_name)
         submissions = {'submissions': data}
-        return render(request, 'submissions.html', submissions)
-        # return HttpResponse("Marks will not be shown at this point")
+        # return render(request, 'submissions.html', submissions)
+        return HttpResponse("Marks will not be shown at this point")
 
 
 class ContainerTestView(View):
@@ -76,7 +76,7 @@ class ContainerTestView(View):
 
     def post(self, request):
         try:
-            return HttpResponse("Submission Closed.!")
+            # return HttpResponse("Submission Closed.!")
             sub = Submission()
             sub.team = Team.objects.get(team_name=request.POST["team"])
             sub.evaluation = Evaluation.objects.get(
