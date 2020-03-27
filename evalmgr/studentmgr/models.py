@@ -1,8 +1,11 @@
-from django.db import models
-from facultymgr.models import Evaluation
-from django.utils import timezone
-from django.core.files.storage import FileSystemStorage
 import os
+
+from django.core.files.storage import FileSystemStorage
+from django.db import models
+from django.utils import timezone
+
+from facultymgr.models import Evaluation
+
 
 # Create your models here.
 
@@ -42,6 +45,26 @@ class Submission(models.Model):
     private_key_file = models.FileField(
         upload_to="key", storage=OverwriteStorage(), blank=True
     )
+
+    def __str__(self):
+        return str(self.id)
+
+
+class SubmissionAssignment3(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(default=timezone.now)
+    users_source_file = models.FileField(
+        upload_to="source/users", storage=OverwriteStorage(), blank=True
+    )
+    rides_source_file = models.FileField(
+        upload_to="source/rides", storage=OverwriteStorage(), blank=True
+    )
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
+    lb_ip = models.CharField(max_length=128, blank=True)
+    users_ip = models.CharField(max_length=128, blank=True)
+    rides_ip = models.CharField(max_length=128, blank=True)
+    marks = models.FloatField(default=-1)
+    message = models.TextField()
 
     def __str__(self):
         return str(self.id)
