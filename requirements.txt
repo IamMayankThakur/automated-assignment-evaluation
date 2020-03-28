@@ -9,3 +9,4 @@ paramiko
 pre-commit
 black
 flake8
+ipython

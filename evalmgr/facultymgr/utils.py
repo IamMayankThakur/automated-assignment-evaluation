@@ -1,11 +1,15 @@
 import configparser
-from .models import Evaluation, FacultyProfile
-from testmgr.api_eval import setup_api_eval
-from studentmgr.models import Team
+import csv
+
 import pandas as pd
-from testmgr.code_eval import setup_code_eval
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 from django.http import HttpResponse
+
+from studentmgr.models import Team, Submission, SubmissionAssignment3
+from testmgr.api_eval import setup_api_eval
+from testmgr.code_eval import setup_code_eval
+from .models import Evaluation, FacultyProfile
 
 
 def create_evaluation(**kwargs):
@@ -69,3 +73,74 @@ def create_evaluation_code_eval(**kwargs):
         setup_code_eval.delay(eval_id=eval_id)
     except ObjectDoesNotExist:
         return HttpResponse("FacultyProfile object not found")
+
+
+def filter_on_team_name(l, team_name):
+    for i in l:
+        if i[0] == team_name:
+            return i[1]
+    return "MARKS_NOT_FOUND"
+
+def get_max_marks():
+    a1 = list(
+        Submission.objects.filter(evaluation=3)
+        .values_list("team__team_name")
+        .annotate(Max("marks"))
+    )
+    a2 = list(
+        Submission.objects.filter(evaluation=4)
+        .values_list("team__team_name")
+        .annotate(Max("marks"))
+    )
+    a3 = list(
+        SubmissionAssignment3.objects.filter(evaluation=5)
+        .values_list("team__team_name")
+        .annotate(Max("marks"))
+    )
+    all_rows = []
+
+    columns = ['USN', 'Name', 'Email ID', 'Team Name', 'Assignment 1 Marks', 'Assignment 2 Marks', 'Assignment 3 Marks']
+    df = pd.read_csv('teamslist.csv')
+    for index, row in df.iterrows():
+        new_row = [] 
+        if row["SRN (Member 1)"] != "nan":
+            new_row.append(row["SRN (Member 1)"])
+            new_row.append(row["Name (Member 1)"])
+            new_row.append(row["Email(Member 1)"])
+            new_row.append(row["Team Name"])
+            new_row.append(filter_on_team_name(a1,row["Team Name"]))
+            new_row.append(filter_on_team_name(a2,row["Team Name"]))
+            new_row.append(filter_on_team_name(a3,row["Team Name"]))
+            all_rows.append(new_row)
+        new_row = [] 
+        if row["SRN (Member 2)"] != "nan":
+            new_row.append(row["SRN (Member 2)"])
+            new_row.append(row["Name (Member 2)"])
+            new_row.append(row["Email(Member 2)"])
+            new_row.append(row["Team Name"])
+            new_row.append(filter_on_team_name(a1,row["Team Name"]))
+            new_row.append(filter_on_team_name(a2,row["Team Name"]))
+            new_row.append(filter_on_team_name(a3,row["Team Name"]))
+            all_rows.append(new_row)
+        new_row = []
+        if row["SRN (Member 3)"] != "nan":
+            new_row.append(row["SRN (Member 3)"])
+            new_row.append(row["Name(Member 3)"])
+            new_row.append(row["Email(Member 3)"])
+            new_row.append(row["Team Name"])
+            new_row.append(filter_on_team_name(a1,row["Team Name"]))
+            new_row.append(filter_on_team_name(a2,row["Team Name"]))
+            new_row.append(filter_on_team_name(a3,row["Team Name"]))
+            all_rows.append(new_row)
+        new_row = []
+        if row["SRN (Member 4)"] != "nan":
+            new_row.append(row["SRN (Member 4)"])
+            new_row.append(row["Name (Member 4)"])
+            new_row.append(row["Email (Member 4)"])
+            new_row.append(row["Team Name"])
+            new_row.append(filter_on_team_name(a1,row["Team Name"]))
+            new_row.append(filter_on_team_name(a2,row["Team Name"]))
+            new_row.append(filter_on_team_name(a3,row["Team Name"]))
+            all_rows.append(new_row)
+    final_data = pd.DataFrame(all_rows, columns=columns)
+    final_data.to_csv('final_marks.csv')

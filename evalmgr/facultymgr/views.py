@@ -20,7 +20,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-# from django.db.module import InternalError, DatabaseError
 from .models import Evaluation
 from .utils import create_evaluation, create_evaluation_code_eval
 from testmgr.models import CodeEvalModel

@@ -349,3 +349,9 @@
 [2020-03-18 10:53:39 +0000] [15545] [INFO] Booting worker with pid: 15545
 [2020-03-20 20:00:56 +0530] [15545] [INFO] Parent changed, shutting down: <Worker 15545>
 [2020-03-20 20:00:56 +0530] [15545] [INFO] Worker exiting (pid: 15545)
+[2020-03-20 15:29:49 +0000] [30217] [INFO] Starting gunicorn 19.7.1
+[2020-03-20 15:29:49 +0000] [30217] [INFO] Listening at: http://0.0.0.0:8000 (30217)
+[2020-03-20 15:29:49 +0000] [30217] [INFO] Using worker: sync
+[2020-03-20 15:29:49 +0000] [30220] [INFO] Booting worker with pid: 30220
+[2020-03-21 20:40:16 +0530] [30220] [INFO] Parent changed, shutting down: <Worker 30220>
+[2020-03-21 20:40:16 +0530] [30220] [INFO] Worker exiting (pid: 30220)
