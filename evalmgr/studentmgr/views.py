@@ -6,7 +6,7 @@ from facultymgr.models import Evaluation
 from testmgr.api_eval import do_api_eval, do_api_eval_cc
 from testmgr.container_eval import do_container_eval_cc
 from testmgr.code_eval import do_code_eval
-from .models import Team, Submission
+from .models import Team, Submission, SubmissionCodeEval
 from .utils import get_route_for_eval_type
 
 
@@ -102,14 +102,14 @@ class CodeEvalTestView(View):
 
     def post(self, request):
         try:
-            sub = Submission()
+            sub = SubmissionCodeEval()
             sub.team = Team.objects.get(team_name=request.POST["team"])
             sub.evaluation = Evaluation.objects.get(
                 access_code=request.session["access_code"]
             )
             sub.source_code_file = request.FILES["source_code_file"]
             sub.save()
-            do_code_eval.delay(sub_id=sub.id)
+            do_code_eval.delay(sub_id=sub.id, eval_id=sub.evaluation.id)
             return HttpResponse(
                 "Your submission has been recorded. Your submission id is "
                 + str(sub.id)

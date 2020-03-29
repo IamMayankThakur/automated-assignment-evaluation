@@ -20,10 +20,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.db.module import InternalError, DatabaseError
+from django.db import InternalError, DatabaseError
 from .models import Evaluation
 from .utils import create_evaluation, create_evaluation_code_eval
 from testmgr.models import CodeEvalModel
+import docker
 
 
 class ConfigUpload(View):
@@ -64,6 +65,15 @@ class ConfigUploadCodeEval(View):
             code_eval_model.main_file = eval_main
             code_eval_model.evaluation = Evaluation.objects.get(id=evaluation.id)
             code_eval_model.save()
+
+            print(code_eval_model.docker_file)
+            client = docker.from_env()
+            client.images.build(
+                path="/home/nihali/work/8thsem/code/automated-assignment-evaluation/evalmgr/media/conf/dockerfile/",
+                tag={"image1"},
+            )
+            print("IMAGES", client.images.list(tag="image1"))
+
             return HttpResponse("Config created and docker and main in table")
         except ObjectDoesNotExist:
             return HttpResponse("Error in creating object in CodeEvalModel")

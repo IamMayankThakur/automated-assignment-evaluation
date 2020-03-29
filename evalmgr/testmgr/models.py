@@ -20,8 +20,8 @@ class ApiTestModel(models.Model):
 
 
 class CodeEvalModel(models.Model):
-    docker_file = models.FileField(blank=False, upload_to="conf/dockerfile/")
-    main_file = models.FileField(blank=False, upload_to="conf/mainfile/")
+    docker_file = models.FileField(blank=False, upload_to="conf/dockerfile/", null=True)
+    main_file = models.FileField(blank=False, upload_to="conf/mainfile/", null=True)
     evaluation = models.ForeignKey(
         Evaluation, on_delete=models.CASCADE, null=True, blank=True
     )
@@ -36,8 +36,8 @@ class CodeEvalModel(models.Model):
 class CodeEvalTestModel(models.Model):
     test_name = models.TextField(default="hidden")
     sanity = models.BooleanField(default=False)
-    input1 = models.TextField(blank=False)
-    input2 = models.TextField(blank=True)
+    length_input1 = models.TextField(blank=False)
+    length_input2 = models.TextField(blank=True)
     expected_output = models.TextField(blank=True)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
 

@@ -3,9 +3,9 @@ from django.contrib.auth.models import Group, User
 
 # Register your models here.
 
-from studentmgr.models import Team, Submission
+from studentmgr.models import Team, Submission, SubmissionCodeEval
 from .models import FacultyProfile, Evaluation
-from testmgr.models import ApiTestModel
+from testmgr.models import ApiTestModel, CodeEvalTestModel
 
 
 # admin.site.unregister(User)
@@ -21,6 +21,8 @@ class CustomSubmission(admin.ModelAdmin):
 
 admin.site.register(Team)
 admin.site.register(Submission, CustomSubmission)
+admin.site.register(SubmissionCodeEval, CustomSubmission)
 admin.site.register(FacultyProfile)
 admin.site.register(Evaluation)
 admin.site.register(ApiTestModel)
+admin.site.register(CodeEvalTestModel)
