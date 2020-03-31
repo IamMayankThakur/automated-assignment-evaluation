@@ -63,6 +63,12 @@ def do_code_eval(*args, **kwargs):
     return "okay"
 
 
+def random_with_digits(n):
+    range_start = 10 ** (n - 1)
+    range_end = (10 ** n) - 1
+    return randint(range_start, range_end)
+
+
 def run_tests(test_objects, code_file, main_file):
     path = (
         "/home/nihali/work/8thsem/code/automated-assignment-evaluation/evalmgr/media/"
@@ -71,8 +77,10 @@ def run_tests(test_objects, code_file, main_file):
     for test in test_objects:
         length_input1 = test.length_input1
         length_input2 = test.length_input2
-        input1 = length_input1
-        input2 = length_input2
+        len_input1 = length_input1
+        len_input2 = length_input2
+        input1 = str(random_with_digits(len_input1))
+        input2 = str(random_with_digits(len_input2))
         f.write(input1 + "\n")
         f.write(input2 + "\n")
 
