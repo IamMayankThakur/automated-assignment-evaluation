@@ -1,3 +1,0 @@
-FROM ubuntu
-COPY . .
-RUN sudo apt-get install gcc

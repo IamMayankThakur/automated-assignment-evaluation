@@ -1,13 +1,15 @@
 import configparser
 import json
 import ast
+import random
+import string
 
 import requests
 from celery import shared_task
 
 from facultymgr.models import Evaluation
 from notifymgr.mail import send_mail
-from studentmgr.models import Submission
+from studentmgr.models import Submission, SubmissionAssignment3
 from .models import ApiTestModel
 
 
@@ -250,3 +252,198 @@ def do_api_eval_cc(*args, **kwargs):
         submission.save()
         print(e)
         return
+
+
+def random_name():
+    return "".join(random.choice(string.ascii_lowercase) for i in range(10))
+
+
+@shared_task(time_limit=600)
+def do_assignment_3_eval(*args, **kwargs):
+    try:
+        marks = 0
+        message = ""
+        sub_id = kwargs.get("sub_id", None)
+        if sub_id is None:
+            print("No sub id")
+            raise RuntimeError
+        submission = SubmissionAssignment3.objects.get(id=sub_id)
+        password = "3d725109c7e7c0bfb9d709836735b56d943d263f"
+        lb_ip = submission.lb_ip
+        users_ip = submission.users_ip
+        rides_ip = submission.rides_ip
+
+        r_users = requests.get(users_ip + "/api/v1/_count")
+        r_rides = requests.get(rides_ip + "/api/v1/_count")
+        if "0" in str(r_users.content) and "0" in str(r_rides.content):
+            marks += 0.5
+            message += (
+                " Count initialized to 0 on either users and rides microservice. "
+            )
+        else:
+            message += (
+                " Count not initialized to 0 on either users or rides microservice. "
+            )
+            submission.marks = marks
+            submission.message = message
+            submission.save()
+            return
+
+        r1 = requests.put(
+            lb_ip + "/api/v1/users",
+            json={
+                "username": "userName",
+                "password": "3d725109c7e7c0bfb9d709836735b56d943d263f",
+            },
+        )
+
+        r2 = requests.post(
+            lb_ip + "/api/v1/rides",
+            json={
+                "created_by": "userName",
+                "timestamp": "21-08-2021:00-00-00",
+                "source": "1",
+                "destination": "2",
+            },
+        )
+
+        if r1.status_code == 201 and r2.status_code == 201:
+            marks += 1
+            message += " Load Balancer working. "
+        else:
+            message += " Load Balancer not working. "
+            submission.marks = marks
+            submission.message = message
+            submission.save()
+            return
+
+        r_users = requests.delete(users_ip + "/api/v1/_count")
+        r_rides = requests.delete(rides_ip + "/api/v1/_count")
+
+        if r_rides.status_code == 200 and r_users.status_code == 200:
+            message += " Reset count API returning 200 HTTP response. "
+        else:
+            message += " Reset count API not returning 200 HTTP response. "
+            submission.marks = marks
+            submission.message = message
+            submission.save()
+            return
+
+        r_users = requests.get(users_ip + "/api/v1/_count")
+        r_rides = requests.get(rides_ip + "/api/v1/_count")
+        if "0" in str(r_users.content) and "0" in str(r_rides.content):
+            marks += 0.5
+            message += " Count successfully reset to 0. "
+        else:
+            message += " Count not reset to 0. "
+            return
+
+        requests.post(users_ip + "/api/v1/db/clear")
+        requests.post(rides_ip + "/api/v1/db/clear")
+
+        rand_users_correct = random.randrange(200, 400)
+        rand_users_wrong = random.randrange(300, 500)
+
+        rand_rides_correct = random.randrange(250, 500)
+        rand_rides_wrong = random.randrange(100, 400)
+
+        requests.put(
+            lb_ip + "/api/v1/users",
+            json={
+                "username": "userName",
+                "password": "3d725109c7e7c0bfb9d709836735b56d943d263f",
+            },
+        )
+
+        for _ in range(rand_users_correct):
+            name = random_name()
+            requests.put(
+                lb_ip + "/api/v1/users", json={"username": name, "password": password,},
+            )
+
+        for _ in range(rand_rides_correct):
+            requests.post(
+                lb_ip + "/api/v1/rides",
+                json={
+                    "created_by": "userName",
+                    "timestamp": "21-08-2021:00-00-00",
+                    "source": "1",
+                    "destination": "2",
+                },
+            )
+
+        count_rides = requests.get(lb_ip + "/api/v1/rides/count")
+        if str(rand_rides_correct) in str(count_rides.content):
+            marks += 0.5
+            message += " Correct Ride Count Returned. "
+        else:
+            message += " Incorrect Ride Count Returned. "
+            submission.marks = marks
+            submission.message = message
+            submission.save()
+            return
+
+        for _ in range(rand_users_wrong):
+            name = random_name()
+            requests.post(
+                lb_ip + "/api/v1/users", json={"username": name, "password": password,},
+            )
+
+        for _ in range(rand_rides_wrong):
+            requests.put(
+                lb_ip + "/api/v1/rides",
+                json={
+                    "created_by": "userName",
+                    "timestamp": "21-08-2021:00-00-00",
+                    "source": "1",
+                    "destination": "2",
+                },
+            )
+
+        for _ in range(rand_rides_wrong):
+            requests.get(lb_ip + "/api/v1/rides?source=1&destination=2")
+
+        expected_users_count = str(
+            rand_users_correct + rand_users_wrong + rand_rides_correct + 1
+        )
+        expected_rides_count = str(
+            rand_rides_correct + rand_rides_wrong + 1 + rand_rides_wrong
+        )
+
+        r_users = requests.get(users_ip + "/api/v1/_count")
+        r_rides = requests.get(rides_ip + "/api/v1/_count")
+        if expected_users_count in str(r_users.content) and expected_rides_count in str(
+            r_rides.content
+        ):
+            marks += 0.5
+            message += " Count API returned correct count. "
+        else:
+            message += (
+                " Count API did not return correct count. "
+                + " Returned "
+                + str(r_users.content)
+                + " for users and "
+                + str(r_rides.content)
+                + " for rides. "
+            )
+            submission.marks = marks
+            submission.message = message
+            submission.save()
+            return
+
+        submission.marks = marks
+        submission.message = message
+        submission.save()
+
+        requests.delete(users_ip + "/api/v1/_count")
+        requests.delete(rides_ip + "/api/v1/_count")
+        requests.post(users_ip + "/api/v1/db/clear")
+        requests.post(rides_ip + "/api/v1/db/clear")
+
+    except Exception as e:
+        print(e)
+        submission.marks = marks
+        submission.message += (
+            " Unknown Error. Ensure your instance is running and APIs are reachable. "
+        )
+        submission.save()

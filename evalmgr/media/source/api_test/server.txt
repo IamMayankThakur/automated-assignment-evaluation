@@ -1,8 +1,0 @@
-server {
-    listen 8000;
-    server_name ec2-174-129-169-123.compute-1.amazonaws.com;
-
-location / {
-        proxy_pass http://127.0.0.1:5000;
-   }
-}

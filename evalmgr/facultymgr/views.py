@@ -54,7 +54,7 @@ class ConfigUploadCodeEval(View):
             evaluation = Evaluation()
             evaluation.conf_file = eval_conf
             evaluation.save()
-        except InternalError:
+        except Exception:
             return HttpResponse("Error Evaluation Object could not be created")
         create_evaluation_code_eval(eval_id=evaluation.id)
         try:

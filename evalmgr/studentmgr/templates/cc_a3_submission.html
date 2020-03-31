@@ -22,35 +22,43 @@
       </div>
 
         <div class="form-group">
-        <label for="team_name" class="font-weight-bold">Public ip Address</label>
-        <input type="text" class="form-control w-50" id="public_ip_address" placeholder="Enter Public ip address.." name="public_ip_address" required>
+        <label for="team_name" class="font-weight-bold">Load balancer ip Address</label>
+        <input type="text" class="form-control w-50" id="public_ip_address" placeholder="Enter Public ip address.." name="lb_ip" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field. Do not include any trailing slash</div>
+      </div>
+
+      <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Users public ip Address</label>
+        <input type="text" class="form-control w-50" id="public_ip_address" placeholder="Enter Public ip address.." name="users_ip" required>
         <div class="valid-feedback">Valid.</div>
         <div class="invalid-feedback">Please fill out this field. Do not include any trailing slash</div>
       </div>
 
         <div class="form-group">
-        <label for="team_name" class="font-weight-bold">Username which has sudo access</label>
-        <input type="text" class="form-control w-50" id="username" placeholder="Enter username" name="username" required>
+        <label for="team_name" class="font-weight-bold">Rides public ip address</label>
+        <input type="text" class="form-control w-50" id="username" placeholder="Enter public ip address" name="rides_ip" required>
         <div class="valid-feedback">Valid.</div>
-        <div class="invalid-feedback">Please fill out this field.</div>
+        <div class="invalid-feedback">Please fill out this field. Do not include any trailing slash</div>
       </div>
-
-   <label class="font-weight-bold">Upload the private key (.pem) file which you use to ssh to the instance</label>
+    <br>
+    <label class="font-weight-bold">Upload the users API source code</label>
     <br>
     <div class="custom-file w-25">
-        <input type="file" class="custom-file-input" id="private_key" name="private_key_file" required>
-        <label class="custom-file-label" for="private_key">Choose pem file</label>
+        <input type="file" class="custom-file-input" id="source_code" name="users_source_file" required>
+        <label class="custom-file-label" for="source_code">Users source code</label>
         <div class="valid-feedback">Valid.</div>
-        <div class="invalid-feedback">Please select a file.</div>
+        <div class="invalid-feedback">Filename format CC_TEAMNAME_users.py</div>
     </div>
+
     <br>
-    <label class="font-weight-bold">Upload the Dockerfile for the rides microservice</label>
+    <label class="font-weight-bold">Upload the rides API source code</label>
     <br>
     <div class="custom-file w-25">
-        <input type="file" class="custom-file-input" id="source_code" name="source_code_file" required>
-        <label class="custom-file-label" for="source_code">Choose Dockerfile</label>
+        <input type="file" class="custom-file-input" id="source_code" name="rides_source_file" required>
+        <label class="custom-file-label" for="source_code">Rides source code</label>
         <div class="valid-feedback">Valid.</div>
-        <div class="invalid-feedback">Please name your file in the format CC_TEAMNAME_Dockerfile</div>
+        <div class="invalid-feedback">Filename format CC_TEAMNAME_rides.py</div>
     </div>
 
         <br>
