@@ -79,8 +79,8 @@ def run_tests(test_objects, code_file, main_file):
         length_input2 = test.length_input2
         len_input1 = length_input1
         len_input2 = length_input2
-        input1 = str(random_with_digits(len_input1))
-        input2 = str(random_with_digits(len_input2))
+        input1 = random_with_digits(len_input1)
+        input2 = random_with_digits(len_input2)
         f.write(input1 + "\n")
         f.write(input2 + "\n")
 
