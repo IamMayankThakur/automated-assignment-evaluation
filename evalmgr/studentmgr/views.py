@@ -63,7 +63,7 @@ class PastSubmissionView(View):
     def post(self, request):
         team_name = request.POST["team_name"]
         # data = Submission.objects.filter(team__team_name=team_name)
-        data = SubmissionAssignment3.objects.filter(team__team_name=team_name)
+        data = SubmissionCodeEval.objects.filter(team__team_name=team_name)
         submissions = {"submissions": data}
         return render(request, "submissions.html", submissions)
         # return HttpResponse("Marks will not be shown at this point")

@@ -10,7 +10,7 @@ from studentmgr.models import (
     SubmissionCodeEval,
 )
 from .models import FacultyProfile, Evaluation
-from testmgr.models import ApiTestModel, CodeEvalTestModel
+from testmgr.models import ApiTestModel, CodeEvalTestModel, CodeEvalModel
 
 
 # admin.site.unregister(User)
@@ -31,4 +31,5 @@ admin.site.register(FacultyProfile)
 admin.site.register(Evaluation)
 admin.site.register(ApiTestModel)
 admin.site.register(CodeEvalTestModel)
+admin.site.register(CodeEvalModel)
 admin.site.register(SubmissionAssignment3, CustomSubmission)
