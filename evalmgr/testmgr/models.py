@@ -1,5 +1,6 @@
 from django.db import models
 from facultymgr.models import Evaluation
+from studentmgr.models import OverwriteStorage
 
 
 class ApiTestModel(models.Model):
@@ -20,8 +21,14 @@ class ApiTestModel(models.Model):
 
 
 class CodeEvalModel(models.Model):
-    docker_file = models.FileField(blank=False, upload_to="conf/dockerfile/")
-    main_file = models.FileField(blank=False, upload_to="conf/mainfile/")
+    docker_file = models.FileField(
+        blank=False, upload_to="conf/dockerfile/", storage=OverwriteStorage(), null=True
+    )
+    main_file = models.FileField(blank=False, upload_to="conf/mainfile/", null=True)
+    expected_output_file = models.FileField(
+        blank=False, upload_to="conf/expected_output/", null=True
+    )
+    command = models.TextField(blank=False, null=True)
     evaluation = models.ForeignKey(
         Evaluation, on_delete=models.CASCADE, null=True, blank=True
     )
@@ -36,8 +43,8 @@ class CodeEvalModel(models.Model):
 class CodeEvalTestModel(models.Model):
     test_name = models.TextField(default="hidden")
     sanity = models.BooleanField(default=False)
-    input1 = models.TextField(blank=False)
-    input2 = models.TextField(blank=True)
+    length_input1 = models.TextField(blank=False)
+    length_input2 = models.TextField(blank=True)
     expected_output = models.TextField(blank=True)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
 

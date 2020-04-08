@@ -14,7 +14,7 @@ class FacultyProfile(models.Model):
 
 class Evaluation(models.Model):
     conf_file = models.FileField(blank=False, upload_to="conf/eval/")
-    name = models.CharField(max_length=128, unique=True, blank=False)
+    name = models.CharField(max_length=128, unique=False, blank=False)
     type = models.IntegerField(blank=False, null=True)
     access_code = models.CharField(max_length=256, blank=False, unique=True, null=True)
     created_by = models.ForeignKey(
