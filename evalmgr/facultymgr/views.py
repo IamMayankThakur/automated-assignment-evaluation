@@ -17,6 +17,9 @@ from testmgr.container_eval_final import setup_container_eval
 from testmgr.scale_eval import setup_scale_eval
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+import docker
+
+path = "/home/nihali/work/8thsem/code/automated-assignment-evaluation/evalmgr/media/conf/dockerfile/"
 
 
 class ConfigUpload(View):
@@ -41,22 +44,37 @@ class ConfigUploadCodeEval(View):
         return render(request, "code_eval_faculty_file.html")
 
     def post(self, request):
-        try:
-            eval_conf = request.FILES["conf_file"]
-            evaluation = Evaluation()
-            evaluation.conf_file = eval_conf
-            evaluation.save()
-        except InternalError:
-            return HttpResponse("Error Evaluation Object could not be created")
+        # try:
+        eval_conf = request.FILES["conf_file"]
+        evaluation = Evaluation()
+        evaluation.conf_file = eval_conf
+        evaluation.save()
+        # except Exception:
+        # return HttpResponse("Error Evaluation Object could not be created")
         create_evaluation_code_eval(eval_id=evaluation.id)
         try:
             eval_dock = request.FILES["docker_file"]
             eval_main = request.FILES["main_file"]
+            eval_output_expected = request.FILES["expected_output_file"]
+            eval_command = request.POST.get("command")
             code_eval_model = CodeEvalModel()
             code_eval_model.docker_file = eval_dock
             code_eval_model.main_file = eval_main
+            code_eval_model.expected_output_file = eval_output_expected
+            code_eval_model.command = eval_command
             code_eval_model.evaluation = Evaluation.objects.get(id=evaluation.id)
             code_eval_model.save()
+
+            path = code_eval_model.docker_file.path
+            print(path)
+            path = path.rsplit("/", 1)[0]
+            print(code_eval_model.docker_file)
+            client = docker.from_env()
+            client.images.build(
+                path=path, tag={"image5"},
+            )
+            # print("IMAGES", client.images.list(tag="image1"))
+
             return HttpResponse("Config created and docker and main in table")
         except ObjectDoesNotExist:
             return HttpResponse("Error in creating object in CodeEvalModel")
