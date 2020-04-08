@@ -5,7 +5,9 @@ from studentmgr.models import Team
 import pandas as pd
 from testmgr.code_eval import setup_code_eval
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from django.db.utils import IntegrityError
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 
 
 def create_evaluation(**kwargs):
@@ -69,3 +71,36 @@ def create_evaluation_code_eval(**kwargs):
         setup_code_eval.delay(eval_id=eval_id)
     except ObjectDoesNotExist:
         return HttpResponse("FacultyProfile object not found")
+
+
+def create_evaluation_container_eval(**kwargs):
+    eval_id = kwargs["eval_id"] if "eval_id" in kwargs else None
+    if eval_id is None:
+        raise RuntimeError
+    try:
+        evaluation = Evaluation.objects.get(pk=eval_id)
+    except ObjectDoesNotExist:
+        return HttpResponse("Evaluation object not created")
+    try:
+        evaluation.created_by = FacultyProfile.objects.get(
+            email=kwargs["form_data"]["email_id"]
+        )
+        evaluation.name = kwargs["form_data"]["evaluation_name"]
+        evaluation.type = kwargs["form_data"]["testType"]
+        evaluation.access_code = kwargs["form_data"]["access_code"]
+        evaluation.description = kwargs["form_data"]["description"]
+        evaluation.save()
+        endpoint = get_route_for_eval((int)(kwargs["form_data"]["testType"]))
+        return HttpResponseRedirect(reverse(endpoint))
+    except (ObjectDoesNotExist, IntegrityError):
+        evaluation.delete()
+        return HttpResponse(
+            "FacultyProfile object not found (or) Please enter unique/correct values, the access code or name could have been taken by another evaluation"
+        )
+
+
+def get_route_for_eval(testType):
+    if testType == 4:
+        return "facultymgr:container_test_cases"
+    if testType == 5:
+        return "facultymgr:scale_test_cases"

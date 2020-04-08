@@ -5,8 +5,10 @@ from django.views import View
 from facultymgr.models import Evaluation
 from testmgr.api_eval import do_api_eval, do_api_eval_cc
 from testmgr.container_eval import do_container_eval_cc
+from testmgr.container_eval_final import do_container_eval
 from testmgr.code_eval import do_code_eval
-from .models import Team, Submission
+from testmgr.scale_eval import do_scale_eval
+from .models import Team, Submission, SubmissionScaleEval
 from .utils import get_route_for_eval_type
 
 
@@ -61,11 +63,10 @@ class ApiTestView(View):
 
 class PastSubmissionView(View):
     def post(self, request):
-        team_name = request.POST['team_name']
+        team_name = request.POST["team_name"]
         data = Submission.objects.filter(team__team_name=team_name)
-        submissions = {'submissions': data}
-        # return render(request, 'submissions.html', submissions)
-        return HttpResponse("Marks will not be shown at this point")
+        submissions = {"submissions": data}
+        return render(request, "submissions.html", submissions)
 
 
 class ContainerTestView(View):
@@ -118,3 +119,58 @@ class CodeEvalTestView(View):
         except Exception as e:
             print(e)
             return HttpResponse("Error in input, ensure all fields are filled")
+
+
+class ContainerEvalTestView(View):
+    def get(self, request):
+        if request.session.get("access_code") is None:
+            return HttpResponse("No access code")
+        return render(request, "container_eval_submission.html")
+
+    def post(self, request):
+        try:
+            sub = Submission()
+            sub.team = Team.objects.get(team_name=request.POST["team"])
+            sub.evaluation = Evaluation.objects.get(
+                access_code=request.session["access_code"]
+            )
+            sub.username = request.POST["username"]
+            sub.private_key_file = request.FILES["private_key_file"]
+            sub.public_ip_address = request.POST["public_ip_address"]
+            sub.save()
+            print(sub.username, sub.public_ip_address, sub.id)
+            do_container_eval.delay(sub_id=sub.id)
+            return HttpResponse(
+                "Your submission has been recorded. Your submission id is "
+                + str(sub.id)
+            )
+        except Exception as e:
+            print(e)
+            return HttpResponse("Error in input, ensure all fields are filled")
+
+
+class ScaleTestView(View):
+    def get(self, request):
+        if request.session.get("access_code") is None:
+            return HttpResponse("No access code")
+        return render(request, "scale_eval_submission.html")
+
+    def post(self, request):
+        try:
+            sub = SubmissionScaleEval()
+            sub.team = Team.objects.get(team_name=request.POST["team"])
+            sub.evaluation = Evaluation.objects.get(
+                access_code=request.session["access_code"]
+            )
+            sub.username = request.POST["username"]
+            sub.private_key_file = request.FILES["private_key_file"]
+            sub.manager_ip = request.POST["public_ip_address"]
+            sub.save()
+            do_scale_eval(sub_id=sub.id)
+            return HttpResponse(
+                "Your submission has been recorded. Your submission id is "
+                + str(sub.id)
+            )
+        except Exception as e:
+            print(e)
+            return HttpResponse("Error in input, ensure all fields are filled/valid")

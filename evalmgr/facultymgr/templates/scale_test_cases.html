@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+            
+<body>
+	<br>
+<div class="container mt-5">
+    
+    <form method = "post" action = "" >
+    {% csrf_token %}
+    <div class="border border-dark">
+        <div style="display:none">
+            <input type="text" id="eval_id" name="eval_id" value='{{eval_id}}'>
+        </div>
+        <div class="form-group">
+            <label for="scale_min">Minimum scale value</label>
+            <input type="text" class="form-control" id="scale_min" name="scale_min"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="scale_max">Maximum scale value</label>
+            <input type="text" class="form-control" id="scale_max" name="scale_max"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="metric">Choose metric</label>
+            <select class="form-control" id="metric" name="metric">
+                <option>Count</option>
+                <option>Latency</option>
+                <option>Throughput</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="window">Time interval(window size)</label>
+            <input type="text" class="form-control" id="window" name="window">
+        </div>
+
+        <div class="form-group">
+            <label for="up_threshold">Scale up threshold (Avg rate of "metric" for "Window size" interval)</label>
+            <input type="text" class="form-control" id="up_threshold" name="up_threshold"> </textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="down_threshold">Scale down threshold (Avg rate of "metric" for "Window size" interval)</label>
+            <input type="text" class="form-control" id="down_threshold" name="down_threshold">
+        </div>
+    </div>
+    <div class="mt-3 d-flex justify-content-center grid">
+        <button type="submit" name="another" class="btn btn-danger">Add test case</button>
+    </div>
+    <div class="mt-3 d-flex justify-content-center grid">
+        <br><button type="submit" name="finish" class="btn btn-primary">End</button>
+    </div>
+    </form>
+</div>
+</body>
+</html>

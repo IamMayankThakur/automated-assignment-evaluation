@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+            
+<body>
+
+<div class="container mt-5">
+    
+    <form method = "post" action = {% url 'facultymgr:create_eval'%} >
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="evaluation_name">Evaluation name</label>
+        <input type="text" class="form-control" id="evaluation_name" name="evaluation_name"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description" name="description"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="access_code">Access code</label>
+        <input type="text" class="form-control" id="access_code" name="access_code"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="email_id">Email address</label>
+        <input type="email" class="form-control" id="email_id" name="email_id" placeholder="name@example.com">
+    </div>
+
+    <div class="form-group" style="display: none">
+        <label for="testType">Test type</label>
+        <select class="form-control" id="testType" name="testType">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+        </select>
+    </div>
+
+    <div class="mt-3 d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary" onclick="setTestType('4')">
+            Test Container Configurations in a node
+        </button>
+    </div>
+    <div class="mt-3 d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary" onclick="setTestType('5')">
+            Test Scalability of a Cluster
+        </button>
+    </div>
+    </form>
+</div>
+
+
+</body>
+<script type="text/javascript">
+    function setTestType(number)
+    {
+        document.getElementById('testType').value = number
+    }            
+</script>
+</html>
