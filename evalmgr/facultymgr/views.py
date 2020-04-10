@@ -16,6 +16,8 @@ expected_response_body = {key:value}
 """
 
 # Create your views here.
+from abc import ABC
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -25,11 +27,19 @@ from .models import Evaluation
 from .utils import create_evaluation, create_evaluation_code_eval
 from testmgr.models import CodeEvalModel
 import docker
+from django.contrib.auth.forms import UserCreationForm
+from .utils import SignUpForm
+from django.urls import reverse_lazy
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 path = "/home/nihali/work/8thsem/code/automated-assignment-evaluation/evalmgr/media/conf/dockerfile/"
 
 
-class ConfigUpload(View):
+class ConfigUpload(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="faculty").exists()
+
     def get(self, request):
         return render(request, "choose_file.html")
 
@@ -46,7 +56,10 @@ class ConfigUpload(View):
             return HttpResponse("Error")
 
 
-class ConfigUploadCodeEval(View):
+class ConfigUploadCodeEval(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="faculty").exists()
+
     def get(self, request):
         return render(request, "code_eval_faculty_file.html")
 
@@ -85,3 +98,14 @@ class ConfigUploadCodeEval(View):
             return HttpResponse("Config created and docker and main in table")
         except ObjectDoesNotExist:
             return HttpResponse("Error in creating object in CodeEvalModel")
+
+
+class SignUp(generic.CreateView):
+    form_class = SignUpForm
+    success_url = reverse_lazy("login")
+    template_name = "signup.html"
+
+    def form_valid(self, form):
+        response = super(SignUp, self).form_valid(form)
+        self.object.groups.add(form.cleaned_data["group"])
+        return response

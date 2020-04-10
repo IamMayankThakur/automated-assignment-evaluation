@@ -1,6 +1,8 @@
 import configparser
 import csv
-
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User, Group
 import pandas as pd
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
@@ -9,7 +11,7 @@ from django.http import HttpResponse
 from studentmgr.models import Team, Submission, SubmissionAssignment3
 from testmgr.api_eval import setup_api_eval
 from testmgr.code_eval import setup_code_eval
-from .models import Evaluation, FacultyProfile
+from .models import Evaluation
 
 
 def create_evaluation(**kwargs):
@@ -21,7 +23,7 @@ def create_evaluation(**kwargs):
         file = evaluation.conf_file.path
         c = configparser.ConfigParser()
         c.read(file)
-        faculty = FacultyProfile.objects.get(email=c["Settings"]["email"])
+        faculty = User.objects.get(email=c["Settings"]["email"])
         evaluation.name = c["Settings"]["name"]
         evaluation.description = c["Settings"]["description"]
         evaluation.created_by = faculty
@@ -63,7 +65,7 @@ def create_evaluation_code_eval(**kwargs):
     except ObjectDoesNotExist:
         return HttpResponse("Evaluation object not created")
     try:
-        faculty = FacultyProfile.objects.get(email=c["Settings"]["email"])
+        faculty = User.objects.get(email=c["Settings"]["email"])
         evaluation.name = c["Settings"]["name"]
         evaluation.description = c["Settings"]["description"]
         evaluation.created_by = faculty
@@ -80,6 +82,7 @@ def filter_on_team_name(l, team_name):
         if i[0] == team_name:
             return i[1]
     return "MARKS_NOT_FOUND"
+
 
 def get_max_marks():
     a1 = list(
@@ -99,28 +102,36 @@ def get_max_marks():
     )
     all_rows = []
 
-    columns = ['USN', 'Name', 'Email ID', 'Team Name', 'Assignment 1 Marks', 'Assignment 2 Marks', 'Assignment 3 Marks']
-    df = pd.read_csv('teamslist.csv')
+    columns = [
+        "USN",
+        "Name",
+        "Email ID",
+        "Team Name",
+        "Assignment 1 Marks",
+        "Assignment 2 Marks",
+        "Assignment 3 Marks",
+    ]
+    df = pd.read_csv("teamslist.csv")
     for index, row in df.iterrows():
-        new_row = [] 
+        new_row = []
         if row["SRN (Member 1)"] != "nan":
             new_row.append(row["SRN (Member 1)"])
             new_row.append(row["Name (Member 1)"])
             new_row.append(row["Email(Member 1)"])
             new_row.append(row["Team Name"])
-            new_row.append(filter_on_team_name(a1,row["Team Name"]))
-            new_row.append(filter_on_team_name(a2,row["Team Name"]))
-            new_row.append(filter_on_team_name(a3,row["Team Name"]))
+            new_row.append(filter_on_team_name(a1, row["Team Name"]))
+            new_row.append(filter_on_team_name(a2, row["Team Name"]))
+            new_row.append(filter_on_team_name(a3, row["Team Name"]))
             all_rows.append(new_row)
-        new_row = [] 
+        new_row = []
         if row["SRN (Member 2)"] != "nan":
             new_row.append(row["SRN (Member 2)"])
             new_row.append(row["Name (Member 2)"])
             new_row.append(row["Email(Member 2)"])
             new_row.append(row["Team Name"])
-            new_row.append(filter_on_team_name(a1,row["Team Name"]))
-            new_row.append(filter_on_team_name(a2,row["Team Name"]))
-            new_row.append(filter_on_team_name(a3,row["Team Name"]))
+            new_row.append(filter_on_team_name(a1, row["Team Name"]))
+            new_row.append(filter_on_team_name(a2, row["Team Name"]))
+            new_row.append(filter_on_team_name(a3, row["Team Name"]))
             all_rows.append(new_row)
         new_row = []
         if row["SRN (Member 3)"] != "nan":
@@ -128,9 +139,9 @@ def get_max_marks():
             new_row.append(row["Name(Member 3)"])
             new_row.append(row["Email(Member 3)"])
             new_row.append(row["Team Name"])
-            new_row.append(filter_on_team_name(a1,row["Team Name"]))
-            new_row.append(filter_on_team_name(a2,row["Team Name"]))
-            new_row.append(filter_on_team_name(a3,row["Team Name"]))
+            new_row.append(filter_on_team_name(a1, row["Team Name"]))
+            new_row.append(filter_on_team_name(a2, row["Team Name"]))
+            new_row.append(filter_on_team_name(a3, row["Team Name"]))
             all_rows.append(new_row)
         new_row = []
         if row["SRN (Member 4)"] != "nan":
@@ -138,9 +149,23 @@ def get_max_marks():
             new_row.append(row["Name (Member 4)"])
             new_row.append(row["Email (Member 4)"])
             new_row.append(row["Team Name"])
-            new_row.append(filter_on_team_name(a1,row["Team Name"]))
-            new_row.append(filter_on_team_name(a2,row["Team Name"]))
-            new_row.append(filter_on_team_name(a3,row["Team Name"]))
+            new_row.append(filter_on_team_name(a1, row["Team Name"]))
+            new_row.append(filter_on_team_name(a2, row["Team Name"]))
+            new_row.append(filter_on_team_name(a3, row["Team Name"]))
             all_rows.append(new_row)
     final_data = pd.DataFrame(all_rows, columns=columns)
-    final_data.to_csv('final_marks.csv')
+    final_data.to_csv("final_marks.csv")
+
+
+class SignUpForm(UserCreationForm):
+    username = forms.CharField()
+    first_name = forms.CharField(max_length=32, help_text="First name")
+    last_name = forms.CharField(max_length=32, help_text="Last name")
+    email = forms.EmailField(max_length=64, help_text="Enter a valid email address")
+    password1 = forms.PasswordInput()
+    password2 = forms.PasswordInput()
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields + ("first_name", "last_name", "email",)
