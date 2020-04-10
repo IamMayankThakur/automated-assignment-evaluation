@@ -1,4 +1,6 @@
 # Create your views here.
+from abc import ABC
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -18,11 +20,19 @@ from testmgr.scale_eval import setup_scale_eval
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import docker
+from django.contrib.auth.forms import UserCreationForm
+from .utils import SignUpForm
+from django.urls import reverse_lazy
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 path = "/home/nihali/work/8thsem/code/automated-assignment-evaluation/evalmgr/media/conf/dockerfile/"
 
 
-class ConfigUpload(View):
+class ConfigUpload(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="faculty").exists()
+
     def get(self, request):
         return render(request, "choose_file.html")
 
@@ -39,7 +49,10 @@ class ConfigUpload(View):
             return HttpResponse("Error")
 
 
-class ConfigUploadCodeEval(View):
+class ConfigUploadCodeEval(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="faculty").exists()
+
     def get(self, request):
         return render(request, "code_eval_faculty_file.html")
 
@@ -78,7 +91,6 @@ class ConfigUploadCodeEval(View):
             return HttpResponse("Config created and docker and main in table")
         except ObjectDoesNotExist:
             return HttpResponse("Error in creating object in CodeEvalModel")
-
 
 class CreateEval(View):
     def get(self, request):
@@ -130,3 +142,13 @@ class ScaleTestCases(View):
                 return render(request, "scale_test_cases.html", eval_id)
         except ObjectDoesNotExist:
             return HttpResponse("Evaluation object not found")
+
+class SignUp(generic.CreateView):
+    form_class = SignUpForm
+    success_url = reverse_lazy("login")
+    template_name = "signup.html"
+
+    def form_valid(self, form):
+        response = super(SignUp, self).form_valid(form)
+        self.object.groups.add(form.cleaned_data["group"])
+        return response

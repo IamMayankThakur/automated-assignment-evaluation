@@ -1,6 +1,8 @@
 import configparser
 import csv
-
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User, Group
 import pandas as pd
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
@@ -11,7 +13,7 @@ from django.db.models import Max
 from studentmgr.models import Team, Submission, SubmissionAssignment3
 from testmgr.api_eval import setup_api_eval
 from testmgr.code_eval import setup_code_eval
-from .models import Evaluation, FacultyProfile
+from .models import Evaluation
 
 
 def create_evaluation(**kwargs):
@@ -23,7 +25,7 @@ def create_evaluation(**kwargs):
         file = evaluation.conf_file.path
         c = configparser.ConfigParser()
         c.read(file)
-        faculty = FacultyProfile.objects.get(email=c["Settings"]["email"])
+        faculty = User.objects.get(email=c["Settings"]["email"])
         evaluation.name = c["Settings"]["name"]
         evaluation.description = c["Settings"]["description"]
         evaluation.created_by = faculty
@@ -65,7 +67,7 @@ def create_evaluation_code_eval(**kwargs):
     except ObjectDoesNotExist:
         return HttpResponse("Evaluation object not created")
     try:
-        faculty = FacultyProfile.objects.get(email=c["Settings"]["email"])
+        faculty = User.objects.get(email=c["Settings"]["email"])
         evaluation.name = c["Settings"]["name"]
         evaluation.description = c["Settings"]["description"]
         evaluation.created_by = faculty
@@ -188,3 +190,16 @@ def get_route_for_eval(testType):
         return "facultymgr:container_test_cases"
     if testType == 6:
         return "facultymgr:scale_test_cases"
+
+class SignUpForm(UserCreationForm):
+    username = forms.CharField()
+    first_name = forms.CharField(max_length=32, help_text="First name")
+    last_name = forms.CharField(max_length=32, help_text="Last name")
+    email = forms.EmailField(max_length=64, help_text="Enter a valid email address")
+    password1 = forms.PasswordInput()
+    password2 = forms.PasswordInput()
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields + ("first_name", "last_name", "email",)
