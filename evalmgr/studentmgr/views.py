@@ -8,9 +8,13 @@ from testmgr.container_eval import do_container_eval_cc
 from testmgr.code_eval import do_code_eval
 from .models import Team, Submission, SubmissionAssignment3, SubmissionCodeEval
 from .utils import get_route_for_eval_type
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
-class AccessCodeView(View):
+class AccessCodeView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
     def get(self, request):
         return render(request, "accesskey_file.html")
 
@@ -26,7 +30,10 @@ class AccessCodeView(View):
             return HttpResponse("Error in access code")
 
 
-class ApiTestView(View):
+class ApiTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
     def get(self, request):
         if request.session.get("access_code") is None:
             return HttpResponse("No access code")
@@ -59,7 +66,10 @@ class ApiTestView(View):
             return HttpResponse("Error in input, ensure all fields are filled")
 
 
-class PastSubmissionView(View):
+class PastSubmissionView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
     def post(self, request):
         team_name = request.POST["team_name"]
         # data = Submission.objects.filter(team__team_name=team_name)
@@ -69,7 +79,10 @@ class PastSubmissionView(View):
         # return HttpResponse("Marks will not be shown at this point")
 
 
-class ContainerTestView(View):
+class ContainerTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
     def get(self, request):
         if request.session.get("access_code") is None:
             return HttpResponse("No access code")
@@ -96,7 +109,10 @@ class ContainerTestView(View):
             return HttpResponse("Submission failed. Enter valid data")
 
 
-class CodeEvalTestView(View):
+class CodeEvalTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
     def get(self, request):
         if request.session.get("access_code") is None:
             return HttpResponse("No access code")
@@ -121,7 +137,10 @@ class CodeEvalTestView(View):
             return HttpResponse("Error in input, ensure all fields are filled")
 
 
-class LoadBalancerTestView(View):
+class LoadBalancerTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
     def get(self, request):
         if request.session.get("access_code") is None:
             return HttpResponse("No access code")
