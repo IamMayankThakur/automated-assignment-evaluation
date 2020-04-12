@@ -1,22 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-</head>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
-<script>
-    $(".custom-file-input").on("change", function() {
-        var fileName = $(this).val().split("\\").pop();
-        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-    });
-</script>
-            
-<body>
+{% block title %}Create Code Evaluation{% endblock %}
 
-<div class="container mt-5">
+{% block content %}
+
+    <script>
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+
+
+    <div class="container mt-5">
     <form action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
     <div class="custom-file w-25">
@@ -55,6 +52,4 @@
     </form>
 </div>
 
-
-</body>
-</html>
+{% endblock %}

@@ -14,12 +14,12 @@
             </tr>
             {% for submission in submissions %}
                 <tr>
-            <td> {{ submission.id }}</td>
-            <td>{{ submission.timestamp }}</td>
-            <td>{{ submission.marks }}</td>
-            <td>{{ submission.message }}</td>
-          </tr>
-         {% endfor %}
-    </table>
-</div>
+                    <td> {{ submission.id }}</td>
+                    <td>{{ submission.timestamp }}</td>
+                    <td>{{ submission.marks }}</td>
+                    <td>{{ submission.message }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}
