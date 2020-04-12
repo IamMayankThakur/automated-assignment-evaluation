@@ -72,7 +72,8 @@ class PastSubmissionView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request):
         team_name = request.POST["team_name"]
-        # data = Submission.objects.filter(team__team_name=team_name)
+        # eval_id = int(request.POST["eval"])
+        # data = Submission.objects.filter(team__team_name=team_name, evaluation=eval_id)
         data = Submission.objects.filter(team__team_name=team_name)
         submissions = {"submissions": data}
         return render(request, "submissions.html", submissions)

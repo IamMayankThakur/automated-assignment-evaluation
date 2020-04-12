@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}home{% endblock %}
+
+{% block content %}
+    {% for evaluation in evaluations %}
+        <div class="card">
+            <h5 class="card-header">{{ evaluation.name }}</h5>
+            <div class="card-body">
+                <h5 class="card-title">Access Code: {{ evaluation.access_code }}</h5>
+                <p class="card-text">{{ evaluation.description }}</p>
+                <a href="{% url 'facultymgr:view_submission' %}?eval_id={{ evaluation.id }}" class="btn btn-primary">View Submissions</a>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}
