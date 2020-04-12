@@ -6,7 +6,7 @@ from facultymgr.models import Evaluation
 from testmgr.api_eval import do_api_eval, do_api_eval_cc, do_assignment_3_eval
 from testmgr.container_eval import do_container_eval_cc
 from testmgr.code_eval import do_code_eval
-from .models import Team, Submission, SubmissionAssignment3, SubmissionCodeEval
+from .models import Team, Submission, SubmissionAssignment3
 from .utils import get_route_for_eval_type
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
@@ -73,7 +73,7 @@ class PastSubmissionView(LoginRequiredMixin, UserPassesTestMixin, View):
     def post(self, request):
         team_name = request.POST["team_name"]
         # data = Submission.objects.filter(team__team_name=team_name)
-        data = SubmissionCodeEval.objects.filter(team__team_name=team_name)
+        data = Submission.objects.filter(team__team_name=team_name)
         submissions = {"submissions": data}
         return render(request, "submissions.html", submissions)
         # return HttpResponse("Marks will not be shown at this point")
@@ -120,7 +120,7 @@ class CodeEvalTestView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request):
         try:
-            sub = SubmissionCodeEval()
+            sub = Submission()
             sub.team = Team.objects.get(team_name=request.POST["team"])
             sub.evaluation = Evaluation.objects.get(
                 access_code=request.session["access_code"]

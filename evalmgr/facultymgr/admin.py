@@ -7,7 +7,6 @@ from studentmgr.models import (
     Team,
     Submission,
     SubmissionAssignment3,
-    SubmissionCodeEval,
 )
 from .models import Evaluation
 from testmgr.models import ApiTestModel, CodeEvalTestModel, CodeEvalModel
@@ -26,7 +25,6 @@ class CustomSubmission(admin.ModelAdmin):
 
 admin.site.register(Team)
 admin.site.register(Submission, CustomSubmission)
-admin.site.register(SubmissionCodeEval, CustomSubmission)
 admin.site.register(Evaluation)
 admin.site.register(ApiTestModel)
 admin.site.register(CodeEvalTestModel)
