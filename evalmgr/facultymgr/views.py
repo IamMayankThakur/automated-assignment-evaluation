@@ -16,7 +16,6 @@ expected_response_body = {key:value}
 """
 
 # Create your views here.
-from abc import ABC
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
@@ -26,6 +25,7 @@ from django.db import InternalError, DatabaseError
 from .models import Evaluation
 from .utils import create_evaluation, create_evaluation_code_eval
 from testmgr.models import CodeEvalModel
+from studentmgr.models import Submission
 import docker
 from django.contrib.auth.forms import UserCreationForm
 from .utils import SignUpForm
@@ -109,3 +109,23 @@ class SignUp(generic.CreateView):
         response = super(SignUp, self).form_valid(form)
         self.object.groups.add(form.cleaned_data["group"])
         return response
+
+
+class HomeView(LoginRequiredMixin, View):
+    def get(self, request):
+        if self.request.user.groups.filter(name="faculty").exists():
+            evaluations = Evaluation.objects.filter(created_by=self.request.user)
+            return render(request, "faculty_home.html", {"evaluations": evaluations})
+        else:
+            evaluations = Evaluation.objects.all()
+            return render(request, "student_home.html", {"evaluations": evaluations})
+
+
+class SubmissionView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="faculty").exists()
+
+    def get(self, request):
+        evaluation = request.GET["eval_id"]
+        submissions = Submission.objects.filter(evaluation=evaluation)
+        return render(request, "submissions.html", {"submissions": submissions})

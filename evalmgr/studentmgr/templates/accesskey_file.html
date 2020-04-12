@@ -1,41 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-</head>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src = "https://cdnjs.cloudflare.com/ajax/libs/flex-layout-attribute/1.0.3/css/flex-layout-attribute.css"></script>
+{% extends 'base.html' %}
 
+{% block content %}
 
-<body>
-
-<div class="container mt-5 row h-100 d-flex justify-content-center">
-    <h3>Submit new assignment</h3>
-    <br>
-    <div class="col-md-3 my-auto">
-    <form method="post">
+    <div class="container mt-5 row h-100 d-flex justify-content-center">
+        <h3>Submit new assignment</h3>
+        <br>
+        <div class="col-md-3 my-auto">
+            <form method="post">
                 {% csrf_token %}
-    <input type="text" class="form-control" id="access_code" placeholder="Enter Access Key..." name="access_code">
+                <input type="text" class="form-control" id="access_code" placeholder="Enter Access Key..."
+                       name="access_code">
 
-    <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </form>
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
+        </div>
     </div>
-</div>
-<div class="container mt-5 row h-100 d-flex justify-content-center">
-    <h3>See previous submissions</h3>
-    <br>
-    <div class="col-md-3 my-auto">
-    <form method="post" action={% url 'studentmgr:past_submission_view' %}>
-                {% csrf_token %}
-    <input type="text" class="form-control" id="team_name" placeholder="Enter Team Name" name="team_name">
 
-    <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </form>
-    </div>
-</div>
-
-
-</body>
-</html>
+{% endblock %}

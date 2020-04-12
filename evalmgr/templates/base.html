@@ -1,13 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>{% block title %} Automated Assignment Evaluation {% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <title>{% block title %} Automated Assignment Evaluation {% endblock %}</title>
 </head>
 <body>
-  <main>
-    {% block content %}
-    {% endblock %}
-  </main>
+{% if user.is_authenticated %}
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Hi {{ user.username }}</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'password_reset' %}">Reset Password</a>
+            </li>
+        </ul>
+    </nav>
+{% else %}
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'login' %}">Login</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <hr class="mt-0 mb-4">
+            <main>
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+</div>
 </body>
 </html>

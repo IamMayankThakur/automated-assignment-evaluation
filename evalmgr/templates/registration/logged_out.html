@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Logout{% endblock %}
 
 {% block content %}
-<h2>Logged Out!</h2>
-<p> Thank you for using the website </p>
-<p><a href="{% url 'login' %}">Login Again</a></p>
+    <h2>Logged Out!</h2>
+    <p> Thank you for using the website </p>
+    <button class="btn"><a href="{% url 'login' %}">Login Again</a></button>
 {% endblock %}
