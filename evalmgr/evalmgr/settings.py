@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "testmgr",
+    "crispy_forms",
 ]
 
 MIDDLEWARE = [
@@ -127,6 +128,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 CELERY_TIMEZONE = TIME_ZONE
 # CELERY_BROKER_URL = 'redis://redis:6379'

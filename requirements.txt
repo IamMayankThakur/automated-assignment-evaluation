@@ -11,3 +11,4 @@ black
 flake8
 ipython
 docker
+django-crispy-forms
