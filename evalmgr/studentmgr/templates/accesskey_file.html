@@ -2,17 +2,18 @@
 
 {% block content %}
 
-<div class="container mt-5 row h-100 d-flex justify-content-center">
-    <h3>Submit new assignment</h3>
-    <br>
-    <div class="col-md-3 my-auto">
-    <form method="post">
+    <div class="container mt-5 row h-100 d-flex justify-content-center">
+        <h3>Submit new assignment</h3>
+        <br>
+        <div class="col-md-3 my-auto">
+            <form method="post">
                 {% csrf_token %}
-    <input type="text" class="form-control" id="access_code" placeholder="Enter Access Key..." name="access_code">
+                <input type="text" class="form-control" id="access_code" placeholder="Enter Access Key..."
+                       name="access_code">
 
-    <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </form>
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
+        </div>
     </div>
-</div>
 
 {% endblock %}

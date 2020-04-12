@@ -4,6 +4,19 @@
 {% block title %}home{% endblock %}
 
 {% block content %}
+    <div class="dropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            Create a new evaluation
+        </button>
+        <div class="dropdown-menu">
+            <h5 class="dropdown-header">Select Evaluation</h5>
+            <a class="dropdown-item" href="{% url 'facultymgr:create_api_eval' %}">API Evaluation</a>
+            <a class="dropdown-item" href="{% url 'facultymgr:create_code_eval' %}">Code Evaluation</a>
+            <a class="dropdown-item" href="#">Container Evaluation</a>
+            <a class="dropdown-item" href="#">Container Scale Evaluation</a>
+        </div>
+    </div>
+    <br>
     {% for evaluation in evaluations %}
         <div class="card">
             <h5 class="card-header">{{ evaluation.name }}</h5>
@@ -13,6 +26,7 @@
                 <a href="{% url 'facultymgr:view_submission' %}?eval_id={{ evaluation.id }}" class="btn btn-primary">View Submissions</a>
             </div>
         </div>
+        <br>
     {% endfor %}
 
 {% endblock %}
