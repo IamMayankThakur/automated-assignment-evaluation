@@ -50,16 +50,6 @@ class Submission(models.Model):
         return str(self.id)
 
 
-class SubmissionCodeEval(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    username = models.CharField(max_length=128, blank=True)
-    timestamp = models.DateTimeField(default=timezone.now)
-    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
-    marks = models.FloatField(default=-1)
-    message = models.TextField()
-    source_code_file = models.FileField(upload_to="source/code_eval/")
-
-
 class SubmissionAssignment3(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now)
