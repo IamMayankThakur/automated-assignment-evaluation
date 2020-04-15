@@ -1,15 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-</head>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-            
-<body>
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
-<div class="container mt-5">
+{% block title %}Create Code Evaluation{% endblock %}
+
+{% block content %}
+    <script type="text/javascript">
+        function setTestType(number)
+        {
+            document.getElementById('testType').value = number
+        }            
+    </script>
+
+    <div class="alert alert-info" role="alert">
     
     <form method = "post" action = {% url 'facultymgr:create_eval'%} >
     {% csrf_token %}
@@ -58,12 +60,4 @@
     </form>
 </div>
 
-
-</body>
-<script type="text/javascript">
-    function setTestType(number)
-    {
-        document.getElementById('testType').value = number
-    }            
-</script>
-</html>
+{% endblock %}

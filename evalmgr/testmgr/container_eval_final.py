@@ -171,11 +171,11 @@ def do_container_eval(*args, **kwargs):
         marks += marks_for_test
         faculty_message += faculty_message_for_test
 
-        sub.marks = marks
-        sub.faculty_message = faculty_message
-        print(faculty_message)
-        sub.message = message
-        sub.save()
+    sub.marks = marks
+    sub.faculty_message = faculty_message
+    print(faculty_message)
+    sub.message = message
+    sub.save()
 
 
 def cpu_test(num_cpus, test, container_data):

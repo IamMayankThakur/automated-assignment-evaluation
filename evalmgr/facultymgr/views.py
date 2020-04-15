@@ -92,7 +92,10 @@ class ConfigUploadCodeEval(LoginRequiredMixin, UserPassesTestMixin, View):
         except ObjectDoesNotExist:
             return HttpResponse("Error in creating object in CodeEvalModel")
 
-class CreateEval(View):
+class CreateEval(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="faculty").exists()
+
     def get(self, request):
         return render(request, "create_eval.html")
 

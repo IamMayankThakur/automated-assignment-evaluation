@@ -168,7 +168,7 @@ def create_evaluation_container_eval(**kwargs):
     except ObjectDoesNotExist:
         return HttpResponse("Evaluation object not created")
     try:
-        evaluation.created_by = FacultyProfile.objects.get(
+        evaluation.created_by = User.objects.get(
             email=kwargs["form_data"]["email_id"]
         )
         evaluation.name = kwargs["form_data"]["evaluation_name"]
@@ -176,7 +176,7 @@ def create_evaluation_container_eval(**kwargs):
         evaluation.access_code = kwargs["form_data"]["access_code"]
         evaluation.description = kwargs["form_data"]["description"]
         evaluation.save()
-        endpoint = get_route_for_eval((int)(kwargs["form_data"]["testType"]))
+        endpoint = get_route_for_eval(int(kwargs["form_data"]["testType"]))
         return HttpResponseRedirect(reverse(endpoint))
     except (ObjectDoesNotExist, IntegrityError):
         evaluation.delete()

@@ -173,8 +173,10 @@ class LoadBalancerTestView(LoginRequiredMixin, UserPassesTestMixin, View):
             print(e)
             return HttpResponse("Error in input, ensure all fields are filled")
 
+class ContainerEvalTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
 
-class ContainerEvalTestView(View):
     def get(self, request):
         if request.session.get("access_code") is None:
             return HttpResponse("No access code")
@@ -202,8 +204,12 @@ class ContainerEvalTestView(View):
             return HttpResponse("Error in input, ensure all fields are filled")
 
 
-class ScaleTestView(View):
+class ScaleTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
     def get(self, request):
+        print("INSIDE GET OF SCALE TEST")
         if request.session.get("access_code") is None:
             return HttpResponse("No access code")
         return render(request, "scale_eval_submission.html")
@@ -217,9 +223,9 @@ class ScaleTestView(View):
             )
             sub.username = request.POST["username"]
             sub.private_key_file = request.FILES["private_key_file"]
-            sub.manager_ip = request.POST["public_ip_address"]
+            sub.public_ip_address = request.POST["public_ip_address"]
             sub.save()
-            do_scale_eval(sub_id=sub.id)
+            do_scale_eval.delay(sub_id=sub.id)
             return HttpResponse(
                 "Your submission has been recorded. Your submission id is "
                 + str(sub.id)

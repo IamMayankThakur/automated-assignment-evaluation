@@ -74,6 +74,7 @@ class ContainerTestModel(models.Model):
 
 
 class ScaleTestModel(models.Model):
+    service_name = models.TextField(blank=False)
     scale_min = models.IntegerField(blank=False)
     scale_max = models.IntegerField(blank=False)
     metric = models.TextField(blank=False)

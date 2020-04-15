@@ -1,10 +1,16 @@
-{% extends 'base.html' %}
-{% load crispy_forms_tags %}
-
-{% block title %}Create Code Evaluation{% endblock %}
-
-{% block content %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cloud Computing Assignment 2</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
 <div class="container mt-5 border border-dark px-5 py-5">
     <form action="" method="POST" enctype="multipart/form-data" class="was-validated">
         {% csrf_token %}
@@ -12,14 +18,14 @@
         <label for="team_name" class="font-weight-bold">Team Name</label>
         <input type="text" class="form-control w-50" id="team_name" placeholder="Enter Team Name.." name="team" required>
         <div class="valid-feedback">Valid.</div>
-        <div class="invalid-feedback">Please fill out this field. Same team name as the previous assignment</div>
+        <div class="invalid-feedback">Your registered team name</div>
       </div>
 
         <div class="form-group">
-        <label for="team_name" class="font-weight-bold">Public ip Address</label>
+        <label for="team_name" class="font-weight-bold">Manager IP</label>
         <input type="text" class="form-control w-50" id="public_ip_address" placeholder="Enter Public ip address.." name="public_ip_address" required>
         <div class="valid-feedback">Valid.</div>
-        <div class="invalid-feedback">Please fill out this field. Do not include any trailing slash</div>
+        <div class="invalid-feedback">Manager node IP with port on which service is running</div>
       </div>
 
         <div class="form-group">
@@ -42,5 +48,5 @@
     <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
-
-{% endblock %}
+</body>
+</html>
