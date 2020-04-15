@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Code Evaluation{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 border border-dark px-5 py-5">
+    <form action="" method="POST" enctype="multipart/form-data" class="was-validated">
+        {% csrf_token %}
+    <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Team Name</label>
+        <input type="text" class="form-control w-50" id="team_name" placeholder="Enter Team Name.." name="team" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Your registered team name</div>
+      </div>
+
+        <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Manager IP</label>
+        <input type="text" class="form-control w-50" id="public_ip_address" placeholder="Enter Public ip address.." name="public_ip_address" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Manager node IP with port on which service is running</div>
+      </div>
+
+        <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Username which has sudo access</label>
+        <input type="text" class="form-control w-50" id="username" placeholder="Enter username" name="username" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+
+   <label class="font-weight-bold">Upload the private key (.pem) file (If required) which you use to ssh to the instance</label>
+    <br>
+    <div class="custom-file w-25">
+        <input type="file" class="custom-file-input" id="private_key" name="private_key_file" required>
+        <label class="custom-file-label" for="private_key">Choose pem file</label>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please select a file.</div>
+    </div>
+
+    <br><br>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+{% endblock %}

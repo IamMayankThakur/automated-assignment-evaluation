@@ -5,8 +5,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 import pandas as pd
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import IntegrityError
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.db.models import Max
-from django.http import HttpResponse
 
 from studentmgr.models import Team, Submission, SubmissionAssignment3
 from testmgr.api_eval import setup_api_eval
@@ -156,6 +158,38 @@ def get_max_marks():
     final_data = pd.DataFrame(all_rows, columns=columns)
     final_data.to_csv("final_marks.csv")
 
+
+def create_evaluation_container_eval(**kwargs):
+    eval_id = kwargs["eval_id"] if "eval_id" in kwargs else None
+    if eval_id is None:
+        raise RuntimeError
+    try:
+        evaluation = Evaluation.objects.get(pk=eval_id)
+    except ObjectDoesNotExist:
+        return HttpResponse("Evaluation object not created")
+    try:
+        evaluation.created_by = User.objects.get(
+            email=kwargs["form_data"]["email_id"]
+        )
+        evaluation.name = kwargs["form_data"]["evaluation_name"]
+        evaluation.type = kwargs["form_data"]["testType"]
+        evaluation.access_code = kwargs["form_data"]["access_code"]
+        evaluation.description = kwargs["form_data"]["description"]
+        evaluation.save()
+        endpoint = get_route_for_eval(int(kwargs["form_data"]["testType"]))
+        return HttpResponseRedirect(reverse(endpoint))
+    except (ObjectDoesNotExist, IntegrityError):
+        evaluation.delete()
+        return HttpResponse(
+            "FacultyProfile object not found (or) Please enter unique/correct values, the access code or name could have been taken by another evaluation"
+        )
+
+
+def get_route_for_eval(testType):
+    if testType == 5:
+        return "facultymgr:container_test_cases"
+    if testType == 6:
+        return "facultymgr:scale_test_cases"
 
 class SignUpForm(UserCreationForm):
     username = forms.CharField()

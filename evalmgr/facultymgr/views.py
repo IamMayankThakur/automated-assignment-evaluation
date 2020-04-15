@@ -1,20 +1,3 @@
-"""
-API conf format
-[Settings]
-name = Assignment 1 Eval Cloud Computing
-description = CC A 1
-email = instructor1@mail.com
-access_code = UE17CS302
-test_type = 1
-[TestName]
-sanity = True
-api_endpoint = api/v1/test
-api_method = GET
-api_message_body = {key: value}
-expected_status_code = 201
-expected_response_body = {key:value}
-"""
-
 # Create your views here.
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -22,9 +5,19 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.db import InternalError, DatabaseError
+from django.db.utils import IntegrityError
 from .models import Evaluation
-from .utils import create_evaluation, create_evaluation_code_eval
+from testmgr.models import ContainerTestModel
+from .utils import (
+    create_evaluation,
+    create_evaluation_code_eval,
+    create_evaluation_container_eval,
+)
 from testmgr.models import CodeEvalModel
+from testmgr.container_eval_final import setup_container_eval
+from testmgr.scale_eval import setup_scale_eval
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from studentmgr.models import Submission
 import docker
 from django.contrib.auth.forms import UserCreationForm
@@ -99,6 +92,59 @@ class ConfigUploadCodeEval(LoginRequiredMixin, UserPassesTestMixin, View):
         except ObjectDoesNotExist:
             return HttpResponse("Error in creating object in CodeEvalModel")
 
+class CreateEval(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="faculty").exists()
+
+    def get(self, request):
+        return render(request, "create_eval.html")
+
+    def post(self, request):
+        try:
+            evaluation = Evaluation()
+            evaluation.save()
+        except InternalError:
+            return HttpResponse("Error Evaluation object could not be created")
+        request.session["eval_id"] = evaluation.id
+        return create_evaluation_container_eval(
+            eval_id=evaluation.id, form_data=request.POST
+        )
+
+
+class ContainerTestCases(View):
+    def get(self, request):
+        print(request.session["eval_id"])
+        testcases = {"eval_id": request.session["eval_id"]}
+        return render(request, "container_test_cases.html", testcases)
+
+    def post(self, request):
+        try:
+            if "finish" in request.POST:
+                return render(request, "eval_created.html")
+            setup_container_eval.delay(form_data=request.POST)
+            if "another" in request.POST:
+                testcases = {"eval_id": request.POST["eval_id"]}
+                return render(request, "container_test_cases.html", testcases)
+        except ObjectDoesNotExist:
+            return HttpResponse("Evaluation object not found")
+
+
+class ScaleTestCases(View):
+    def get(self, request):
+        print(request.session["eval_id"])
+        eval_id = {"eval_id": request.session["eval_id"]}
+        return render(request, "scale_test_cases.html", eval_id)
+
+    def post(self, request):
+        try:
+            if "finish" in request.POST:
+                return render(request, "eval_created.html")
+            setup_scale_eval(form_data=request.POST)
+            if "another" in request.POST:
+                eval_id = {"eval_id": request.POST["eval_id"]}
+                return render(request, "scale_test_cases.html", eval_id)
+        except ObjectDoesNotExist:
+            return HttpResponse("Evaluation object not found")
 
 class SignUp(generic.CreateView):
     form_class = SignUpForm

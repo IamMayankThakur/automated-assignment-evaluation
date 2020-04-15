@@ -53,3 +53,38 @@ class CodeEvalTestModel(models.Model):
     class Meta:
         app_label = "facultymgr"
         managed = True
+
+
+class ContainerTestModel(models.Model):
+    container_name = models.TextField(blank=False)
+    container_image = models.TextField(blank=False)
+    ports_exposed = models.TextField(blank=True)
+    connected_to_networks = models.TextField(blank=True)
+    env_variables = models.TextField(blank=True)
+    volumes = models.TextField(blank=True)
+    commands = models.TextField(blank=True)
+    num_cpus = models.IntegerField(blank=True)
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
+
+    objects = models.Manager()
+
+    class Meta:
+        app_label = "facultymgr"
+        managed = True
+
+
+class ScaleTestModel(models.Model):
+    service_name = models.TextField(blank=False)
+    scale_min = models.IntegerField(blank=False)
+    scale_max = models.IntegerField(blank=False)
+    metric = models.TextField(blank=False)
+    window = models.TextField(blank=False)
+    up_threshold = models.TextField(blank=False)
+    down_threshold = models.TextField(blank=False)
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
+
+    objects = models.Manager()
+
+    class Meta:
+        app_label = "facultymgr"
+        managed = True

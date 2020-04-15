@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Code Evaluation{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-5">
+        <form method = "post" action = "" >
+        {% csrf_token %}
+        <div class="alert alert-info" role="alert">
+            <div style="display:none">
+                <input type="text" id="eval_id" name="eval_id" value='{{eval_id}}'>
+            </div>
+            <div class="form-group">
+                <label for="container_name">Container name</label>
+                <input type="text" class="form-control" id="container_name" name="container_name"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="container_image">Container image</label>
+                <input type="text" class="form-control" id="container_image" name="container_image"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="ports_exposed">Ports exposed</label>
+                <input type="text" class="form-control" id="ports_exposed" name="ports_exposed"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="networks">Networks connected</label>
+                <input type="text" class="form-control" id="networks" name="networks">
+            </div>
+
+            <div class="form-group">
+                <label for="env_variables">Environment variables</label>
+                <textarea class="form-control" id="env_variables" name="env_variables"> </textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="volumes">Volumes attached</label>
+                <input type="text" class="form-control" id="volumes" name="volumes">
+            </div>
+
+            <div class="form-group">
+                <label for="commands">Commands to run</label>
+                <input type="text" class="form-control" id="commands" name="commands">
+            </div>
+
+            <div class="form-group">
+                <label for="cpus">Number of CPUS allocated</label>
+                <input type="number" class="form-control" id="cpus" name="cpus">
+            </div>
+        </div>
+        <div class="mt-3 d-flex justify-content-center grid">
+            <button type="submit" name="another" class="btn btn-danger">Add test case</button>
+        </div>
+        <div class="mt-3 d-flex justify-content-center grid">
+            <br><button type="submit" name="finish" class="btn btn-primary">End</button>
+        </div>
+        </form>
+    </div>
+
+{% endblock %}

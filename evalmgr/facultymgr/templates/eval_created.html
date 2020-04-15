@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Code Evaluation{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 row h-100 d-flex justify-content-center">
+    <h1>Evaluation created successfully</h1>
+</div>
+<div class="container mt-5 row h-100 d-flex justify-content-center">
+	<a class="btn btn-primary" href="{% url 'home' %}" role="button">Home</a>
+</div>
+
+{% endblock %}

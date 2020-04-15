@@ -5,7 +5,9 @@ from django.views import View
 from facultymgr.models import Evaluation
 from testmgr.api_eval import do_api_eval, do_api_eval_cc, do_assignment_3_eval
 from testmgr.container_eval import do_container_eval_cc
+from testmgr.container_eval_final import do_container_eval
 from testmgr.code_eval import do_code_eval
+from testmgr.scale_eval import do_scale_eval
 from .models import Team, Submission, SubmissionAssignment3
 from .utils import get_route_for_eval_type
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -170,3 +172,64 @@ class LoadBalancerTestView(LoginRequiredMixin, UserPassesTestMixin, View):
         except Exception as e:
             print(e)
             return HttpResponse("Error in input, ensure all fields are filled")
+
+class ContainerEvalTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
+    def get(self, request):
+        if request.session.get("access_code") is None:
+            return HttpResponse("No access code")
+        return render(request, "container_eval_submission.html")
+
+    def post(self, request):
+        try:
+            sub = Submission()
+            sub.team = Team.objects.get(team_name=request.POST["team"])
+            sub.evaluation = Evaluation.objects.get(
+                access_code=request.session["access_code"]
+            )
+            sub.username = request.POST["username"]
+            sub.private_key_file = request.FILES["private_key_file"]
+            sub.public_ip_address = request.POST["public_ip_address"]
+            sub.save()
+            print(sub.username, sub.public_ip_address, sub.id)
+            do_container_eval.delay(sub_id=sub.id)
+            return HttpResponse(
+                "Your submission has been recorded. Your submission id is "
+                + str(sub.id)
+            )
+        except Exception as e:
+            print(e)
+            return HttpResponse("Error in input, ensure all fields are filled")
+
+
+class ScaleTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
+    def get(self, request):
+        print("INSIDE GET OF SCALE TEST")
+        if request.session.get("access_code") is None:
+            return HttpResponse("No access code")
+        return render(request, "scale_eval_submission.html")
+
+    def post(self, request):
+        try:
+            sub = Submission()
+            sub.team = Team.objects.get(team_name=request.POST["team"])
+            sub.evaluation = Evaluation.objects.get(
+                access_code=request.session["access_code"]
+            )
+            sub.username = request.POST["username"]
+            sub.private_key_file = request.FILES["private_key_file"]
+            sub.public_ip_address = request.POST["public_ip_address"]
+            sub.save()
+            do_scale_eval.delay(sub_id=sub.id)
+            return HttpResponse(
+                "Your submission has been recorded. Your submission id is "
+                + str(sub.id)
+            )
+        except Exception as e:
+            print(e)
+            return HttpResponse("Error in input, ensure all fields are filled/valid")
