@@ -8,13 +8,7 @@ from testmgr.container_eval import do_container_eval_cc
 from testmgr.container_eval_final import do_container_eval
 from testmgr.code_eval import do_code_eval
 from testmgr.scale_eval import do_scale_eval
-from .models import (
-    Team,
-    Submission,
-    SubmissionAssignment3,
-    SubmissionCodeEval,
-    SubmissionScaleEval,
-)
+from .models import Team, Submission, SubmissionAssignment3
 from .utils import get_route_for_eval_type
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
@@ -80,8 +74,9 @@ class PastSubmissionView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request):
         team_name = request.POST["team_name"]
-        # data = Submission.objects.filter(team__team_name=team_name)
-        data = SubmissionCodeEval.objects.filter(team__team_name=team_name)
+        # eval_id = int(request.POST["eval"])
+        # data = Submission.objects.filter(team__team_name=team_name, evaluation=eval_id)
+        data = Submission.objects.filter(team__team_name=team_name)
         submissions = {"submissions": data}
         return render(request, "submissions.html", submissions)
         # return HttpResponse("Marks will not be shown at this point")
@@ -128,7 +123,7 @@ class CodeEvalTestView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request):
         try:
-            sub = SubmissionCodeEval()
+            sub = Submission()
             sub.team = Team.objects.get(team_name=request.POST["team"])
             sub.evaluation = Evaluation.objects.get(
                 access_code=request.session["access_code"]
@@ -215,7 +210,7 @@ class ScaleTestView(View):
 
     def post(self, request):
         try:
-            sub = SubmissionScaleEval()
+            sub = Submission()
             sub.team = Team.objects.get(team_name=request.POST["team"])
             sub.evaluation = Evaluation.objects.get(
                 access_code=request.session["access_code"]

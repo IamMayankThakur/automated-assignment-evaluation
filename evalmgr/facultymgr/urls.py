@@ -13,4 +13,5 @@ urlpatterns = [
         name="container_test_cases",
     ),
     path("scale_test_cases", views.ScaleTestCases.as_view(), name="scale_test_cases"),
+    path("view_submissions", views.SubmissionView.as_view(), name="view_submission"),
 ]

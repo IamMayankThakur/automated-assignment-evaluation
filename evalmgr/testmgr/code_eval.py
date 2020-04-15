@@ -7,7 +7,7 @@ from celery import shared_task
 
 from facultymgr.models import Evaluation
 from notifymgr.mail import send_mail
-from studentmgr.models import Submission, SubmissionCodeEval
+from studentmgr.models import Submission
 from .models import CodeEvalTestModel, CodeEvalModel
 from random import randint
 import docker
@@ -51,7 +51,7 @@ def do_code_eval(*args, **kwargs):
         print("No sub id")
         raise RuntimeError
     print("evaluation started")
-    submission = SubmissionCodeEval.objects.get(id=sub_id)
+    submission = Submission.objects.get(id=sub_id)
     code_file = submission.source_code_file
     code_eval = CodeEvalModel.objects.get(evaluation=eval_id)
     main_file = code_eval.main_file
@@ -105,7 +105,7 @@ def run_tests(test_objects, code_file, main_file, command, expected_output_file)
     exp_output = str(expected_output_file)
     code_file2 = str(code_file)
     folder_exp_output = "mnt/vol1/conf/expected_output/"
-    folder_student_sub = "mnt/vol1/source/code_eval/"
+    folder_student_sub = "mnt/vol1/source/api_test/"
 
     arg_0 = exp_output.rsplit("/", 1)[1]
     arg_1 = code_file2.rsplit("/", 1)[1]
@@ -120,8 +120,8 @@ def run_tests(test_objects, code_file, main_file, command, expected_output_file)
             stdout=True,
             detach=False,
             volumes={path: {"bind": "/mnt/vol1", "mode": "rw",}},
-            # command = "sh -c 'gcc mnt/vol1/conf/expected_output/{0} && ./a.out < mnt/vol1/conf/expected_output/input.txt > mnt/vol1/conf/expected_output/output_expected.txt && gcc -o foo mnt/vol1/source/code_eval/{1} && ./foo < mnt/vol1/conf/expected_output/input.txt > output.txt && diff output.txt mnt/vol1/conf/expected_output/output_expected.txt'".format(exp_output_file,file_name)
-            # command2 = "sh -c 'gcc {2}{0} && ./a.out < {2}input.txt > {2}output_expected.txt && gcc -o foo {3}{1} && ./foo < {2}input.txt > output.txt && diff output.txt {2}output_expected.txt'".format(exp_output_file,file_name)
+            # command = "sh -c 'gcc mnt/vol1/conf/expected_output/{0} && ./a.out < mnt/vol1/conf/expected_output/input.txt > mnt/vol1/conf/expected_output/output_expected.txt && gcc -o foo mnt/vol1/source/api_test/{1} && ./foo < mnt/vol1/conf/expected_output/input.txt > output.txt && diff output.txt mnt/vol1/conf/expected_output/output_expected.txt'".format(arg_0,arg_1)
+            # command = "sh -c 'gcc {2}{0} && ./a.out < {2}input.txt > {2}output_expected.txt && gcc -o foo {3}{1} && ./foo < {2}input.txt > output.txt && diff output.txt {2}output_expected.txt'".format(arg_0,arg_1,arg_2,arg_3)
             command=command.format(arg_0, arg_1, arg_2, arg_3),
         )
     except Exception:

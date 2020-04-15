@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    {% for evaluation in evaluations %}
+        <div class="card">
+            <h5 class="card-header"> {{ evaluation.name }}</h5>
+            <div class="card-body">
+                <h5 class="card-title">Created By: {{ evaluation.created_by }}</h5>
+                <p class="card-text"> {{ evaluation.description }}</p>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#access_modal">Submit
+                </button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#team_name_modal">View
+                    Results
+                </button>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+    <div class="modal fade" id="access_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Enter Access Code</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form action="{% url 'studentmgr:access_code' %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <label>
+                            <input type="text" name="access_code">
+                        </label>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="team_name_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Enter Team Name</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form action="{% url 'studentmgr:past_submission_view' %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <label>
+                            <input type="text" name="team_name" id="ip_team_name">
+                        </label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+                \
+            </div>
+        </div>
+    </div>
+{% endblock %}

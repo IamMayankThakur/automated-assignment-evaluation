@@ -1,5 +1,4 @@
 # Create your views here.
-from abc import ABC
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
@@ -19,6 +18,7 @@ from testmgr.container_eval_final import setup_container_eval
 from testmgr.scale_eval import setup_scale_eval
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from studentmgr.models import Submission
 import docker
 from django.contrib.auth.forms import UserCreationForm
 from .utils import SignUpForm
@@ -152,3 +152,23 @@ class SignUp(generic.CreateView):
         response = super(SignUp, self).form_valid(form)
         self.object.groups.add(form.cleaned_data["group"])
         return response
+
+
+class HomeView(LoginRequiredMixin, View):
+    def get(self, request):
+        if self.request.user.groups.filter(name="faculty").exists():
+            evaluations = Evaluation.objects.filter(created_by=self.request.user)
+            return render(request, "faculty_home.html", {"evaluations": evaluations})
+        else:
+            evaluations = Evaluation.objects.all()
+            return render(request, "student_home.html", {"evaluations": evaluations})
+
+
+class SubmissionView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="faculty").exists()
+
+    def get(self, request):
+        evaluation = request.GET["eval_id"]
+        submissions = Submission.objects.filter(evaluation=evaluation)
+        return render(request, "submissions.html", {"submissions": submissions})
