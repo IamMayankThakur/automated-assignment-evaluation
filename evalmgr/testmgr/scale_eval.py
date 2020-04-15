@@ -95,17 +95,15 @@ def do_scale_eval(*args, **kwargs):
         stdin, stdout, stderr = ssh.exec_command("sudo docker service ls -f name="+test.service_name+" --format {{.Replicas}}")
         output = stdout.read().decode()
         if(len(output)==0 or test.scale_min != int(output.split('/')[0])):
-            message += "Minimum scale test case failed\n"
+            message += "Minimum scale test case failed ("+str(test.scale_min)+" instances)\n"
         else:
+            message += "Minimum scale test case passed ("+str(test.scale_min)+" instances)\n"
             marks+=1
-
-        
-
 
         Requests = int((int(test.up_threshold) + int(test.down_threshold))/2) + 1 #This is your -R
         duration = int(test.window[:-1]) + 30
         window = str(duration)+'s'
-        for i in range(2,int(test.scale_max)+1):
+        for i in range(test.scale_min+1,test.scale_max):
             Requests = Requests + int(test.up_threshold)
             print(Requests)
             print(window)
@@ -117,9 +115,10 @@ def do_scale_eval(*args, **kwargs):
             print("Checking after scale")
             print(output)
             if(len(output)==0 or i!=int(output.split('/')[0])):
-                message += "Service did not scale to "+str(i)+" instances in the give time\n"
+                message += "Service did not scale to "+str(i)+" instances\n"
                 loader.wait()
             else:
+                message += "Service scaled to "+str(i)+" instances\n"
                 marks+=1
             loader.wait()
             print(message)
@@ -127,19 +126,20 @@ def do_scale_eval(*args, **kwargs):
             sub.faculty_message = faculty_message
             sub.marks = marks
             sub.save()
-            
-
-
-
-
-
-
-# def give_marks(testpassed, testname):
-#     marks = 0
-#     message = ""
-#     if testpassed:
-#         marks = 1
-#         message += testname + " test passed\n\n"
-#     else:
-#         message += testname + " test failed\n\n"
-#     return marks, message
+        loader = subprocess.Popen(["wrk","-t1","-c1","-d"+window,"-R1000","http://"+service_address])
+        time.sleep(duration-10)
+        stdin, stdout, stderr = ssh.exec_command("sudo docker service ls -f name="+test.service_name+" --format {{.Replicas}}")
+        output = stdout.read().decode()
+        print("Checking after scale")
+        print(output)
+        if(len(output)==0 or test.scale_max!=int(output.split('/')[0])):
+       	    message += "Maximum scale test failed ("+str(test.scale_max)+" instances)\n"
+            loader.wait()
+        else:
+            message += "Service scaled to "+str(i)+" instances\n"
+            marks+=1
+        loader.wait()
+        sub.message = message
+        sub.faculty_message = faculty_message
+        sub.marks = marks
+        sub.save()
