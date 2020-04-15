@@ -65,8 +65,7 @@ def do_container_eval(*args, **kwargs):
         socket.gaierror,
     ):
         # except Exception as e:
-        message += "Fatal Error.! Check if your instance is running / port is open / pem file is correct etc"
-        faculty_message += "Fatal Error.! Check if your instance is running / port is open / pem file is correct etc"
+        message = faculty_message = "Fatal Error.! Check if your instance is running / port is open / pem file is correct etc"
         sub.message = message
         sub.faculty_message = faculty_message
         sub.marks = marks
