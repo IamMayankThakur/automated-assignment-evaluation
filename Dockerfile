@@ -8,5 +8,4 @@ RUN pip install --upgrade pip
 RUN cd /code/automated-assignment-evaluation && pip install -r requirements.txt
 
 COPY . /code/automated-assignment-evaluation
-
 WORKDIR /code/automated-assignment-evaluation

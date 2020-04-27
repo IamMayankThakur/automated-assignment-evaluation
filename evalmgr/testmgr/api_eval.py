@@ -23,6 +23,7 @@ def setup_api_eval(*args, **kwargs):
     c = configparser.ConfigParser()
     c.read(file)
     sections = c.sections()
+    print(sections)
     sections.remove("Settings")
     for s in sections:
         api_test = ApiTestModel()
