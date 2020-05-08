@@ -34,7 +34,7 @@ class Submission(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
     marks = models.FloatField(default=-1)
-    message = models.TextField()
+    message = models.TextField(default="Probably not evaluated yet")
     faculty_message = models.TextField(blank=True)
     public_ip_address = models.URLField(blank=False)
     source_code_file = models.FileField(upload_to="source/api_test/")

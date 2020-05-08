@@ -3,7 +3,7 @@ from django.shortcuts import render, reverse
 from django.views import View
 
 from facultymgr.models import Evaluation
-from testmgr.api_eval import do_api_eval, do_api_eval_cc, do_assignment_3_eval
+from testmgr.api_eval import do_api_eval, do_api_eval_cc, do_assignment_3_eval, do_final_project_eval
 from testmgr.container_eval import do_container_eval_cc
 from testmgr.container_eval_final import do_container_eval
 from testmgr.code_eval import do_code_eval
@@ -173,6 +173,7 @@ class LoadBalancerTestView(LoginRequiredMixin, UserPassesTestMixin, View):
             print(e)
             return HttpResponse("Error in input, ensure all fields are filled")
 
+
 class ContainerEvalTestView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
         return self.request.user.groups.filter(name="student").exists()
@@ -226,6 +227,35 @@ class ScaleTestView(LoginRequiredMixin, UserPassesTestMixin, View):
             sub.public_ip_address = request.POST["public_ip_address"]
             sub.save()
             do_scale_eval.delay(sub_id=sub.id)
+            return HttpResponse(
+                "Your submission has been recorded. Your submission id is "
+                + str(sub.id)
+            )
+        except Exception as e:
+            print(e)
+            return HttpResponse("Error in input, ensure all fields are filled/valid")
+
+
+class FinalProjectTestView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name="student").exists()
+
+    def get(self, request):
+        print("Render html")
+
+    def post(self, request):
+        try:
+            sub = Submission()
+            sub.username = request.POST["username"]
+            sub.team = Team.objects.get(team_name=request.POST["team"])
+            sub.evaluation = Evaluation.objects.get(
+                access_code=request.session["access_code"]
+            )
+            sub.private_key_file = request.FILES["private_key_file"]
+            sub.public_ip_address = request.POST["public_ip_address"]
+            sub.source_code_file = request.FILES["source_code_file"]
+            sub.save()
+            do_final_project_eval.delay(sub_id=sub.id, users_ip = str(request.POST["users_ip"]), rides_ip = request.POST["rides_ip"], lb_ip=request.POST["lb_ip"])
             return HttpResponse(
                 "Your submission has been recorded. Your submission id is "
                 + str(sub.id)

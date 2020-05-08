@@ -3,7 +3,9 @@ import json
 import ast
 import random
 import string
+import time
 
+import paramiko
 import requests
 from celery import shared_task
 
@@ -448,3 +450,191 @@ def do_assignment_3_eval(*args, **kwargs):
             " Unknown Error. Ensure your instance is running and APIs are reachable. "
         )
         submission.save()
+
+
+def count_container(ip, username, key_filename):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=ip, username=username, key_filename=key_filename)
+    stdin, stdout, stderr = ssh.exec_command("sudo docker ps | wc -l")
+    output = stdout.read().decode()
+    res = int(output) - 1
+    return res
+
+@shared_task(time_limit=700)
+def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
+    marks = 0
+    message = ""
+
+    submission = Submission.objects.get(id=sub_id)
+    orch_ip = submission.public_ip_address
+    username = submission.username
+    path_to_key = submission.private_key_file.path
+
+    # 0. Clear db
+    requests.post(users_ip + "/api/v1/db/clear")
+    requests.post(rides_ip + "/api/v1/db/clear")
+    requests.post(lb_ip + "/api/v1/db/clear")
+    requests.post(orch_ip + "/api/v1/db/clear")
+
+    # 1. SSH And count containers
+    try:
+        initial_container_count = count_container(orch_ip, username, path_to_key)
+        message += "Initial container count is " + str(initial_container_count) + ". "
+    except Exception as e:
+        print(e)
+        message += "Failed to SSH, check your ip and private key"
+        submission.message = message
+        submission.save()
+        return
+
+    # 2. Create 1 user and 1 ride
+    r1 = requests.put(
+        lb_ip + "/api/v1/users",
+        json={
+            "username": "userName",
+            "password": "3d725109c7e7c0bfb9d709836735b56d943d263f",
+        },
+    )
+
+    r2 = requests.post(
+        lb_ip + "/api/v1/rides",
+        json={
+            "created_by": "userName",
+            "timestamp": "21-08-2021:00-00-00",
+            "source": "1",
+            "destination": "2",
+        },
+    )
+
+    if r1.status_code == 201 and r2.status_code == 201:
+        marks += 1
+        message += " Load Balancer working. "
+    else:
+        message += " Load Balancer not working. "
+        submission.marks = marks
+        submission.message = message
+        submission.save()
+
+    # 3. Sleep for 2 mins
+    time.sleep(120)
+
+    # 4. Get users and rides 25-30 times
+    _iterations = random.randrange(13, 15)
+    for _ in range(_iterations):
+        r = requests.get(lb_ip + "/api/v1/rides?source=1&destination=2")
+        if r.status_code != 200:
+            message += " Could not retrive ride information. "
+            submission.message = message
+            submission.marks = marks
+            submission.save()
+            return
+            
+        r = requests.get(lb_ip + "/api/v1/rides?source=1341&destination=2123")
+        if r.status_code != 400:
+            message += " Inconsistent ride information. Ensure your db clear APIs work."
+            submission.message = message
+            submission.marks = marks
+            submission.save()
+            return
+
+    marks += 1
+    message += " DB get APIs successfully called"
+    
+    # 5. Sleep for 2 mins 45 seconds
+    time.sleep(170)
+
+    # 6. Count Containers
+    final_container_count = count_container(orch_ip, username, path_to_key)
+    if final_container_count > initial_container_count:
+        marks += 2
+        message += " Auto scale successful, final container count is " + str(final_container_count) + ". "
+    else:
+        message += " Auto scale failed, as final container count is " + str(final_container_count) + ". "
+        submission.marks = marks
+        submission.message = message
+        submission.save()
+
+    # 7. Call workers list API
+    time.sleep(140)
+    try:
+        r = requests.get(orch_ip+"/api/v1/worker/list")
+        worker_list = r.json()
+        message += "Successfully retrieved workers list"
+        marks += 1
+    except Exception as e:
+        print(e)
+        message += " Could not retrieve workers. "
+        submission.message = message
+        submission.marks = marks
+        submission.save()
+        return
+    
+    # 8. Crash slave
+    r = requests.post(orch_ip+"/api/v1/crash/slave")
+    if r.status_code == 200:
+        message += "Crash slave API successfully returned 200 OK. "
+        marks += 1
+    else:
+        message += "Crash API did not return 200 OK."
+        submission.message = message
+        submission.marks = marks
+        submission.save()
+        return
+    
+    # 9. Sleep for 1 min
+    time.sleep(60)
+
+    # 10. Ensure new slave is running
+    r = requests.get(orch_ip+"/api/v1/worker/list")
+    new_worker_list = r.json()
+    marks += 1
+    message += "Called worker list after new slave is spawned"
+    if len(new_worker_list) == len(worker_list):
+        message += "New worker started. "
+        marks += 1
+        if worker_list[len(worker_list) - 1] not in new_worker_list:
+            message += " Old slave worker stopped. "
+            marks +=1 
+    
+    else:
+        message = " New slave not started. New PID not returned in worker list API call"
+        submission.message = message
+        submission.marks = marks
+        submission.save()
+        return
+    
+    # 11. Get users and rides
+    _iterations = random.randrange(3, 8)
+    for _ in range(_iterations):
+        r = requests.get(lb_ip + "/api/v1/rides?source=1&destination=2")
+        if r.status_code != 200:
+            message += " Could not retrive ride information after new slave creation. "
+            submission.message = message
+            submission.marks = marks
+            submission.save()
+            return
+            
+        r = requests.get(lb_ip + "/api/v1/rides?source=1341&destination=2123")
+        if r.status_code != 400:
+            message += " Inconsistent ride information after new slave creation"
+            submission.message = message
+            submission.marks = marks
+            submission.save()
+            return
+    
+    marks += 1
+    message += " DB get APIs successfully called after new slave creation"
+
+    # Save marks in the db
+    submission.marks = marks
+    submission.message = message
+    submission.save()
+
+    # 12. Clear db
+    requests.post(users_ip + "/api/v1/db/clear")
+    requests.post(rides_ip + "/api/v1/db/clear")
+    requests.post(lb_ip + "/api/v1/db/clear")
+    requests.post(orch_ip + "/api/v1/db/clear")
+
+    return
