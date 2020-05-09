@@ -19,6 +19,10 @@ urlpatterns = [
         views.ContainerEvalTestView.as_view(),
         name="container_eval_view",
     ),
-    path("scale_eval_test/",views.ScaleTestView.as_view(),name="scale_eval_view"),
-    path("final_project_test/",views.FinalProjectTestView.as_view(),name="final_project_view"),
+    path("scale_eval_test/", views.ScaleTestView.as_view(), name="scale_eval_view"),
+    path(
+        "final_project_test/",
+        views.FinalProjectTestView.as_view(),
+        name="final_project_view",
+    ),
 ]

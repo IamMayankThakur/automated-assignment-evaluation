@@ -92,6 +92,7 @@ class ConfigUploadCodeEval(LoginRequiredMixin, UserPassesTestMixin, View):
         except ObjectDoesNotExist:
             return HttpResponse("Error in creating object in CodeEvalModel")
 
+
 class CreateEval(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
         return self.request.user.groups.filter(name="faculty").exists()
@@ -145,6 +146,7 @@ class ScaleTestCases(View):
                 return render(request, "scale_test_cases.html", eval_id)
         except ObjectDoesNotExist:
             return HttpResponse("Evaluation object not found")
+
 
 class SignUp(generic.CreateView):
     form_class = SignUpForm

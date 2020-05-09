@@ -42,13 +42,14 @@ def setup_scale_eval(*args, **kwargs):
     scale_test.save()
 
 
-#Scale max 3
-#scale min 1
-#window 30s
-#up threshold 10
-#down threshold 5
-#Requests per second to send per instance = int(up threshold + down threshold / 2)
+# Scale max 3
+# scale min 1
+# window 30s
+# up threshold 10
+# down threshold 5
+# Requests per second to send per instance = int(up threshold + down threshold / 2)
 # wrk -t1 -c1 -d -R
+
 
 @shared_task(time_limit=200)
 def do_scale_eval(*args, **kwargs):
@@ -60,7 +61,7 @@ def do_scale_eval(*args, **kwargs):
     marks = 0
     message = ""
     faculty_message = ""
-    ip = service_address.split(':',1)[0]
+    ip = service_address.split(":", 1)[0]
     try:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -82,56 +83,75 @@ def do_scale_eval(*args, **kwargs):
         return
 
     for test in tests:
-        stdin, stdout, stderr = ssh.exec_command("sudo docker service ps "+test.service_name)
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker service ps " + test.service_name
+        )
         error_output = stderr.read().decode()
 
-        if(len(error_output)!=0):
-            message += "Fatal Error.! Service '"+test.service_name+"' is not running\n"
+        if len(error_output) != 0:
+            message += (
+                "Fatal Error.! Service '" + test.service_name + "' is not running\n"
+            )
             sub.message = message
             sub.marks = marks
             sub.save()
             continue
 
-        stdin, stdout, stderr = ssh.exec_command("sudo docker service ls -f name="+test.service_name+" --format {{.Replicas}}")
+        stdin, stdout, stderr = ssh.exec_command(
+            "sudo docker service ls -f name="
+            + test.service_name
+            + " --format {{.Replicas}}"
+        )
         output = stdout.read().decode()
-        if(len(output)==0 or test.scale_min != int(output.split('/')[0])):
+        if len(output) == 0 or test.scale_min != int(output.split("/")[0]):
             message += "Minimum scale test case failed\n"
         else:
-            marks+=1
+            marks += 1
 
-        
-
-
-        Requests = int((int(test.up_threshold) + int(test.down_threshold))/2) + 1 #This is your -R
+        Requests = (
+            int((int(test.up_threshold) + int(test.down_threshold)) / 2) + 1
+        )  # This is your -R
         duration = int(test.window[:-1]) + 30
-        window = str(duration)+'s'
-        for i in range(2,int(test.scale_max)+1):
+        window = str(duration) + "s"
+        for i in range(2, int(test.scale_max) + 1):
             Requests = Requests + int(test.up_threshold)
             print(Requests)
             print(window)
-            loader = subprocess.Popen(["wrk","-t1","-c1","-d"+window,"-R"+str(Requests),"http://"+service_address])
-            print("sleeping for"+str(duration-10)+" seconds")
-            time.sleep(duration-10)
-            stdin, stdout, stderr = ssh.exec_command("sudo docker service ls -f name="+test.service_name+" --format {{.Replicas}}")
+            loader = subprocess.Popen(
+                [
+                    "wrk",
+                    "-t1",
+                    "-c1",
+                    "-d" + window,
+                    "-R" + str(Requests),
+                    "http://" + service_address,
+                ]
+            )
+            print("sleeping for" + str(duration - 10) + " seconds")
+            time.sleep(duration - 10)
+            stdin, stdout, stderr = ssh.exec_command(
+                "sudo docker service ls -f name="
+                + test.service_name
+                + " --format {{.Replicas}}"
+            )
             output = stdout.read().decode()
             print("Checking after scale")
             print(output)
-            if(len(output)==0 or i!=int(output.split('/')[0])):
-                message += "Service did not scale to "+str(i)+" instances in the give time\n"
+            if len(output) == 0 or i != int(output.split("/")[0]):
+                message += (
+                    "Service did not scale to "
+                    + str(i)
+                    + " instances in the give time\n"
+                )
                 loader.wait()
             else:
-                marks+=1
+                marks += 1
             loader.wait()
             print(message)
             sub.message = message
             sub.faculty_message = faculty_message
             sub.marks = marks
             sub.save()
-            
-
-
-
-
 
 
 # def give_marks(testpassed, testname):

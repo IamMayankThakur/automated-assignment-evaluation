@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studentmgr', '0003_delete_submissionscaleeval'),
+        ("studentmgr", "0003_delete_submissionscaleeval"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='submission',
-            name='message',
-            field=models.TextField(default='Probably not evaluated yet'),
+            model_name="submission",
+            name="message",
+            field=models.TextField(default="Probably not evaluated yet"),
         ),
     ]

@@ -456,10 +456,18 @@ def count_container(ip, username, key_filename):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname=ip[7:], username=username, key_filename=key_filename)
+    stdin, stdout, stderr = ssh.exec_command(
+        "sudo docker ps --format '{{.ID}} {{.Image}}' | grep rabbitmq | cut -d ' ' -f 1"
+    )
+    rabbitmq = str(stdout.read().decode())
+    stdin, stdout, stderr = ssh.exec_command(
+        "sudo docker ps --format '{{.ID}} {{.Image}}' | grep zookeeper | cut -d ' ' -f 1"
+    )
+    zookeeper = str(stdout.read().decode())
     stdin, stdout, stderr = ssh.exec_command("sudo docker ps | wc -l")
     output = stdout.read().decode()
     res = int(output) - 1
-    return res
+    return res, rabbitmq, zookeeper
 
 
 @shared_task(time_limit=700)
@@ -487,7 +495,12 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
 
     # 1. SSH And count containers
     try:
-        initial_container_count = count_container(orch_ip, username, path_to_key)
+        initial_container_count, rabbitmq, zookeeper = count_container(orch_ip, username, path_to_key)
+        if rabbitmq == "" and rabbitmq == "":
+            message += "Rabbitmq and zookeeper not running. "
+            submission.message = message
+            submission.marks = marks
+            submission.save()
         message += "Initial container count is " + str(initial_container_count) + ". "
         print("Container Count Done")
     except Exception as e:
@@ -531,11 +544,18 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
         submission.save()
         return
 
-    # 3. Sleep for 2 mins
+    # 3. Sleep for 120 seconds
     time.sleep(120)
-    r = requests.get(orch_ip + "/api/v1/worker/list")
-    worker_list = r.json()
-    print("Called worker list before auto scale", worker_list)
+    try:
+        r = requests.get(orch_ip + "/api/v1/worker/list")
+        worker_list = r.json()
+        print("Called worker list before auto scale", worker_list)
+    except Exception as e:
+        print(e)
+        message += " Worker List API failed. "
+        submission.message = message
+        submission.marks = marks
+        submission.save()
 
     # 4. Get users and rides 25-30 times
     _iterations = random.randrange(13, 15)
@@ -548,9 +568,9 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
             submission.save()
             return
 
-        r = requests.get(lb_ip + "/api/v1/rides?source=1341&destination=2123")
-        if r.status_code != 400:
-            message += " Inconsistent ride information. Ensure your db clear APIs work."
+        r = requests.get(lb_ip + "/api/v1/rides?source=12&destination=21")
+        if r.status_code != 204:
+            message += " Inconsistent ride information. "
             submission.message = message
             submission.marks = marks
             submission.save()
@@ -570,7 +590,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     r = requests.get(orch_ip + "/api/v1/worker/list")
     worker_list = r.json()
     print("Called worker list after auto scale", worker_list)
-    final_container_count = count_container(orch_ip, username, path_to_key)
+    final_container_count, rmq, zk = count_container(orch_ip, username, path_to_key)
     print("Got final container count")
     if final_container_count > initial_container_count:
         marks += 2
@@ -593,7 +613,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
         submission.save()
 
     # 7. Call workers list API
-    time.sleep(140)
+    time.sleep(150)
     try:
         r = requests.get(orch_ip + "/api/v1/worker/list")
         worker_list = r.json()
@@ -644,7 +664,9 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
             marks += 1
 
     else:
-        message = " New slave not started. New PID not returned in worker list API call"
+        message += (
+            " New slave not started. New PID not returned in worker list API call"
+        )
         submission.message = message
         submission.marks = marks
         submission.save()

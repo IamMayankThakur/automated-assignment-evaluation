@@ -6,11 +6,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studentmgr', '0002_delete_submissioncodeeval'),
+        ("studentmgr", "0002_delete_submissioncodeeval"),
     ]
 
     operations = [
-        migrations.DeleteModel(
-            name='SubmissionScaleEval',
-        ),
+        migrations.DeleteModel(name="SubmissionScaleEval",),
     ]

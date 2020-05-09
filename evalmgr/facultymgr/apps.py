@@ -11,4 +11,6 @@ class FacultymgrConfig(AppConfig):
             Group.objects.get_or_create(name="student")
             Group.objects.get_or_create(name="faculty")
         except Exception as e:
-            print("No auth_group, run migrations and then student/faculty groups can be created.")
+            print(
+                "No auth_group, run migrations and then student/faculty groups can be created."
+            )

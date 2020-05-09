@@ -168,9 +168,7 @@ def create_evaluation_container_eval(**kwargs):
     except ObjectDoesNotExist:
         return HttpResponse("Evaluation object not created")
     try:
-        evaluation.created_by = User.objects.get(
-            email=kwargs["form_data"]["email_id"]
-        )
+        evaluation.created_by = User.objects.get(email=kwargs["form_data"]["email_id"])
         evaluation.name = kwargs["form_data"]["evaluation_name"]
         evaluation.type = kwargs["form_data"]["testType"]
         evaluation.access_code = kwargs["form_data"]["access_code"]
@@ -190,6 +188,7 @@ def get_route_for_eval(testType):
         return "facultymgr:container_test_cases"
     if testType == 6:
         return "facultymgr:scale_test_cases"
+
 
 class SignUpForm(UserCreationForm):
     username = forms.CharField()
