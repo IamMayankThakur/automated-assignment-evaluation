@@ -492,7 +492,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
         print("Container Count Done")
     except Exception as e:
         print(e)
-        message += "Failed to SSH, check your ip and private key"
+        message += " Failed to SSH, check your ip and private key "
         submission.marks = marks
         submission.message = message
         submission.save()
@@ -521,6 +521,9 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     if r1.status_code == 201 and r2.status_code == 201:
         marks += 1
         message += " Load Balancer working. "
+        submission.marks = marks
+        submission.message = message
+        submission.save()
     else:
         message += " Load Balancer not working. "
         submission.marks = marks
@@ -529,6 +532,9 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
 
     # 3. Sleep for 2 mins
     time.sleep(120)
+    r = requests.get(orch_ip + "/api/v1/worker/list")
+    worker_list = r.json()
+    print("Called worker list before auto scale", worker_list)
 
     # 4. Get users and rides 25-30 times
     _iterations = random.randrange(13, 15)
@@ -551,12 +557,18 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
 
     marks += 1
     message += " DB get APIs successfully called"
+    submission.marks = marks
+    submission.message = message
+    submission.save()
     print("DB get APIs called succesfully")
 
-    # 5. Sleep for 2 mins 45 seconds
-    time.sleep(170)
+    # 5. Sleep for 2 mins 30 seconds
+    time.sleep(160)
 
     # 6. Count Containers
+    r = requests.get(orch_ip + "/api/v1/worker/list")
+    worker_list = r.json()
+    print("Called worker list after auto scale", worker_list)
     final_container_count = count_container(orch_ip, username, path_to_key)
     print("Got final container count")
     if final_container_count > initial_container_count:
@@ -566,6 +578,9 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
             + str(final_container_count)
             + ". "
         )
+        submission.marks = marks
+        submission.message = message
+        submission.save()
     else:
         message += (
             " Auto scale failed, as final container count is "
@@ -582,8 +597,11 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
         r = requests.get(orch_ip + "/api/v1/worker/list")
         worker_list = r.json()
         print("Called worjer list ", worker_list)
-        message += "Successfully retrieved workers list"
+        message += " Successfully retrieved workers list. "
         marks += 1
+        submission.marks = marks
+        submission.message = message
+        submission.save()
     except Exception as e:
         print(e)
         message += " Could not retrieve workers. "
@@ -596,10 +614,13 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     r = requests.post(orch_ip + "/api/v1/crash/slave")
     print("Crash slave called")
     if r.status_code == 200:
-        message += "Crash slave API successfully returned 200 OK. "
+        message += " Crash slave API successfully returned 200 OK. "
         marks += 1
+        submission.marks = marks
+        submission.message = message
+        submission.save()
     else:
-        message += "Crash API did not return 200 OK."
+        message += " Crash API did not return 200 OK. "
         submission.message = message
         submission.marks = marks
         submission.save()
@@ -615,7 +636,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     marks += 1
     message += "Called worker list after new slave is spawned"
     if len(new_worker_list) == len(worker_list):
-        message += "New worker started. "
+        message += " New worker started. "
         marks += 1
         if worker_list[len(worker_list) - 1] not in new_worker_list:
             message += " Old slave worker stopped. "
@@ -639,8 +660,8 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
             submission.save()
             return
 
-        r = requests.get(lb_ip + "/api/v1/rides?source=1341&destination=2123")
-        if r.status_code != 400:
+        r = requests.get(lb_ip + "/api/v1/rides?source=34&destination=23")
+        if r.status_code != 204:
             message += " Inconsistent ride information after new slave creation"
             submission.message = message
             submission.marks = marks
