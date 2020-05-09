@@ -529,6 +529,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
         submission.marks = marks
         submission.message = message
         submission.save()
+        return
 
     # 3. Sleep for 2 mins
     time.sleep(120)
@@ -541,7 +542,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     for _ in range(_iterations):
         r = requests.get(lb_ip + "/api/v1/rides?source=1&destination=2")
         if r.status_code != 200:
-            message += " Could not retrive ride information. "
+            message += " Could not retrieve ride information. "
             submission.message = message
             submission.marks = marks
             submission.save()
