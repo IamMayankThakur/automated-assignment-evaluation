@@ -455,7 +455,7 @@ def do_assignment_3_eval(*args, **kwargs):
 def count_container(ip, username, key_filename):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(hostname=ip, username=username, key_filename=key_filename)
+    ssh.connect(hostname=ip[7:], username=username, key_filename=key_filename)
     stdin, stdout, stderr = ssh.exec_command("sudo docker ps | wc -l")
     output = stdout.read().decode()
     res = int(output) - 1
@@ -476,8 +476,14 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     try:
         requests.post(orch_ip + "/api/v1/db/clear")
         print("Clear db done")
+        message += "DB Clear Success. "
     except Exception as e:
+        message += "DB Clear Failed. "
+        submission.marks = marks
+        submission.message = message
+        submission.save()
         print(e)
+        return
 
     # 1. SSH And count containers
     try:
@@ -487,6 +493,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     except Exception as e:
         print(e)
         message += "Failed to SSH, check your ip and private key"
+        submission.marks = marks
         submission.message = message
         submission.save()
         return
