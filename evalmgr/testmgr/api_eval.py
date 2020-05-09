@@ -434,7 +434,7 @@ def do_assignment_3_eval(*args, **kwargs):
             submission.save()
             return
 
-        submission.marks = marks
+        submission.marks = marks * 0.5
         submission.message = message
         submission.save()
 
@@ -695,7 +695,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     message += " DB get APIs successfully called after new slave creation"
 
     # Save marks in the db
-    submission.marks = marks * 0.5
+    submission.marks = marks
     submission.message = message
     submission.save()
 
