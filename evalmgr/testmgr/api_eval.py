@@ -245,7 +245,7 @@ def do_api_eval_cc(*args, **kwargs):
             message += " Failed GetUpcomingRides "
             print(" Failed GetUpcomingRides ")
 
-        submission.marks = marks * 0.6
+        submission.marks = marks * 0.4
         submission.message = message
         submission.save()
         return
@@ -695,7 +695,7 @@ def do_final_project_eval(sub_id, users_ip, rides_ip, lb_ip):
     message += " DB get APIs successfully called after new slave creation"
 
     # Save marks in the db
-    submission.marks = marks
+    submission.marks = marks * 0.5
     submission.message = message
     submission.save()
 
