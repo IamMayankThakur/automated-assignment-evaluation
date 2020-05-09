@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Final Project Evaluation{% endblock %}
+
+{% block content %}
+<div class="container mt-5 border border-dark px-5 py-5">
+    <form action="" method="POST" enctype="multipart/form-data" class="was-validated">
+        {% csrf_token %}
+    <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Team Name</label>
+        <input type="text" class="form-control" id="team_name" placeholder="Enter Team Name.." name="team" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field. Same team name as the previous assignments</div>
+      </div>
+
+        <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Public ip Address Of Load Balancer</label>
+        <input type="text" class="form-control" id="public_ip_address" placeholder="Enter Public ip address.." name="lb_ip" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field. Do not include any trailing slash</div>
+      </div>
+
+      <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Public ip Address Of Orchestrator</label>
+        <input type="text" class="form-control" id="public_ip_address" placeholder="Enter Public ip address.." name="public_ip_address" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field. Do not include any trailing slash</div>
+      </div>
+
+      <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Public ip Address Of Rides VM</label>
+        <input type="text" class="form-control" id="public_ip_address" placeholder="Enter Public ip address.." name="rides_ip" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field. Do not include any trailing slash</div>
+      </div>
+
+      <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Public ip Address Of Users VM</label>
+        <input type="text" class="form-control" id="public_ip_address" placeholder="Enter Public ip address.." name="users_ip" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field. Do not include any trailing slash</div>
+      </div>
+
+        <div class="form-group">
+        <label for="team_name" class="font-weight-bold">Username which has sudo access for Orchestrator</label>
+        <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+
+   <label class="font-weight-bold">Upload the private key (.pem) file which you use to ssh to the orchestrator instance</label>
+    <br>
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="private_key" name="private_key_file" required>
+        <label class="custom-file-label" for="private_key">Choose pem file</label>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please select a file.</div>
+    </div>
+    <br>
+    <label class="font-weight-bold">Upload the source code of the entire project</label>
+    <br>
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="source_code" name="source_code_file" required>
+        <label class="custom-file-label" for="source_code">Choose the zip file</label>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please name your file in the format TEAMNAME.zip</div>
+    </div>
+
+        <br>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}
