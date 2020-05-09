@@ -3,7 +3,12 @@ from django.shortcuts import render, reverse
 from django.views import View
 
 from facultymgr.models import Evaluation
-from testmgr.api_eval import do_api_eval, do_api_eval_cc, do_assignment_3_eval, do_final_project_eval
+from testmgr.api_eval import (
+    do_api_eval,
+    do_api_eval_cc,
+    do_assignment_3_eval,
+    do_final_project_eval,
+)
 from testmgr.container_eval import do_container_eval_cc
 from testmgr.container_eval_final import do_container_eval
 from testmgr.code_eval import do_code_eval
@@ -241,7 +246,9 @@ class FinalProjectTestView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.request.user.groups.filter(name="student").exists()
 
     def get(self, request):
-        print("Render html")
+        if request.session.get("access_code") is None:
+            return HttpResponse("No access code")
+        return render(request, "final_project_submission.html")
 
     def post(self, request):
         try:
@@ -252,10 +259,15 @@ class FinalProjectTestView(LoginRequiredMixin, UserPassesTestMixin, View):
                 access_code=request.session["access_code"]
             )
             sub.private_key_file = request.FILES["private_key_file"]
-            sub.public_ip_address = request.POST["public_ip_address"]
+            sub.public_ip_address = "http://" + request.POST["public_ip_address"]
             sub.source_code_file = request.FILES["source_code_file"]
             sub.save()
-            do_final_project_eval.delay(sub_id=sub.id, users_ip = str(request.POST["users_ip"]), rides_ip = request.POST["rides_ip"], lb_ip=request.POST["lb_ip"])
+            do_final_project_eval.delay(
+                sub_id=sub.id,
+                users_ip="http://" + str(request.POST["users_ip"]),
+                rides_ip="http://" + request.POST["rides_ip"],
+                lb_ip="http://" + request.POST["lb_ip"],
+            )
             return HttpResponse(
                 "Your submission has been recorded. Your submission id is "
                 + str(sub.id)

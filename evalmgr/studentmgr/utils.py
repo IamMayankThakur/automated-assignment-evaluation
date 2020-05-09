@@ -16,3 +16,6 @@ def get_route_for_eval_type(eval_type):
 
     if eval_type == 6:
         return "studentmgr:scale_eval_view"
+
+    if eval_type == 7:
+        return "studentmgr:final_project_view"
