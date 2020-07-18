@@ -106,6 +106,7 @@ def do_scale_eval(*args, **kwargs):
         if len(output) == 0 or test.scale_min != int(output.split("/")[0]):
             message += "Minimum scale test case failed\n"
         else:
+            message += "Servic scaled to "+str(test.scale_min)+" instances in the given time\n"
             marks += 1
 
         Requests = (
@@ -141,11 +142,16 @@ def do_scale_eval(*args, **kwargs):
                 message += (
                     "Service did not scale to "
                     + str(i)
-                    + " instances in the give time\n"
+                    + " instances in the given time\n"
                 )
                 loader.wait()
             else:
                 marks += 1
+                message += (
+                    "Service scaled to "
+                    + str(i)
+                    + " instances in the given time\n"
+                )
             loader.wait()
             print(message)
             sub.message = message

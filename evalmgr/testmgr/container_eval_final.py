@@ -35,7 +35,10 @@ def setup_container_eval(*args, **kwargs):
     container_test.env_variables = kwargs["form_data"]["env_variables"]
     container_test.volumes = kwargs["form_data"]["volumes"]
     container_test.commands = kwargs["form_data"]["commands"]
-    container_test.num_cpus = kwargs["form_data"]["cpus"]
+    try:
+        container_test.num_cpus = int(kwargs["form_data"]["cpus"])
+    except Exception:
+        container_test.num_cpus = None
     container_test.evaluation = Evaluation.objects.get(
         id=int(kwargs["form_data"]["eval_id"])
     )
@@ -104,73 +107,94 @@ def do_container_eval(*args, **kwargs):
 
         # test2 Container image
         message += "Container Image test running\n"
-        testpassed = container_data["Config"]["Image"] == test.container_image
-        faculty_message += (
-            "Container was not run using " + test.container_image + " image\n",
-            "",
-        )[testpassed]
-        marks_for_test, message_for_test = give_marks(testpassed, "Container Image")
-        message += message_for_test
-        marks += marks_for_test
+        if(len(test.container_image)!=0):
+            testpassed = container_data["Config"]["Image"] == test.container_image
+            faculty_message += (
+                "Container was not run using " + test.container_image + " image\n",
+                "",
+            )[testpassed]
+            marks_for_test, message_for_test = give_marks(testpassed, "Container Image")
+            message += message_for_test
+            marks += marks_for_test
+        else:
+        	message += "Container Image test did not complete/skipped\n\n"
 
         # test3 port test
         message += "Ports test running\n"
-        test_ports = test.ports_exposed.split(",")
-        marks_for_test, message_for_test, faculty_message_for_test = port_test(
-            test_ports, test, container_data
-        )
-        message += message_for_test
-        marks += marks_for_test
-        faculty_message += faculty_message_for_test
+        if(len(test.ports_exposed)!=0):
+            test_ports = test.ports_exposed.split(",")
+            marks_for_test, message_for_test, faculty_message_for_test = port_test(
+                test_ports, test, container_data
+            )
+            message += message_for_test
+            marks += marks_for_test
+            faculty_message += faculty_message_for_test
+        else:
+        	message += "Ports test did not complete/skipped\n\n"
 
         # test4 connected to networks test
         message += "Network connection test running\n"
-        required_networks = test.connected_to_networks.split(",")
-        marks_for_test, message_for_test, faculty_message_for_test = network_test(
-            required_networks, test, container_data
-        )
-        message += message_for_test
-        marks += marks_for_test
-        faculty_message += faculty_message_for_test
+        if(len(test.connected_to_networks)!=0):
+            required_networks = test.connected_to_networks.split(",")
+            marks_for_test, message_for_test, faculty_message_for_test = network_test(
+                required_networks, test, container_data
+            )
+            message += message_for_test
+            marks += marks_for_test
+            faculty_message += faculty_message_for_test
+        else:
+        	message += "Network connection test did not complete/skipped\n\n"
 
         # test5 env variables
         message += "Env variables test running\n"
-        env_variables = test.env_variables.split("\n")
-        marks_for_test, message_for_test, faculty_message_for_test = env_test(
-            env_variables, test, container_data
-        )
-        message += message_for_test
-        marks += marks_for_test
-        faculty_message += faculty_message_for_test
+        if(len(test.env_variables)!=0):
+            env_variables = test.env_variables.split("\n")
+            marks_for_test, message_for_test, faculty_message_for_test = env_test(
+                env_variables, test, container_data
+            )
+            message += message_for_test
+            marks += marks_for_test
+            faculty_message += faculty_message_for_test
+        else:
+        	message += "Env variables test did not complete/skipped\n\n"
 
         # test6 volumes
         message += "Volumes test running\n"
-        test_volumes = test.volumes.split(",")
-        marks_for_test, message_for_test, faculty_message_for_test = volume_test(
-            test_volumes, test, container_data
-        )
-        message += message_for_test
-        marks += marks_for_test
-        faculty_message += faculty_message_for_test
+        if(len(test.volumes)!=0):
+            test_volumes = test.volumes.split(",")
+            marks_for_test, message_for_test, faculty_message_for_test = volume_test(
+                test_volumes, test, container_data
+            )
+            message += message_for_test
+            marks += marks_for_test
+            faculty_message += faculty_message_for_test
+        else:
+        	message += "Volumes test did not complete/skipped\n\n"
 
         # test7 commands
         message += "Commands test running\n"
-        commands = test.commands.split("\n")
-        marks_for_test, message_for_test, faculty_message_for_test = command_test(
-            commands, test, ssh
-        )
-        message += message_for_test
-        marks += marks_for_test
-        faculty_message += faculty_message_for_test
+        if(len(test.commands)!=0):
+            commands = test.commands.split("\n")
+            marks_for_test, message_for_test, faculty_message_for_test = command_test(
+                commands, test, ssh
+            )
+            message += message_for_test
+            marks += marks_for_test
+            faculty_message += faculty_message_for_test
+        else:
+        	message += "Commands test did not complete/skipped\n\n"
 
         # test8 num_cpus
         message += "CPU test running\n"
-        marks_for_test, message_for_test, faculty_message_for_test = cpu_test(
-            test.num_cpus, test, container_data
-        )
-        message += message_for_test
-        marks += marks_for_test
-        faculty_message += faculty_message_for_test
+        if(test.num_cpus!=None):
+            marks_for_test, message_for_test, faculty_message_for_test = cpu_test(
+                test.num_cpus, test, container_data
+            )
+            message += message_for_test
+            marks += marks_for_test
+            faculty_message += faculty_message_for_test
+        else:
+        	message += "CPU test did not complete/skipped\n\n"
 
     sub.marks = marks
     sub.faculty_message = faculty_message

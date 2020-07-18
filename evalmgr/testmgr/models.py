@@ -63,7 +63,7 @@ class ContainerTestModel(models.Model):
     env_variables = models.TextField(blank=True)
     volumes = models.TextField(blank=True)
     commands = models.TextField(blank=True)
-    num_cpus = models.IntegerField(blank=True)
+    num_cpus = models.IntegerField(blank=True,null=True)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
 
     objects = models.Manager()
